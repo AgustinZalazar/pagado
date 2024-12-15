@@ -45,7 +45,7 @@ const LoginForm = () => {
     }
 
     return (
-        <CardWrapper headerLabel='Bienvenido!'
+        <CardWrapper headerLabel='Bienvenido a Pagado!'
             backButtonLabel='No tienes una cuenta?'
             backButtonHref='/register'
             showSocial

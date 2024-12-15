@@ -1,7 +1,7 @@
 "use client"
 import { FcGoogle } from "react-icons/fc"
-import { FaFacebook } from "react-icons/fa"
 import { Button } from "../ui/button"
+import { signIn, signOut } from "next-auth/react"
 
 
 export const Social = () => {
@@ -11,17 +11,18 @@ export const Social = () => {
                 size="lg"
                 className="w-full"
                 variant="outline"
-                onClick={() => { }}
+                onClick={() => signIn("google", { redirectTo: "/dashboard" })}
             >
-                <FcGoogle className="h-5 w-5" />
+                Login with google
+                <FcGoogle className="h-5 w-5 ml-2" />
             </Button>
             <Button
                 size="lg"
                 className="w-full"
                 variant="outline"
-                onClick={() => { }}
+                onClick={() => signOut()}
             >
-                <FaFacebook className="h-5 w-5" />
+                Logout
             </Button>
         </div>
     )

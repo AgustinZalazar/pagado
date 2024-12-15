@@ -19,9 +19,9 @@ const CardWrapper = ({ children, headerLabel, backButtonLabel, backButtonHref, s
             <CardHeader className='text-center'>
                 <h2>{headerLabel}</h2>
             </CardHeader>
-            <CardContent>
+            {/* <CardContent>
                 {children}
-            </CardContent>
+            </CardContent> */}
             <CardFooter className='flex flex-col'>
                 <Social />
                 <BackButton label={backButtonLabel} href={backButtonHref} />
