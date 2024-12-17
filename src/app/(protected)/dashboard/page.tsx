@@ -2,7 +2,7 @@
 export default function Dashboard() {
     return (
         <>
-            <p>hola ds</p>
+            <p>Dashboard</p>
         </>
     );
 }

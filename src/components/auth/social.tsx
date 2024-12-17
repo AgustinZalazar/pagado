@@ -16,14 +16,6 @@ export const Social = () => {
                 Login with google
                 <FcGoogle className="h-5 w-5 ml-2" />
             </Button>
-            <Button
-                size="lg"
-                className="w-full"
-                variant="outline"
-                onClick={() => signOut()}
-            >
-                Logout
-            </Button>
         </div>
     )
 }
