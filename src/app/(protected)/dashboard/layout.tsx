@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../../globals.css";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import AppSidebar from "@/components/dashboard/sidebar/AppSidebar";
 import { SessionProvider } from "next-auth/react";
 
@@ -23,10 +23,10 @@ export default function RootLayout({
                 <SessionProvider>
                     <SidebarProvider>
                         <AppSidebar />
-                        <main>
+                        <SidebarInset>
                             <SidebarTrigger />
                             {children}
-                        </main>
+                        </SidebarInset>
                     </SidebarProvider>
                 </SessionProvider>
             </body>
