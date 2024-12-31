@@ -53,8 +53,8 @@ const items = [
 
 const AppSidebar = () => {
     const { data: session } = useSession()
-    console.log(session?.user)
-    return <Sidebar>
+    // console.log(session?.user)
+    return <Sidebar collapsible="icon">
         <SidebarContent>
             <SidebarGroup>
                 <SidebarGroupLabel>Pagado</SidebarGroupLabel>

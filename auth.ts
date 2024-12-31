@@ -54,7 +54,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             if (account?.refresh_token) {
                 // Guarda el refreshToken en la base de datos del usuario
                 // await saveRefreshTokenToDatabase(user.id, account.refresh_token);
-                console.log(account.refresh_token)
+                // console.log(account.refresh_token)
             }
             return true;
         }
