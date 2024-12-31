@@ -8,8 +8,8 @@ type SummaryCardsProps = {
 
 export function SummaryCards({ totalIncome, totalExpenses }: SummaryCardsProps) {
     return (
-        <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <Card>
+        <div className="flex flex-col md:flex-row gap-4">
+            <Card className="drop-shadow-md w-[260px]">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Income</CardTitle>
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -18,7 +18,7 @@ export function SummaryCards({ totalIncome, totalExpenses }: SummaryCardsProps) 
                     <div className="text-2xl font-bold">${totalIncome.toFixed(2)}</div>
                 </CardContent>
             </Card>
-            <Card>
+            <Card className="drop-shadow-md w-[260px]">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
