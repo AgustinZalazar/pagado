@@ -144,7 +144,7 @@ export function DataTable<TData, TValue>({
                 </Button> */}
             </div>
             <div className="rounded-md border mb-4  overflow-scroll md:overflow-visible max-w-[380px] md:max-w-none">
-                <Table className="bg-white">
+                <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
