@@ -97,7 +97,7 @@ const SearchableColorfulSelect = () => {
                     {searchTerm && !filteredOptions.some((option) => option.label === searchTerm) && (
                         <div className="p-2 flex items-center justify-center">
                             <Button variant="outline" size="sm" onClick={handleCreateOption}>
-                                Crear "{searchTerm}"
+                                Crear {searchTerm}
                             </Button>
                         </div>
                     )}
