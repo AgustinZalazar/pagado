@@ -30,6 +30,8 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { PaginationTable } from "./DataTableComponents/pagination"
+import { DialogWindow } from "./dialogWindow"
+import { SheetWindow } from "./sheetWindow"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -130,9 +132,16 @@ export function DataTable<TData, TValue>({
                         <SelectItem value="2024-12-01">December 2024</SelectItem>
                     </SelectContent>
                 </Select>
-                <Button className="flex-1 md:flex-initial ml-auto">
+
+                <div className="flex-1 md:flex-initial ml-auto">
+                    <DialogWindow />
+                </div>
+                <div className="flex-1 md:flex-initial">
+                    <SheetWindow />
+                </div>
+                {/* <Button className="flex-1 md:flex-initial ml-auto">
                     Add transaction
-                </Button>
+                </Button> */}
             </div>
             <div className="rounded-md border mb-4  overflow-scroll md:overflow-visible max-w-[380px] md:max-w-none">
                 <Table className="bg-white">
