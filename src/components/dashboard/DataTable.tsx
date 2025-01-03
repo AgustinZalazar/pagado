@@ -19,14 +19,18 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     const router = useRouter();
     const searchParams = useSearchParams();
     const [filters, setFilters] = useState<Record<string, string>>({});
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 2; // Items per page
 
-    // Convert search params into an object
+    // Update filters and page from query params
     useEffect(() => {
         const params: Record<string, string> = {};
         searchParams.forEach((value, key) => {
             params[key] = value;
         });
         setFilters(params);
+        const page = parseInt(searchParams.get("page") || "1", 10);
+        setCurrentPage(page);
     }, [searchParams]);
 
     const filteredData = useMemo(() => {
@@ -45,12 +49,12 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         });
     }, [data, filters]);
 
-    const table = useReactTable({
-        data: filteredData,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-    });
+    // Paginated data
+    const paginatedData = useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        return filteredData.slice(startIndex, endIndex);
+    }, [filteredData, currentPage]);
 
     const updateQueryParams = (key: string, value: string) => {
         const params = new URLSearchParams(searchParams as any);
@@ -62,13 +66,22 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         router.push(`?${params.toString()}`);
     };
 
+    const table = useReactTable({
+        data: paginatedData,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+    });
+
+
+
     return (
         <div className="min-h-[100vh] flex-1">
             <div className="w-full flex justify-between mb-4">
                 <div className="flex gap-3">
                     <Input
                         placeholder="Buscar por descripcion"
-                        // value={searchParams.get("description") || ""}
+                        value={searchParams.get("description") || ""}
                         onChange={(event) => updateQueryParams("description", event.target.value)}
                         className="max-w-sm"
                     />
@@ -111,7 +124,15 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                     </TableBody>
                 </Table>
             </div>
-            <PaginationTable />
+            <PaginationTable
+                totalPages={Math.ceil(filteredData.length / itemsPerPage)}
+                onPageChange={(page) => {
+                    const params = new URLSearchParams(searchParams as any);
+                    params.set("page", page.toString());
+                    router.push(`?${params.toString()}`);
+                    setCurrentPage(page);
+                }}
+            />
         </div>
     );
 }
