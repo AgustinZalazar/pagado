@@ -1,9 +1,11 @@
+import { getTranslations } from 'next-intl/server';
 import { DataTable } from '@/components/dashboard/DataTable'
 import { columns, Payment } from '@/components/dashboard/DataTableComponents/columns'
 import { SummaryCards } from '@/components/dashboard/incomes/summaryCards'
 import React from 'react'
 
 async function getData(): Promise<Payment[]> {
+
     // Fetch data from your API here.
     return [
         {
@@ -56,9 +58,10 @@ async function getData(): Promise<Payment[]> {
 
 const Incomes = async () => {
     const data = await getData()
+    const t = await getTranslations('Dashboard.Incomes');
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <h1 className="text-3xl font-bold mb-6">Financial Dashboard</h1>
+            <h1 className="text-3xl font-bold mb-6">{t('title')}</h1>
             <SummaryCards totalIncome={500} totalExpenses={350} />
             <DataTable columns={columns} data={data} />
         </div>

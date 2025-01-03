@@ -10,12 +10,15 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useTranslations } from "next-intl";
+import React from "react";
 
 export function DialogWindow() {
+    const t = useTranslations('Dashboard.Incomes');
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button className="w-full">Add transaction</Button>
+                <Button>{t('buttonAdd')}</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>

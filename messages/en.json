@@ -1,0 +1,10 @@
+{
+    "Login": {
+        "title": "test"
+    },
+    "Dashboard": {
+        "Incomes": {
+            "title": "Dashboard of transactions"
+        }
+    }
+}

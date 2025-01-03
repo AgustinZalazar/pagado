@@ -51,7 +51,7 @@ const items = [
     },
 ]
 
-const AppSidebar = () => {
+const AppSidebar = ({ locale }: { locale: string }) => {
     const { data: session } = useSession()
     // console.log(session?.user)
     return <Sidebar collapsible="icon">
@@ -61,9 +61,9 @@ const AppSidebar = () => {
                 <SidebarGroupContent>
                     <SidebarMenu>
                         {items.map((item) => (
-                            <SidebarMenuItem key={item.title}>
-                                <SidebarMenuButton asChild>
-                                    <a href={item.url}>
+                            <SidebarMenuItem key={item.title} className='py-2'>
+                                <SidebarMenuButton asChild >
+                                    <a href={`/${locale}${item.url}`}>
                                         <item.icon />
                                         <span>{item.title}</span>
                                     </a>
@@ -81,7 +81,7 @@ const AppSidebar = () => {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild className=' h-fit'>
                             <SidebarMenuButton>
-                                {session &&
+                                {/* {session &&
                                     <>
                                         <Avatar>
                                             <AvatarImage src={session?.user?.image ?? undefined} />
@@ -90,7 +90,7 @@ const AppSidebar = () => {
                                         {session?.user?.name}
                                         <ChevronUp className="ml-auto" />
                                     </>
-                                }
+                                } */}
                             </SidebarMenuButton>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent

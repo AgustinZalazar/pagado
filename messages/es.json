@@ -1,0 +1,26 @@
+{
+    "Login": {
+        "title": "test"
+    },
+    "Dashboard": {
+        "Incomes": {
+            "title": "Tablero de transacciones",
+            "card1": "Ingresos totales",
+            "card2": "Gastos totales",
+            "inputSearch": "Buscar por descripcion",
+            "filterButton": "Filtros",
+            "filterType": "Filtrar por tipo",
+            "filterPayment": "Filtrar por metodo de pago",
+            "filterCategory": "Filtrar por categoria",
+            "filterDate": "Filtrar por fecha",
+            "buttonAdd": "Agregar transaccion",
+            "header1": "Numero",
+            "header2": "Descripcion",
+            "header3": "Tipo",
+            "header4": "Categoria",
+            "header5": "Monto",
+            "header6": "Fecha",
+            "header7": "Metodo de pago"
+        }
+    }
+}
