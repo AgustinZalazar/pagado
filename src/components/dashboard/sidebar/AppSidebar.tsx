@@ -81,7 +81,7 @@ const AppSidebar = ({ locale }: { locale: string }) => {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild className=' h-fit'>
                             <SidebarMenuButton>
-                                {/* {session &&
+                                {session &&
                                     <>
                                         <Avatar>
                                             <AvatarImage src={session?.user?.image ?? undefined} />
@@ -90,7 +90,7 @@ const AppSidebar = ({ locale }: { locale: string }) => {
                                         {session?.user?.name}
                                         <ChevronUp className="ml-auto" />
                                     </>
-                                } */}
+                                }
                             </SidebarMenuButton>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent

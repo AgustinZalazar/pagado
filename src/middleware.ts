@@ -1,44 +1,30 @@
-// import { NextRequest, NextResponse } from "next/server"; // Importa los tipos correctos
-// import { auth } from "@/auth";
-// import createMiddleware from "next-intl/middleware";
-// import { routing } from "./i18n/routing";
+import createMiddleware from "next-intl/middleware";
+import { NextRequest } from "next/server";
+import { auth } from "@/auth";
+import { routing } from "./i18n/routing";
 
-// // Crear una instancia del middleware de internacionalización
-// const intlMiddleware = createMiddleware(routing);
+const locales = ["es", "en"];
 
-// export default async function middleware(req: NextRequest) {
-//     // 1. Lógica de autenticación
-//     // const authResponse = await auth(req);
-//     // if (!authResponse && req.nextUrl.pathname !== "/login") {
-//     //     const newUrl = new URL("/login", req.nextUrl.origin);
-//     //     return NextResponse.redirect(newUrl); // Usa NextResponse para redirigir
-//     // }
+const publicPages = ["/", "/login", "/register"]; // your public routes
+const handleI18nRouting = createMiddleware(routing);
 
-//     // 2. Ejecutar la lógica de internacionalización
-//     const intlResponse = intlMiddleware(req);
-//     if (intlResponse) {
-//         return intlResponse;
-//     }
+const authMiddleware = auth((req) => {
+    return handleI18nRouting(req);
+});
 
-//     // 3. Continuar con la solicitud si no se intercepta
-//     return NextResponse.next();
-// }
+export default function middleware(req: NextRequest) {
+    const publicPathnameRegex = RegExp(
+        `^(/(${locales.join("|")}))?(${publicPages
+            .flatMap((p) => (p === "/" ? ["", "/"] : p))
+            .join("|")})/?$`,
+        "i"
+    );
+    const isPublicPage = publicPathnameRegex.test(req.nextUrl.pathname);
 
-// // Configuración de las rutas para ambas funcionalidades
-// export const config = {
-//     matcher: [
-//         "/((?!api|_next/static|_next/image|favicon.ico).*)",
-//         "['/', '/(es|en)/:path*']",
-//     ],
-// };
-
-
-import createMiddleware from 'next-intl/middleware';
-import { routing } from './i18n/routing';
-
-export default createMiddleware(routing);
+    if (isPublicPage) return handleI18nRouting(req);
+    else return (authMiddleware as any)(req);
+}
 
 export const config = {
-    // Match only internationalized pathnames
-    matcher: ['/', '/(es|en)/:path*']
+    matcher: ["/((?!api|_next|.*\\..*).*)"],
 };
