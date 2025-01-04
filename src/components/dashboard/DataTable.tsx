@@ -20,7 +20,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     const searchParams = useSearchParams();
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 2; // Items per page
+    const itemsPerPage = 10; // Items per page
 
     // Update filters and page from query params
     useEffect(() => {
@@ -77,7 +77,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
     return (
         <div className="min-h-[100vh] flex-1">
-            <div className="w-full flex justify-between mb-4">
+            <div className="w-full flex flex-col md:flex-row justify-between gap-4 mb-4">
                 <div className="flex gap-3">
                     <Input
                         placeholder="Buscar por descripcion"
@@ -90,7 +90,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                 {/* <FilterControls onFilterChange={setFilters} /> */}
                 <DialogWindow />
             </div>
-            <div className="rounded-md border mb-4 overflow-scroll md:overflow-visible max-w-full">
+            <div className="rounded-md border mb-4 overflow-scroll md:overflow-visible max-w-[380px] md:max-w-full">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

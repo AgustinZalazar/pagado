@@ -12,17 +12,10 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Payment } from "@/types/payment"
 
 
-export type Payment = {
-    id: string,
-    description: string,
-    type: "income" | "expense",
-    category: string,
-    amount: number,
-    date: string,
-    typeOfPayment: string
-}
+
 
 export const columns: ColumnDef<Payment>[] = [
     {
