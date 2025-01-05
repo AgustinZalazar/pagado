@@ -33,7 +33,7 @@ export function SheetWindow() {
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <Button variant="outline">Filtrar <Filter /></Button>
+                <Button variant="outline">{t("filterButton")} <Filter /></Button>
             </SheetTrigger>
             <SheetContent>
                 <SheetHeader>

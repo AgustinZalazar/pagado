@@ -15,8 +15,6 @@ import {
 import { Payment } from "@/types/payment"
 
 
-
-
 export const columns: ColumnDef<Payment>[] = [
     {
         accessorKey: "id",
@@ -26,7 +24,7 @@ export const columns: ColumnDef<Payment>[] = [
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Number
+                    Numero
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
@@ -37,26 +35,40 @@ export const columns: ColumnDef<Payment>[] = [
     },
     {
         accessorKey: "description",
-        header: "Description",
+        header: "Descripcion",
     },
     {
         accessorKey: "type",
-        header: "Type",
+        header: "Tipo",
         cell: ({ row }) => {
             if (row.getValue("type") === "expense") {
-                return <p className="rounded-full bg-[#dc4a46] text-white px-4 py-1 text-center w-fit capitalize">{row.getValue("type")}</p>
+                return <p className="rounded-lg bg-[#f9cbca] text-red-400 px-2 py-1 text-center w-fit capitalize">{row.getValue("type")}</p>
+                // return <p className="rounded-lg bg-[#f5f5f5] text-red-400 px-2 py-1 text-center w-fit capitalize">{row.getValue("type")}</p>
             } else {
-                return <p className="rounded-full bg-[#008f4c] text-white px-4 py-1 text-center w-fit capitalize">{row.getValue("type")}</p>
+                return <p className="rounded-lg bg-[#bce9d4e3] text-[#00b743] px-2 py-1 text-center w-fit capitalize">{row.getValue("type")}</p>
+                // return <p className="rounded-lg bg-[#f5f5f5] text-[#00b743] px-2 py-1 text-center w-fit capitalize">{row.getValue("type")}</p>
             }
         },
     },
     {
         accessorKey: "category",
-        header: "Category",
+        header: "Categoria",
     },
     {
         accessorKey: "amount",
-        header: () => <div className="text-right">Amount</div>,
+        // header: () => <div className="text-right">Amount</div>,
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    className="ml-auto"
+                >
+                    Monto
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
         cell: ({ row }) => {
             const amount = parseFloat(row.getValue("amount"))
             const formatted = new Intl.NumberFormat("en-US", {
@@ -72,11 +84,11 @@ export const columns: ColumnDef<Payment>[] = [
     },
     {
         accessorKey: "date",
-        header: "Date",
+        header: "Fecha",
     },
     {
         accessorKey: "typeOfPayment",
-        header: "Type of Payment",
+        header: "Metodo de pago",
     },
     {
         id: "actions",

@@ -4,7 +4,25 @@
     },
     "Dashboard": {
         "Incomes": {
-            "title": "Dashboard of transactions"
+            "title": "Dashboard of transactions",
+            "card1": "Total income",
+            "card2": "Total spend",
+            "card3": "Category",
+            "card4": "Payment method",
+            "inputSearch": "Search by description",
+            "filterButton": "Filters",
+            "filterType": "Filter by type",
+            "filterPayment": "Filter by payment method",
+            "filterCategory": "Filter by category",
+            "filterDate": "Filter by date",
+            "buttonAdd": "Add transaction",
+            "header1": "Number",
+            "header2": "Description",
+            "header3": "Type",
+            "header4": "Category",
+            "header5": "Amount",
+            "header6": "Date",
+            "header7": "Payment method"
         }
     }
 }

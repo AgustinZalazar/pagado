@@ -7,6 +7,8 @@
             "title": "Tablero de transacciones",
             "card1": "Ingresos totales",
             "card2": "Gastos totales",
+            "card3": "Categoria",
+            "card4": "Metodo de pago",
             "inputSearch": "Buscar por descripcion",
             "filterButton": "Filtros",
             "filterType": "Filtrar por tipo",
