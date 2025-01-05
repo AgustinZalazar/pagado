@@ -11,7 +11,21 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useTranslations } from "next-intl";
-import React from "react";
+import React, { useState } from "react";
+import { ComboboxCustom } from "./comboBox";
+import SearchableColorfulSelect from "./incomes/searchableColorfulSelect";
+import { FormTransaction } from "./incomes/formTransaction";
+
+const itemsCombo = [
+    {
+        value: "income",
+        label: "Income",
+    },
+    {
+        value: "expense",
+        label: "Expense",
+    },
+]
 
 export function DialogWindow() {
     const t = useTranslations('Dashboard.Incomes');
@@ -20,38 +34,17 @@ export function DialogWindow() {
             <DialogTrigger asChild>
                 <Button>{t('buttonAdd')}</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:w-[80%]">
                 <DialogHeader>
-                    <DialogTitle>Add transaction</DialogTitle>
+                    <DialogTitle>Agregar transaccion</DialogTitle>
                     <DialogDescription>
-                        Make changes to your profile here. Click save when you re done.
+                        Crea una nueva transaccion
                     </DialogDescription>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="name" className="text-right">
-                            Name
-                        </Label>
-                        <Input
-                            id="name"
-                            defaultValue="Pedro Duarte"
-                            className="col-span-3"
-                        />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="username" className="text-right">
-                            Username
-                        </Label>
-                        <Input
-                            id="username"
-                            defaultValue="@peduarte"
-                            className="col-span-3"
-                        />
-                    </div>
-                </div>
-                <DialogFooter>
-                    <Button type="submit">Save changes</Button>
-                </DialogFooter>
+                <FormTransaction />
+                {/* <DialogFooter>
+                    <Button type="submit">Guardar</Button>
+                </DialogFooter> */}
             </DialogContent>
         </Dialog>
     )

@@ -28,7 +28,7 @@ const colors = [
     "bg-teal-500",
 ];
 
-const SearchableColorfulSelect = () => {
+const SearchableColorfulSelect = ({ field }: any) => {
     const [options, setOptions] = useState<Option[]>([
         { id: "1", label: "Home", color: "bg-yellow-500" },
         { id: "2", label: "Food", color: "bg-green-500" },
@@ -59,8 +59,8 @@ const SearchableColorfulSelect = () => {
     return (
         <div className="w-full max-w-sm">
             <Select
-                value={selectedOption || undefined}
-                onValueChange={(value) => setSelectedOption(value)}
+                onValueChange={(value) => field.onChange(value)}
+                defaultValue={field.value}
                 open={isOpen}
                 onOpenChange={setIsOpen}
             >
