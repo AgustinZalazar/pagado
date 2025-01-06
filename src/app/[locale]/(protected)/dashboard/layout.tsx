@@ -9,6 +9,7 @@ import { DarkmodeToggle } from "@/components/dashboard/darkModeToggle";
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -52,6 +53,7 @@ export default function RootLayout({
                                     </div>
                                 </header>
                                 {children}
+                                <Toaster />
                             </SidebarInset>
                         </SidebarProvider>
                     </SessionProvider>

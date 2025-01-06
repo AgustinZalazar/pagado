@@ -57,7 +57,7 @@ const SearchableColorfulSelect = ({ field }: any) => {
     };
 
     return (
-        <div className="w-full max-w-sm">
+        <div className="w-full">
             <Select
                 onValueChange={(value) => field.onChange(value)}
                 defaultValue={field.value}
@@ -74,6 +74,7 @@ const SearchableColorfulSelect = ({ field }: any) => {
                             placeholder="Buscar o crear"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            onMouseDown={(e) => e.stopPropagation()} // Evitar que el select se cierre
                         />
                     </div>
                     {/* Opciones filtradas */}

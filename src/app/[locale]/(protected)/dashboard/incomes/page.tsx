@@ -5,7 +5,6 @@ import { SummaryCards } from '@/components/dashboard/incomes/summaryCards'
 import { IncomesData } from '@/data/incomes'
 import React from 'react'
 import { Payment } from '@/types/payment';
-import { FormTransaction } from '@/components/dashboard/incomes/formTransaction';
 
 async function getData(): Promise<Payment[]> {
     return IncomesData
@@ -19,8 +18,6 @@ const Incomes = async () => {
             <h1 className="text-3xl font-bold mb-6">{t('title')}</h1>
             <SummaryCards totalIncome={500} totalExpenses={350} />
             <DataTable columns={columns} data={data} />
-
-            {/* <FormTransaction /> */}
         </div>
     )
 }

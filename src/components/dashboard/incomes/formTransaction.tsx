@@ -1,9 +1,7 @@
 "use client"
-
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { number, z } from "zod"
-
+import { z } from "zod"
 import { toast } from "@/components/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import {
@@ -19,13 +17,17 @@ import { Input } from "@/components/ui/input"
 import {
     Select,
     SelectContent,
-    SelectGroup,
     SelectItem,
-    SelectLabel,
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
 import SearchableColorfulSelect from "./searchableColorfulSelect"
+import { CalendarIcon } from "lucide-react"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { format } from "date-fns"
+import { cn } from "@/lib/utils"
+import { Calendar } from "@/components/ui/calendar"
+import { Dispatch, SetStateAction } from "react"
 
 const FormSchema = z.object({
     description: z.string().min(2, {
@@ -36,11 +38,16 @@ const FormSchema = z.object({
         message: "Seleccione un tipo por favor",
     }),
     category: z.string(),
-    // date: z.date(),
+    date: z.date(),
     paymentMethod: z.string(),
 })
 
-export function FormTransaction() {
+interface formProps {
+    openDialog: boolean,
+    setOpenDialog: Dispatch<SetStateAction<boolean>>
+}
+
+export function FormTransaction({ openDialog, setOpenDialog }: formProps) {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -48,20 +55,21 @@ export function FormTransaction() {
             amount: 0,
             type: "",
             category: "",
-            // date: new Date,
+            date: new Date,
             paymentMethod: ""
         },
     })
 
     function onSubmit(data: z.infer<typeof FormSchema>) {
-        // toast({
-        //     title: "You submitted the following values:",
-        //     description: (
-        //         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-        //             <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        //         </pre>
-        //     ),
-        // })
+        setOpenDialog(!openDialog)
+        toast({
+            title: "You submitted the following values:",
+            description: (
+                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+                </pre>
+            ),
+        })
         console.log(data)
     }
 
@@ -136,19 +144,47 @@ export function FormTransaction() {
                     )}
                 />
                 {/* Campo Date */}
-                {/* <FormField
+                <FormField
                     control={form.control}
-                    name="category"
+                    name="date"
                     render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Tipo</FormLabel>
-                            <FormControl>
-                                <SearchableColorfulSelect field={field} />
-                            </FormControl>
+                        <FormItem className="flex flex-col">
+                            <FormLabel>Fecha</FormLabel>
+                            <Popover modal>
+                                <PopoverTrigger asChild>
+                                    <FormControl>
+                                        <Button
+                                            variant={"outline"}
+                                            className={cn(
+                                                "w-full pl-3 text-left font-normal",
+                                                !field.value && "text-muted-foreground"
+                                            )}
+                                        >
+                                            {field.value ? (
+                                                format(field.value, "PPP")
+                                            ) : (
+                                                <span>Pick a date</span>
+                                            )}
+                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                        </Button>
+                                    </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                        mode="single"
+                                        selected={field.value}
+                                        onSelect={field.onChange}
+                                        disabled={(date) =>
+                                            date > new Date() || date < new Date("1900-01-01")
+                                        }
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
                             <FormMessage />
                         </FormItem>
                     )}
-                /> */}
+                />
                 {/* Campo PaymentMethod */}
                 <FormField
                     control={form.control}
