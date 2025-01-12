@@ -60,17 +60,22 @@ export function FormTransaction({ openDialog, setOpenDialog }: formProps) {
         },
     })
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
+    async function onSubmit(data: z.infer<typeof FormSchema>) {
         setOpenDialog(!openDialog)
+        const newTransaction = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/save-transaction`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        });
+
         toast({
-            title: "You submitted the following values:",
+            title: "Listo!",
             description: (
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-                </pre>
+                <p className="mt-2 w-[340px] rounded-md  p-4">
+                    Transaccion guardada correctamente!
+                </p>
             ),
         })
-        console.log(data)
     }
 
     return (
