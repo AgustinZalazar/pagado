@@ -102,7 +102,7 @@ export const SearchableColorfulSelect = ({ field }: any) => {
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     {selectedOption
                         ? options.find((opt) => opt.id === selectedOption)?.label
-                        : "Select an option or create one"}
+                        : "Selecciona una opcion o crea una"}
                 </span>
                 {isOpen ? (
                     <ChevronUpIcon size={16} className="text-gray-500" />
@@ -122,7 +122,7 @@ export const SearchableColorfulSelect = ({ field }: any) => {
                         <Input
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Search or create new"
+                            placeholder="Busca o crea una"
                             className="w-full"
                         />
                     </div>
@@ -148,7 +148,7 @@ export const SearchableColorfulSelect = ({ field }: any) => {
                     {filteredOptions.length === 0 && (
                         <div className="mt-2 flex items-center justify-center">
                             <Button variant="outline" onClick={handleCreateOption}>
-                                Create "{searchTerm}"
+                                Crear &quot;{searchTerm}&quot;
                             </Button>
                         </div>
                     )}
