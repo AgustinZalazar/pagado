@@ -1,15 +1,26 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { DollarSign, TrendingDown, TrendingUp } from 'lucide-react'
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
+import { getLocale } from "next-intl/server"
 
 type SummaryCardsProps = {
     totalIncome: number
     totalExpenses: number
+    totalCategory: number
+    totalMethod: number
 }
 
-export function SummaryCards({ totalIncome, totalExpenses }: SummaryCardsProps) {
+export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory = 0, totalMethod = 0 }: SummaryCardsProps) {
     const t = useTranslations('Dashboard.Incomes');
+    const locale = useLocale()
+    const formatCurrency = (value: number) =>
+        new Intl.NumberFormat(locale, {
+            style: "currency",
+            currency: "ARS",
+            maximumFractionDigits: 0,
+            minimumFractionDigits: 0,
+        }).format(value);
     return (
         <div className="flex flex-col md:flex-row gap-4">
             <Card className="drop-shadow-md w-full md:w-[382px] h-fit">
@@ -18,7 +29,7 @@ export function SummaryCards({ totalIncome, totalExpenses }: SummaryCardsProps) 
                 </CardHeader>
                 <CardContent className="">
                     <div className="flex gap-3 items-start">
-                        <div className="text-2xl font-bold text-black relative -top-1">${totalIncome.toFixed(2)}</div>
+                        <div className="text-2xl font-bold text-black relative -top-1">${formatCurrency(+totalIncome.toFixed(0))}</div>
                         <div className="flex bg-badge_light_green rounded-xl h-fit py-0.5 px-2">
                             <TrendingUp className="h-3 w-3 text-badge_text_green" />
                             <p className="text-xs text-badge_text_green">+3%</p>
@@ -36,7 +47,7 @@ export function SummaryCards({ totalIncome, totalExpenses }: SummaryCardsProps) 
                 </CardHeader>
                 <CardContent>
                     <div className="flex gap-3 items-start">
-                        <div className="text-2xl font-bold text-black relative -top-1">${totalExpenses.toFixed(2)}</div>
+                        <div className="text-2xl font-bold text-black relative -top-1">${formatCurrency(+totalExpenses)}</div>
                         <div className="flex bg-badge_light_red rounded-xl h-fit py-0.5 px-2">
                             <TrendingDown className="h-3 w-3 text-badge_text_red" />
                             <p className="text-xs text-badge_text_red">+3%</p>
@@ -54,7 +65,7 @@ export function SummaryCards({ totalIncome, totalExpenses }: SummaryCardsProps) 
                 </CardHeader>
                 <CardContent>
                     <div className="flex gap-3 items-start">
-                        <div className="text-2xl font-bold text-black relative -top-1">${totalExpenses.toFixed(2)}</div>
+                        <div className="text-2xl font-bold text-black relative -top-1">${formatCurrency(+totalCategory)}</div>
                         <div className="flex bg-badge_light_red rounded-xl h-fit py-0.5 px-2">
                             <TrendingDown className="h-3 w-3 text-badge_text_red" />
                             <p className="text-xs text-badge_text_red">+3%</p>
@@ -68,11 +79,11 @@ export function SummaryCards({ totalIncome, totalExpenses }: SummaryCardsProps) 
             </Card>
             <Card className="drop-shadow-md w-full md:w-[400px] h-fit">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-xs font-medium text-muted-foreground">{t('card3')}</CardTitle>
+                    <CardTitle className="text-xs font-medium text-muted-foreground">{t('card4')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="flex gap-3 items-start">
-                        <div className="text-2xl font-bold text-black relative -top-1">${totalExpenses.toFixed(2)}</div>
+                        <div className="text-2xl font-bold text-black relative -top-1">${formatCurrency(+totalMethod)}</div>
                         <div className="flex bg-badge_light_red rounded-xl h-fit py-0.5 px-2">
                             <TrendingDown className="h-3 w-3 text-badge_text_red" />
                             <p className="text-xs text-badge_text_red">+3%</p>

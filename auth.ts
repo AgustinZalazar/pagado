@@ -16,6 +16,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: "jwt", // Usar JWT para las sesiones
   },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+  },
   callbacks: {
     authorized: ({ auth, request: { nextUrl } }) => {
       const isLoggedIn = !!auth?.user;
@@ -47,7 +58,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const userEmail = profile?.email;
           // Verificar si el usuario existe en la base de datos
           const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/${userEmail}`).then((res) => res.json());
-          console.log(user)
+          // console.log(user)
           console.log(account.access_token)
           if (!user) {
             // Crear un Google Sheet para el nuevo usuario

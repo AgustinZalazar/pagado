@@ -17,7 +17,7 @@ const getColumns = (locale: string): ColumnDef<Payment>[] => {
     const formatCurrency = (value: number) =>
         new Intl.NumberFormat(locale, {
             style: "currency",
-            currency: "USD",
+            currency: "ARS",
         }).format(value);
 
     return [
@@ -79,13 +79,13 @@ const getColumns = (locale: string): ColumnDef<Payment>[] => {
                 const formatted = formatCurrency(amount);
                 if (row.getValue("type") === "expense") {
                     return (
-                        <p className=" text-[#dc4a46] text-right font-bold">
+                        <p className=" text-[#dc4a46] text-left font-bold">
                             -{formatted}
                         </p>
                     );
                 } else {
                     return (
-                        <p className=" text-[#008f4c] text-right font-bold ">
+                        <p className=" text-[#008f4c] text-left font-bold ">
                             +{formatted}
                         </p>
                     );
@@ -95,6 +95,14 @@ const getColumns = (locale: string): ColumnDef<Payment>[] => {
         {
             accessorKey: "date",
             header: "Fecha",
+            cell: ({ row }) => {
+                const date = new Date(row.getValue("date"));
+                return (
+                    <p>
+                        {date.toLocaleDateString("es-ES")}
+                    </p>
+                )
+            },
         },
         {
             accessorKey: "typeOfPayment",
@@ -104,7 +112,6 @@ const getColumns = (locale: string): ColumnDef<Payment>[] => {
             id: "actions",
             cell: ({ row }) => {
                 const payment = row.original
-
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -114,15 +121,8 @@ const getColumns = (locale: string): ColumnDef<Payment>[] => {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem
-                                onClick={() => navigator.clipboard.writeText(payment.id)}
-                            >
-                                Copy payment ID
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>View customer</DropdownMenuItem>
-                            <DropdownMenuItem>View payment details</DropdownMenuItem>
+                            <DropdownMenuItem>Editar</DropdownMenuItem>
+                            <DropdownMenuItem>Eliminar</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )

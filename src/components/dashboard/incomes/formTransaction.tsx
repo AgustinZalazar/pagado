@@ -21,7 +21,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import SearchableColorfulSelect from "./searchableColorfulSelect"
+import { SearchableColorfulSelect } from "./searchableColorfulSelect"
 import { CalendarIcon } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { format } from "date-fns"
@@ -62,7 +62,7 @@ export function FormTransaction({ openDialog, setOpenDialog }: formProps) {
 
     async function onSubmit(data: z.infer<typeof FormSchema>) {
         setOpenDialog(!openDialog)
-        const newTransaction = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/save-transaction`, {
+        const newTransaction = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/transaction`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
@@ -140,7 +140,7 @@ export function FormTransaction({ openDialog, setOpenDialog }: formProps) {
                     name="category"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Tipo</FormLabel>
+                            <FormLabel>Categoria</FormLabel>
                             <FormControl>
                                 <SearchableColorfulSelect field={field} />
                             </FormControl>
