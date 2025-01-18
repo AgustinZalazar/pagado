@@ -53,20 +53,6 @@ export const SearchableColorfulSelect = ({ field }: any) => {
         const listItems = scope.current.querySelectorAll("li");
         const hasListItems = listItems.length > 0;
 
-        animate(
-            scope.current.querySelectorAll("ul"),
-            {
-                clipPath: isOpen
-                    ? "inset(0% 0% 0% 0% round 12px)"
-                    : "inset(10% 50% 90% 50% round 12px)",
-            },
-            {
-                type: "spring",
-                bounce: 0,
-                duration: 0.5,
-            },
-        );
-
         if (hasListItems) {
             animate(
                 listItems,

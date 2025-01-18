@@ -55,7 +55,6 @@ export function FormTransaction({ openDialog, setOpenDialog }: formProps) {
             amount: 0,
             type: "",
             category: "",
-            date: new Date,
             paymentMethod: ""
         },
     })
@@ -168,7 +167,7 @@ export function FormTransaction({ openDialog, setOpenDialog }: formProps) {
                                             {field.value ? (
                                                 format(field.value, "PPP")
                                             ) : (
-                                                <span>Pick a date</span>
+                                                <span>Elegi una fecha</span>
                                             )}
                                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                         </Button>
