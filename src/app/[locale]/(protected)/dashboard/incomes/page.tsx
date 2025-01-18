@@ -16,7 +16,6 @@ async function getData(): Promise<Payment[]> {
     // const accessToken = session?.accessToken;
     // console.log(accessToken)
     const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/get-transactions`, { cache: 'no-store', credentials: 'include' }).then((resp) => resp.json())
-    if (response.status !== "ok") return []
     const { formattedTransactions } = await response
     return formattedTransactions
 }

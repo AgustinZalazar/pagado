@@ -87,10 +87,6 @@ export async function POST(request: Request) {
     } catch (error: any) {
         console.error("Error al guardar la transacción:", error.message || error);
         return NextResponse.json(
-            { error: `Error al guardar la transacción` },
-            { status: 404 }
-        );
-        return NextResponse.json(
             { error: "Error al guardar la transacción" },
             { status: 500 }
         );

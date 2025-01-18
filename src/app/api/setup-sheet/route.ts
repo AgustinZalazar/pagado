@@ -42,16 +42,17 @@ export async function POST(req: Request) {
 
             // Insertar cabeceras y categorías predeterminadas
             const categories = [
-                { id: 0, name: "Servicio", color: "#FF5733" },
-                { id: 1, name: "Alquiler", color: "#33FF57" },
-                { id: 2, name: "Entretenimiento", color: "#3357FF" },
-                { id: 3, name: "Comida", color: "#FF33A6" },
+                { id: 0, name: "Servicio", color: "#FF5733", porcentaje: 0 },
+                { id: 1, name: "Alquiler", color: "#33FF57", porcentaje: 0 },
+                { id: 2, name: "Entretenimiento", color: "#3357FF", porcentaje: 0 },
+                { id: 3, name: "Comida", color: "#FF33A6", porcentaje: 0 },
             ];
 
             const categoryRows = categories.map((category) => [
                 { userEnteredValue: { numberValue: category.id } },
                 { userEnteredValue: { stringValue: category.name } },
                 { userEnteredValue: { stringValue: category.color } },
+                { userEnteredValue: { numberValue: category.porcentaje } }
             ]);
 
             await sheets.spreadsheets.batchUpdate({
