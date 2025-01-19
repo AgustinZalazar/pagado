@@ -28,6 +28,7 @@ import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
 import { Dispatch, SetStateAction } from "react"
+import { useRouter } from "next/navigation"
 
 const FormSchema = z.object({
     description: z.string().min(2, {
@@ -48,6 +49,7 @@ interface formProps {
 }
 
 export function FormTransaction({ openDialog, setOpenDialog }: formProps) {
+    const router = useRouter()
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -75,6 +77,7 @@ export function FormTransaction({ openDialog, setOpenDialog }: formProps) {
                 </p>
             ),
         })
+        router.refresh()
     }
 
     return (

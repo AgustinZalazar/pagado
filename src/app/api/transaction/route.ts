@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { google } from "googleapis";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -82,7 +82,8 @@ export async function POST(request: Request) {
                 ],
             },
         });
-        revalidateTag('collection')
+        revalidatePath('/dashboard/incomes')
+        revalidateTag("transactions")
         return NextResponse.json({ message: "Transacción guardada exitosamente" });
     } catch (error: any) {
         console.error("Error al guardar la transacción:", error.message || error);
