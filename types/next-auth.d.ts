@@ -1,11 +1,13 @@
 // next-auth.d.ts
 import NextAuth, { DefaultSession, DefaultUser } from "next-auth";
+import { JWT } from "next-auth/jwt"
 
 // Extiende la interfaz de usuario
 declare module "next-auth" {
     interface Session {
-        // Agrega el campo accessToken a la sesión
         accessToken?: string;
+        refreshToken?: string;
+        accessTokenExpires?: string;
         user: {
             id: string;
             email: string;
@@ -14,8 +16,12 @@ declare module "next-auth" {
         } & DefaultSession["user"];
     }
 
+
+}
+
+declare module "next-auth/jwt" {
     interface JWT {
-        // Agrega el campo accessToken al JWT
         accessToken?: string;
+        refreshToken?: string;
     }
 }

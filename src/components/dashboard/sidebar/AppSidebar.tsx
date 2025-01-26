@@ -17,6 +17,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 // import { Button } from '@/components/ui/button'
 import { signOut } from 'next-auth/react'
 import { useSession } from "next-auth/react"
+import Link from 'next/link'
 
 const items = [
     {
@@ -53,7 +54,7 @@ const items = [
 
 const AppSidebar = ({ locale }: { locale: string }) => {
     const { data: session } = useSession()
-    // console.log(session?.user)
+    // console.log({ s: session })
     return <Sidebar collapsible="icon">
         <SidebarContent>
             <SidebarGroup>
@@ -63,10 +64,10 @@ const AppSidebar = ({ locale }: { locale: string }) => {
                         {items.map((item) => (
                             <SidebarMenuItem key={item.title} className='py-2'>
                                 <SidebarMenuButton asChild >
-                                    <a href={`/${locale}${item.url}`}>
+                                    <Link href={`/${locale}${item.url}`}>
                                         <item.icon />
                                         <span>{item.title}</span>
-                                    </a>
+                                    </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                         ))}
@@ -85,7 +86,7 @@ const AppSidebar = ({ locale }: { locale: string }) => {
                                     <>
                                         <Avatar>
                                             <AvatarImage src={session?.user?.image ?? undefined} />
-                                            <AvatarFallback>CN</AvatarFallback>
+                                            <AvatarFallback>A</AvatarFallback>
                                         </Avatar>
                                         {session?.user?.name}
                                         <ChevronUp className="ml-auto" />

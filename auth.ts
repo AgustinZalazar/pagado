@@ -1,7 +1,20 @@
 import NextAuth from "next-auth"
 import Google from "next-auth/providers/google"
+import { DrizzleAdapter } from "@auth/drizzle-adapter"
+import { db } from "@/db/index"
+import { accounts, sessions, users, verificationTokens } from "@/db/schema"
+import { refreshAccessToken } from "@/actions/updateUserToken"
+import { eq } from "drizzle-orm"
+
+
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  adapter: DrizzleAdapter(db, {
+    usersTable: users,
+    accountsTable: accounts,
+    sessionsTable: sessions,
+    verificationTokensTable: verificationTokens,
+  }),
   providers: [Google({
     clientId: process.env.AUTH_GOOGLE_CLIENT_ID!,
     clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET!,
@@ -14,52 +27,63 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   })],
   session: {
-    strategy: "jwt", // Usar JWT para las sesiones
-  },
-  cookies: {
-    sessionToken: {
-      name: `next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-      },
-    },
+    strategy: "database",
+    maxAge: 30 * 24 * 60 * 60, // Duración de la sesión: 30 días
+    updateAge: 24 * 60 * 60, // Actualiza automáticamente después de 24 horas
   },
   callbacks: {
-    authorized: ({ auth, request: { nextUrl } }) => {
-      const isLoggedIn = !!auth?.user;
-      const isOnProtectRoute = nextUrl.pathname.includes("/dashboard");
-      if (isOnProtectRoute) {
-        if (isLoggedIn) return true;
-        return Response.redirect(new URL("/login", nextUrl));
-      } else if (isLoggedIn) {
-        return Response.redirect(new URL("/dashboard", nextUrl));
-      }
-      return true;
-    },
+    // authorized: ({ auth, request: { nextUrl } }) => {
+    //   const isLoggedIn = !!auth?.user;
+    //   const isOnProtectRoute = nextUrl.pathname.includes("/dashboard");
+    //   console.log(auth)
+    //   if (isOnProtectRoute) {
+    //     if (isLoggedIn) return true;
+    //     return Response.redirect(new URL("/login", nextUrl));
+    //   } else if (isLoggedIn) {
+    //     return Response.redirect(new URL("/dashboard", nextUrl));
+    //   }
+    //   return true;
+    // },
     async redirect({ url, baseUrl }) {
-      if (url.startsWith("/")) return `${baseUrl}${url}`
-      else if (new URL(url).origin === baseUrl) return url
-      return baseUrl
+      // Redirigir al dashboard después del inicio de sesión
+      if (url === "/login") return `${baseUrl}/dashboard`;
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
     },
     async jwt({ token, account }) {
       if (account) {
-        token.accessToken = account.access_token as string;
+        token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
       }
+
       return token;
     },
+    async session({ session, token }) {
+      const account = await db
+        .select()
+        .from(accounts)
+        .where(eq(accounts.userId, session.user.id))
+        .execute();
 
+      const currentAccount = account[0];
+
+      // Verifica si el token ha expirado
+      if (currentAccount.expires_at! * 1000 < Date.now()) {
+        await refreshAccessToken(currentAccount.refresh_token!, session.user.id);
+      } else {
+        session.accessToken = currentAccount.access_token ?? undefined;
+      }
+      return session;
+    },
     async signIn({ account, profile }) {
       if (account?.provider === "google" && account?.access_token) {
         try {
           const userEmail = profile?.email;
           // Verificar si el usuario existe en la base de datos
+          // console.log(account)
           const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/${userEmail}`).then((res) => res.json());
           // console.log(user)
-          console.log(account.access_token)
           if (!user) {
             // Crear un Google Sheet para el nuevo usuario
             const response = await fetch(`${process.env.NEXTAUTH_URL}/api/google-sheets`, {
@@ -85,7 +109,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             const newUserResponse = await fetch(`${process.env.NEXTAUTH_URL}/api/user`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ name: profile?.name, lastname: '', phone: '', email: userEmail, sheetId: data.id }),
+              body: JSON.stringify({ name: profile?.name, phone: '', email: userEmail, sheetId: data.id }),
             });
 
             if (!newUserResponse.ok) {
@@ -93,7 +117,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               return false;
             }
           } else {
-            console.log("El usuario ya existe:", user);
+            // const token = {
+            //   accessToken: account.access_token,
+            //   refreshToken: account.refresh_token,
+
+            // }
+            // const newToken = await refreshAccessToken(token, user.id)
           }
         } catch (error) {
           console.error("Error al gestionar el usuario y Google Sheets:", error);
@@ -101,14 +130,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
       }
       return true;
-    },
-    async session({ session, token }) {
-      session.accessToken = token.accessToken as string
-      // session.refreshToken = token.refreshToken
-      return session
     }
   },
   pages: {
     signIn: "login"
   }
 })
+
+
+// export const options = {
+
+// }

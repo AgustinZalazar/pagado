@@ -4,8 +4,9 @@ import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
+    const session = await auth();
     try {
-        const accessToken = '';
+        const accessToken = session?.accessToken;
         const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/agusstiin.az@gmail.com`).then((res) => res.json());
         const { sheetId } = user;
         // console.log(accessToken, sheetId)

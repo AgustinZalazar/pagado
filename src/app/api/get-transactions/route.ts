@@ -3,13 +3,12 @@ import { google } from "googleapis";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
-    // const session = await auth();
-    // console.log(session)
+    const session = await auth();
     try {
-        const accessToken = '';
+        const accessToken = session?.accessToken;
         const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/agusstiin.az@gmail.com`).then((res) => res.json());
+        // console.log(session
         const { sheetId } = user;
-        // console.log(accessToken, sheetId)
         if (!accessToken || !sheetId) {
             return NextResponse.json(
                 { error: "Faltan parámetros: accessToken o sheetId" },
@@ -54,7 +53,7 @@ export async function GET(request: Request) {
 
         // Procesar los datos para excluir el encabezado (si existe)
         const [header, ...transactions] = rows;
-        console.log({ ts: transactions })
+        // console.log({ ts: transactions })
         const formattedTransactions = transactions.map((row) =>
             header.reduce((obj, key, index) => {
                 obj[key] = row[index] || null; // Usa null si no hay un valor en esa celda
