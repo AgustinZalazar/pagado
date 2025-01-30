@@ -3,11 +3,10 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PaginationTable } from "./DataTableComponents/pagination";
-import { DialogWindow } from "./dialogWindow";
-import { FilterControls } from "./incomes/filterControls";
-import { SheetWindow } from "./sheetWindow";
-import { Input } from "../ui/input";
+import { PaginationTable } from "../DataTableComponents/pagination";
+import { DialogWindow } from "../dialogWindow";
+import { SheetWindow } from "../sheetWindow";
+import { Input } from "../../ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
@@ -20,7 +19,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     const searchParams = useSearchParams();
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10; // Items per page
+    const itemsPerPage = 5; // Items per page
     const [sorting, setSorting] = React.useState<SortingState>([])
 
     // Update filters and page from query params
@@ -30,7 +29,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             params[key] = value;
         });
         setFilters(params);
-        const page = parseInt(searchParams.get("page") || "1", 10);
+        const page = parseInt(searchParams.get("page") || "1", 5);
         setCurrentPage(page);
     }, [searchParams]);
 
@@ -82,7 +81,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
 
     return (
-        <div className="min-h-[100vh] flex-1">
+        <div className="flex-1">
             <div className="w-full flex flex-col md:flex-row justify-between gap-4 mb-4">
                 <div className="flex gap-3">
                     <Input
@@ -93,7 +92,6 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                     />
                     <SheetWindow />
                 </div>
-                {/* <FilterControls onFilterChange={setFilters} /> */}
                 <DialogWindow />
             </div>
             <div className="rounded-md border mb-4 overflow-scroll md:overflow-visible max-w-[380px] md:max-w-full">

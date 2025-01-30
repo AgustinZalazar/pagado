@@ -1,8 +1,8 @@
 "use client"
 import React from "react"
-import { DataTable } from '@/components/dashboard/DataTable'
+import { DataTable } from '@/components/dashboard/incomes/DataTable'
 import { useLocale } from "next-intl";
-import getColumns from "./DataTableComponents/columns";
+import getColumns from "../DataTableComponents/columns";
 import { Payment } from "@/types/payment";
 
 interface Props {

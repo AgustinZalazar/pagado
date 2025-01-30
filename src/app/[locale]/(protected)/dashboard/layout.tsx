@@ -7,9 +7,10 @@ import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { DarkmodeToggle } from "@/components/dashboard/darkModeToggle";
 import { setRequestLocale } from 'next-intl/server';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Toaster } from "@/components/ui/toaster"
+import { auth } from "@/auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
     description: "",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
     params: { locale }
 }: Readonly<{
@@ -28,7 +29,11 @@ export default function RootLayout({
     if (!routing.locales.includes(locale as any)) {
         notFound();
     }
+    const session = await auth();
 
+    if (!session) {
+        redirect(`/login`);
+    }
     // Enable static rendering
     setRequestLocale(locale);
     return (

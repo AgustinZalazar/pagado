@@ -37,9 +37,6 @@ export function DialogWindow() {
                     </DialogDescription>
                 </DialogHeader>
                 <FormTransaction openDialog={openDialog} setOpenDialog={setOpenDialog} />
-                {/* <DialogFooter>
-                    <Button type="submit">Guardar</Button>
-                </DialogFooter> */}
             </DialogContent>
         </Dialog>
     )

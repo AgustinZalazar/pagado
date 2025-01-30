@@ -1,17 +1,11 @@
 "use client"
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal } from "lucide-react"
+import { Trash2 } from "lucide-react"
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Payment } from "@/types/payment"
+import { EditDialogWindow } from "../incomes/dialogWindow/Edit"
+import DeleteButton from "../buttons/deleteButton"
 
 const getColumns = (locale: string): ColumnDef<Payment>[] => {
     const formatCurrency = (value: number) =>
@@ -48,10 +42,8 @@ const getColumns = (locale: string): ColumnDef<Payment>[] => {
             cell: ({ row }) => {
                 if (row.getValue("type") === "expense") {
                     return <p className="rounded-lg bg-[#f9cbca] text-red-400 px-2 py-1 text-center w-fit capitalize">{locale === "es" ? "Gasto" : "Expense"}</p>
-                    // return <p className="rounded-lg bg-[#f5f5f5] text-red-400 px-2 py-1 text-center w-fit capitalize">{row.getValue("type")}</p>
                 } else {
                     return <p className="rounded-lg bg-[#bce9d4e3] text-[#00b743] px-2 py-1 text-center w-fit capitalize">{locale === "es" ? "Ingreso" : "Income"}</p>
-                    // return <p className="rounded-lg bg-[#f5f5f5] text-[#00b743] px-2 py-1 text-center w-fit capitalize">{row.getValue("type")}</p>
                 }
             },
         },
@@ -111,20 +103,12 @@ const getColumns = (locale: string): ColumnDef<Payment>[] => {
         {
             id: "actions",
             cell: ({ row }) => {
-                const payment = row.original
+                const transaction = row.original
                 return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem>Editar</DropdownMenuItem>
-                            <DropdownMenuItem>Eliminar</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="flex gap-4">
+                        <EditDialogWindow transaction={transaction} />
+                        <DeleteButton id={transaction.id} date={transaction.date} />
+                    </div>
                 )
             },
         },

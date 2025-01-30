@@ -28,7 +28,8 @@ import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
 import { Dispatch, SetStateAction } from "react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { Payment } from "@/types/payment"
 
 const FormSchema = z.object({
     description: z.string().min(2, {
@@ -46,38 +47,51 @@ const FormSchema = z.object({
 interface formProps {
     openDialog: boolean,
     setOpenDialog: Dispatch<SetStateAction<boolean>>
+    transaction?: Payment
 }
 
-export function FormTransaction({ openDialog, setOpenDialog }: formProps) {
+export function FormTransaction({ openDialog, setOpenDialog, transaction }: formProps) {
     const router = useRouter()
+    const path = usePathname()
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            description: "",
-            amount: 0,
-            type: "",
-            category: "",
-            paymentMethod: ""
+            description: transaction ? transaction.description : "",
+            amount: transaction ? transaction.amount : 0,
+            type: transaction ? transaction.type : "",
+            category: transaction ? transaction.category : "",
+            paymentMethod: transaction ? transaction.typeOfPayment : "",
+            date: transaction && new Date(transaction.date)
         },
     })
-
     async function onSubmit(data: z.infer<typeof FormSchema>) {
         setOpenDialog(!openDialog)
-        const newTransaction = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/transaction`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-        });
 
+        if (transaction) {
+            const allData = { id: transaction.id, ...data }
+            const editTransaction = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/transaction`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(allData),
+            });
+            router.push(path, { scroll: false })
+            router.refresh()
+        } else {
+            const newTransaction = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/transaction`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+            router.refresh()
+        }
         toast({
             title: "Listo!",
             description: (
                 <p className="mt-2 w-[340px] rounded-md  p-4">
-                    Transaccion guardada correctamente!
+                    Transaccion {transaction ? "editada" : "creada"} correctamente!
                 </p>
             ),
         })
-        router.refresh()
     }
 
     return (
@@ -208,10 +222,11 @@ export function FormTransaction({ openDialog, setOpenDialog }: formProps) {
                                         <SelectValue placeholder="Seleccione un metodo de pago" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="creditCard">Tarjeta de credito</SelectItem>
-                                        <SelectItem value="debitCard">Tarjeta de debito</SelectItem>
-                                        <SelectItem value="cash">Efectivo</SelectItem>
+                                        <SelectItem value="Tarjeta de Credito">Tarjeta de credito</SelectItem>
+                                        <SelectItem value="Tarjeta de Debito">Tarjeta de debito</SelectItem>
+                                        <SelectItem value="Efectivo">Efectivo</SelectItem>
                                         <SelectItem value="mp">Mercado pago</SelectItem>
+                                        <SelectItem value="Caja de ahorro">Caja de ahorro</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </FormControl>

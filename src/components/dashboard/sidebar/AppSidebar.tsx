@@ -18,6 +18,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { signOut } from 'next-auth/react'
 import { useSession } from "next-auth/react"
 import Link from 'next/link'
+import ButtonShineBorder from './buttonShineBorder'
 
 const items = [
     {
@@ -78,6 +79,9 @@ const AppSidebar = ({ locale }: { locale: string }) => {
         </SidebarContent>
         <SidebarFooter>
             <SidebarMenu>
+                <SidebarMenuItem>
+                    <ButtonShineBorder />
+                </SidebarMenuItem>
                 <SidebarMenuItem>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild className=' h-fit'>

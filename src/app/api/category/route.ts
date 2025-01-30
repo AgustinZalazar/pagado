@@ -9,7 +9,7 @@ export async function GET(request: Request) {
         const accessToken = session?.accessToken;
         const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/agusstiin.az@gmail.com`).then((res) => res.json());
         const { sheetId } = user;
-        // console.log(accessToken, sheetId)
+
         if (!accessToken || !sheetId) {
             return NextResponse.json(
                 { error: "Faltan parámetros: accessToken o sheetId" },
