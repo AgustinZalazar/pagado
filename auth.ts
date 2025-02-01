@@ -28,22 +28,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   })],
   session: {
     strategy: "database",
-    maxAge: 30 * 24 * 60 * 60, // Duración de la sesión: 30 días
-    updateAge: 24 * 60 * 60, // Actualiza automáticamente después de 24 horas
   },
   callbacks: {
-    // authorized: ({ auth, request: { nextUrl } }) => {
-    //   const isLoggedIn = !!auth?.user;
-    //   const isOnProtectRoute = nextUrl.pathname.includes("/dashboard");
-    //   console.log(auth)
-    //   if (isOnProtectRoute) {
-    //     if (isLoggedIn) return true;
-    //     return Response.redirect(new URL("/login", nextUrl));
-    //   } else if (isLoggedIn) {
-    //     return Response.redirect(new URL("/dashboard", nextUrl));
-    //   }
-    //   return true;
-    // },
     async redirect({ url, baseUrl }) {
       // Redirigir al dashboard después del inicio de sesión
       if (url === "/login") return `${baseUrl}/dashboard`;
@@ -51,33 +37,63 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (new URL(url).origin === baseUrl) return url;
       return baseUrl;
     },
-    async jwt({ token, account }) {
-      if (account) {
-        token.accessToken = account.access_token;
-        token.refreshToken = account.refresh_token;
+    async session({ session, user }) {
+      if (!user?.id) {
+        console.error("El usuario no tiene un ID válido");
+        return session;
       }
 
-      return token;
-    },
-    async session({ session, token }) {
-      const account = await db
+      // 🔹 Buscar el token en la BD
+      const userAccount = await db
         .select()
         .from(accounts)
-        .where(eq(accounts.userId, session.user.id))
-        .execute();
+        .where(eq(accounts.userId, user.id))
+        .limit(1)
+        .execute()
+        .then((rows) => rows[0]);
 
-      const currentAccount = account[0];
-
-      // Verifica si el token ha expirado
-      if (currentAccount.expires_at! * 1000 < Date.now()) {
-        await refreshAccessToken(currentAccount.refresh_token!, session.user.id);
-      } else {
-        session.accessToken = currentAccount.access_token ?? undefined;
+      if (!userAccount) {
+        console.error("No se encontró la cuenta en la BD");
+        return session;
       }
-      return session;
+
+      // 🔹 Agregar el accessToken a la sesión
+      session.accessToken = userAccount.access_token!;
+      session.accessTokenExpires = userAccount.expires_at ? userAccount.expires_at * 1000 : undefined;
+      session.refreshToken = userAccount.refresh_token!;
+
+      // Verificar si el token ha expirado (asegurándonos de que `accessTokenExpires` es un número válido)
+      const expiresAt = session.accessTokenExpires ?? 0;
+      if (expiresAt && Date.now() > expiresAt) {
+        console.log("Access token expirado, intentando refrescar...");
+
+        const newToken = await refreshAccessToken(session.refreshToken, session.user.id);
+
+        if (!newToken) {
+          console.error("Error al refrescar el token, cerrando sesión...");
+          return { ...session, error: "RefreshTokenError" };
+        }
+
+        if (!newToken) {
+          console.error("Error al refrescar el token, cerrando sesión...");
+          return { ...session, error: "RefreshTokenError" };
+        }
+
+
+        // Retornar la sesión con el nuevo token
+        return {
+          ...session,
+          accessToken: newToken.accessToken,
+          error: null,
+        };
+      }
+
+      // Retornar sesión normal si el token sigue válido
+      return session
     },
     async signIn({ account, profile }) {
       if (account?.provider === "google" && account?.access_token) {
+        // console.log({ acc_s: account })
         try {
           const userEmail = profile?.email;
           // Verificar si el usuario existe en la base de datos
@@ -116,13 +132,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               console.error("Error al crear el usuario en la base de datos");
               return false;
             }
-          } else {
-            // const token = {
-            //   accessToken: account.access_token,
-            //   refreshToken: account.refresh_token,
-
-            // }
-            // const newToken = await refreshAccessToken(token, user.id)
           }
         } catch (error) {
           console.error("Error al gestionar el usuario y Google Sheets:", error);
@@ -136,8 +145,3 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "login"
   }
 })
-
-
-// export const options = {
-
-// }
