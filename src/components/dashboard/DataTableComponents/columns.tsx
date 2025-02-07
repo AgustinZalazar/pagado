@@ -4,7 +4,7 @@ import { Trash2 } from "lucide-react"
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Payment } from "@/types/payment"
-import { EditDialogWindow } from "../incomes/dialogWindow/Edit"
+import { EditDialogWindow } from "../incomes/dialogWindows/Edit"
 import DeleteButton from "../buttons/deleteButton"
 
 const getColumns = (locale: string): ColumnDef<Payment>[] => {

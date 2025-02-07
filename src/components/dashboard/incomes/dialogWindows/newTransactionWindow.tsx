@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -10,11 +11,10 @@ import {
     DialogClose
 } from "@/components/ui/dialog"
 import { useTranslations } from "next-intl";
-import React, { useState } from "react";
-import { FormTransaction } from "./incomes/formTransaction";
+import { FormTransaction } from "../formTransaction";
 import { cn } from "@/lib/utils";
 
-export function DialogWindow() {
+export function NewTransactionWindow() {
     const t = useTranslations('Dashboard.Incomes');
     const [openDialog, setOpenDialog] = useState(false)
     return (

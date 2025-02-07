@@ -1,27 +1,34 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { SummaryCategory } from "@/types/category"
+import { SummaryMethod } from "@/types/PaymentMethod"
 import NumberFlow from "@number-flow/react"
-import { DollarSign, TrendingDown, TrendingUp } from 'lucide-react'
+import { TrendingDown, TrendingUp } from 'lucide-react'
 import { useLocale, useTranslations } from "next-intl"
 import { getLocale } from "next-intl/server"
 
 type SummaryCardsProps = {
     totalIncome: number
     totalExpenses: number
-    totalCategory: number
-    totalMethod: number
+    totalCategory: SummaryCategory
+    totalMethod: SummaryMethod
+    totalCat: number
+    totalMetCurrentMonth: number
 }
 
-export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory = 0, totalMethod = 0 }: SummaryCardsProps) {
+export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory, totalMethod, totalCat, totalMetCurrentMonth }: SummaryCardsProps) {
     const t = useTranslations('Dashboard.Incomes');
     const locale = useLocale()
-    const formatCurrency = (value: number) =>
-        new Intl.NumberFormat(locale, {
-            style: "currency",
-            currency: "ARS",
-            maximumFractionDigits: 0,
-            minimumFractionDigits: 0,
-        }).format(value);
+        ;
+    // const formatCurrency = (value: number) =>
+    //     new Intl.NumberFormat(locale, {
+    //         style: "currency",
+    //         currency: "ARS",
+    //         maximumFractionDigits: 0,
+    //         minimumFractionDigits: 0,
+    //     }).format(value);
+
+    // console.log(isLoading, totalCategory)
     return (
         <div className="flex flex-col md:flex-row gap-4">
             <Card className="drop-shadow-md w-full md:w-[382px] h-[142px]">
@@ -30,7 +37,6 @@ export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory
                 </CardHeader>
                 <CardContent className="flex flex-col items-start">
                     <div className="flex gap-x-3">
-                        {/* <div className="text-2xl font-bold text-black relative -top-1">${formatCurrency(+totalIncome.toFixed(0))}</div> */}
                         <NumberFlow
                             className="text-2xl font-bold text-black relative -top-1"
                             value={+totalIncome.toFixed(0)}
@@ -61,7 +67,6 @@ export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory
                 </CardHeader>
                 <CardContent className="flex flex-col items-start">
                     <div className="flex gap-x-3">
-                        {/* <div className="text-2xl font-bold text-black relative -top-1">${formatCurrency(+totalExpenses)}</div> */}
                         <NumberFlow
                             className="text-2xl font-bold text-black relative -top-1"
                             value={+totalExpenses}
@@ -89,44 +94,57 @@ export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory
             <Card className="drop-shadow-md w-full md:w-[400px] h-[142px]">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-xs font-medium text-muted-foreground">{t('card3')}</CardTitle>
+                    {totalCategory &&
+                        <p className="text-xs font-medium text-muted-foreground bg-gray-200 px-2 rounded-full">{totalCategory.currentMonth.category}</p>
+                    }
                 </CardHeader>
                 <CardContent className="flex flex-col items-start">
                     <div className="flex gap-x-3">
-                        {/* <div className="text-2xl font-bold text-black relative -top-1">${formatCurrency(+totalCategory)}</div> */}
                         <NumberFlow
                             className="text-2xl font-bold text-black relative -top-1"
-                            value={+totalCategory}
+                            value={totalCat}
                             format={{
-                                style: 'currency',
-                                currency: 'ARS',
-                                minimumFractionDigits: 0
+                                style: "currency",
+                                currency: "ARS",
+                                minimumFractionDigits: 0,
                             }}
                             transformTiming={{
                                 duration: 500,
-                                easing: 'ease-out'
+                                easing: "ease-out",
                             }}
                         />
-                        <div className="flex bg-badge_light_red rounded-xl h-fit py-0.5 px-2">
-                            <TrendingDown className="h-3 w-3 text-badge_text_red" />
-                            <p className="text-xs text-badge_text_red">+3%</p>
-                        </div>
+                        {totalCategory && totalCategory.percentage.includes("-") ?
+                            <div className="flex bg-badge_light_green rounded-xl h-fit py-0.5 px-2">
+                                <TrendingDown className="h-3 w-3  text-badge_text_green" />
+                                <p className="text-xs text-badge_text_green">{totalCategory ? totalCategory.percentage : "%0"}</p>
+                            </div>
+                            :
+                            <div className="flex bg-badge_light_red rounded-xl h-fit py-0.5 px-2">
+                                <TrendingUp className="h-3 w-3 text-badge_text_red" />
+                                <p className="text-xs text-badge_text_red ">{totalCategory ? totalCategory.percentage : "%0"}</p>
+                            </div>
+                        }
                     </div>
                     <div>
                         <p className="text-xs text-muted-foreground">Mes Pasado</p>
-                        <p className="text-black text-xs font-semibold">$200 &#10088;Entretenimiento&#10089;</p>
+                        <p className="text-black text-xs font-semibold">${totalCategory ? totalCategory.previousMonth.total : 0}  &#10088;{totalCategory ? totalCategory.previousMonth.category : "-"}&#10089;</p>
                     </div>
+
+
                 </CardContent>
             </Card>
             <Card className="drop-shadow-md w-full md:w-[400px] h-[142px]">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-xs font-medium text-muted-foreground">{t('card4')}</CardTitle>
+                    {totalMethod &&
+                        <p className="text-xs font-medium text-muted-foreground bg-gray-200 px-2 rounded-full">{totalMethod.currentMonth.method}</p>
+                    }
                 </CardHeader>
                 <CardContent className="flex items-start flex-col">
                     <div className="flex gap-x-3">
-                        {/* <div className="text-2xl font-bold text-black relative -top-1">${formatCurrency(+totalMethod)}</div> */}
                         <NumberFlow
                             className="text-2xl font-bold text-black relative -top-1"
-                            value={+totalMethod}
+                            value={totalMetCurrentMonth}
                             format={{
                                 style: 'currency',
                                 currency: 'ARS',
@@ -137,17 +155,51 @@ export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory
                                 easing: 'ease-out'
                             }}
                         />
-                        <div className="flex bg-badge_light_red rounded-xl h-fit py-0.5 px-2">
-                            <TrendingDown className="h-3 w-3 text-badge_text_red" />
-                            <p className="text-xs text-badge_text_red">+3%</p>
-                        </div>
+                        {totalMethod && totalMethod.percentage.includes("-") ?
+                            <div className="flex bg-badge_light_green rounded-xl h-fit py-0.5 px-2">
+                                <TrendingDown className="h-3 w-3  text-badge_text_green" />
+                                <p className="text-xs text-badge_text_green">{totalMethod ? totalMethod.percentage : "%0"}</p>
+                            </div>
+                            :
+                            <div className="flex bg-badge_light_red rounded-xl h-fit py-0.5 px-2">
+                                <TrendingUp className="h-3 w-3 text-badge_text_red" />
+                                <p className="text-xs text-badge_text_red ">{totalMethod ? totalMethod.percentage : "%0"}</p>
+                            </div>
+                        }
                     </div>
                     <div>
                         <p className="text-xs text-muted-foreground">Mes Pasado</p>
-                        <p className="text-black text-xs font-semibold">$200 &#10088;Tarjeta de credito&#10089;</p>
+                        <p className="text-black text-xs font-semibold">${totalMethod ? totalMethod.previousMonth.total : 0} &#10088;{totalMethod ? totalMethod.previousMonth.method : "-"}&#10089;</p>
                     </div>
                 </CardContent>
             </Card>
         </div>
+    )
+}
+
+
+const EmptyCard = () => {
+    return (
+        <>
+            <div className="flex gap-x-3">
+                <NumberFlow
+                    className="text-2xl font-bold text-black relative -top-1"
+                    value={0}
+                    format={{
+                        style: 'currency',
+                        currency: 'ARS',
+                        minimumFractionDigits: 0
+                    }}
+                    transformTiming={{
+                        duration: 500,
+                        easing: 'ease-out'
+                    }}
+                />
+            </div>
+            <div>
+                <p className="text-xs text-muted-foreground">Mes Pasado</p>
+                <p className="text-black text-xs font-semibold">$0  &#10088;-&#10089;</p>
+            </div>
+        </>
     )
 }

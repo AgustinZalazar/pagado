@@ -3,7 +3,10 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { Category } from "@/types/category";
+import { getMonthsOfYear } from "@/helpers/getMonthsOfYear";
 
 export interface FilterControlsProps {
     onFilterChange: (filters: Record<string, string>) => void;
@@ -11,8 +14,35 @@ export interface FilterControlsProps {
 
 export const FilterControls = ({ onFilterChange }: FilterControlsProps) => {
     const router = useRouter();
+    const locale = useLocale()
     const searchParams = useSearchParams();
     const t = useTranslations("Dashboard.Incomes");
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [options, setOptions] = useState<Category[]>([]);
+    const months = getMonthsOfYear(locale)
+
+    console.log(months)
+
+    useEffect(() => {
+        const getCategories = async () => {
+            try {
+                setIsLoading(true)
+                const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/category`, { cache: 'no-store', credentials: 'include' }).then((resp) => resp.json())
+                const { formattedCategories } = await response
+                if (formattedCategories) {
+                    setOptions(formattedCategories)
+                    setIsLoading(false)
+                }
+
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
+        getCategories();
+    }, [])
+
+
 
     const updateQueryParams = (key: string, value: string) => {
         const params = new URLSearchParams(searchParams as any);
@@ -70,11 +100,9 @@ export const FilterControls = ({ onFilterChange }: FilterControlsProps) => {
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all">All categories</SelectItem>
-                    <SelectItem value="Entertainment">Entertainment</SelectItem>
-                    <SelectItem value="Work">Work</SelectItem>
-                    <SelectItem value="Food">Food</SelectItem>
-                    <SelectItem value="Utilities">Utilities</SelectItem>
-                    <SelectItem value="Salary">Salary</SelectItem>
+                    {options.map((option) => (
+                        <SelectItem value={option.nombre}>{option.nombre}</SelectItem>
+                    ))}
                 </SelectContent>
             </Select>
             <Select
@@ -86,9 +114,9 @@ export const FilterControls = ({ onFilterChange }: FilterControlsProps) => {
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all">All Dates</SelectItem>
-                    <SelectItem value="2023-12-01">December 2023</SelectItem>
-                    <SelectItem value="2024-01-01">January 2024</SelectItem>
-                    <SelectItem value="2024-12-01">December 2024</SelectItem>
+                    {months.map((month) => (
+                        <SelectItem value="2023-12-01">{month}</SelectItem>
+                    ))}
                 </SelectContent>
             </Select>
         </div>

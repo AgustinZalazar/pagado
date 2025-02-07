@@ -4,8 +4,8 @@ import React, { useState, useMemo, useEffect } from "react";
 import { ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PaginationTable } from "../DataTableComponents/pagination";
-import { DialogWindow } from "../dialogWindow";
-import { SheetWindow } from "../sheetWindow";
+import { NewTransactionWindow } from "./dialogWindows/newTransactionWindow";
+import { FilterSheetWindow } from "./filtersSheetWindow";
 import { Input } from "../../ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -36,15 +36,23 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     const filteredData = useMemo(() => {
         return data.filter((item: any) => {
             const matchesType = !filters.type || filters.type === "all" || item.type === filters.type;
-            const matchesCategory =
-                !filters.category || filters.category === "all" || item.category === filters.category;
-            const matchesDate = !filters.date || filters.date === "all" || item.date === filters.date;
-            const matchesTypePayment =
-                !filters.paymentType ||
-                filters.paymentType === "all" ||
-                item.typeOfPayment === filters.paymentType;
-            const matchesDescription =
-                !filters.description || item.description?.toLowerCase().includes(filters.description.toLowerCase());
+            const matchesCategory = !filters.category || filters.category === "all" || item.category === filters.category;
+            const matchesTypePayment = !filters.paymentType || filters.paymentType === "all" || item.typeOfPayment === filters.paymentType;
+            const matchesDescription = !filters.description || item.description?.toLowerCase().includes(filters.description.toLowerCase());
+
+            let matchesDate = true;
+            if (filters.date && filters.date !== "all") {
+                const filterDate = new Date(filters.date);
+                const filterYear = filterDate.getFullYear();
+                const filterMonth = filterDate.getMonth();
+
+                const itemDate = new Date(item.date);
+                const itemYear = itemDate.getFullYear();
+                const itemMonth = itemDate.getMonth();
+
+                matchesDate = filterYear === itemYear && filterMonth === itemMonth;
+            }
+
             return matchesType && matchesCategory && matchesDate && matchesTypePayment && matchesDescription;
         });
     }, [data, filters]);
@@ -90,9 +98,9 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                         onChange={(event) => updateQueryParams("description", event.target.value)}
                         className="max-w-sm"
                     />
-                    <SheetWindow />
+                    <FilterSheetWindow />
                 </div>
-                <DialogWindow />
+                <NewTransactionWindow />
             </div>
             <div className="rounded-md border mb-4 overflow-scroll md:overflow-visible max-w-[380px] md:max-w-full">
                 <Table>

@@ -9,16 +9,12 @@ import { cn } from "@/lib/utils";
 import { Spinner } from "../spinnerLoading";
 import { toast } from "@/components/hooks/use-toast";
 import { colors } from "@/data/colors";
+import { Category } from "@/types/category";
 
-interface Option {
-    id: string;
-    nombre: string;
-    color: string;
-    porcentaje: number;
-}
+
 
 export const SearchableColorfulSelect = ({ field }: any) => {
-    const [options, setOptions] = useState<Option[]>([]);
+    const [options, setOptions] = useState<Category[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -41,7 +37,7 @@ export const SearchableColorfulSelect = ({ field }: any) => {
 
     }
 
-    async function createCategory(data: Option) {
+    async function createCategory(data: Category) {
         const newCategory = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/category`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -87,7 +83,7 @@ export const SearchableColorfulSelect = ({ field }: any) => {
 
     const handleCreateOption = async () => {
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
-        let newOption: Option = {
+        let newOption: Category = {
             id: "0",
             nombre: searchTerm,
             color: randomColor,
@@ -143,8 +139,8 @@ export const SearchableColorfulSelect = ({ field }: any) => {
                                     <motion.li
                                         key={option.id}
                                         onClick={() => {
-                                            setSelectedOption(option.id);
-                                            field.onChange(option.id);
+                                            setSelectedOption(option.nombre);
+                                            field.onChange(option.nombre);
                                             setIsOpen(false);
                                         }}
                                         className="flex items-center justify-between p-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-neutral-800 cursor-pointer"

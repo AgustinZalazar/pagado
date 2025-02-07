@@ -12,14 +12,40 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
+import { getMonthsOfYear } from "@/helpers/getMonthsOfYear";
+import { Category } from "@/types/category";
 import { Filter } from "lucide-react"
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-export function SheetWindow() {
+export function FilterSheetWindow() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const locale = useLocale()
     const t = useTranslations("Dashboard.Incomes");
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [options, setOptions] = useState<Category[]>([]);
+    const months = getMonthsOfYear(locale)
+
+    useEffect(() => {
+        const getCategories = async () => {
+            try {
+                setIsLoading(true)
+                const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/category`, { cache: 'no-store', credentials: 'include' }).then((resp) => resp.json())
+                const { formattedCategories } = await response
+                if (formattedCategories) {
+                    setOptions(formattedCategories)
+                    setIsLoading(false)
+                }
+
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
+        getCategories();
+    }, [])
 
     const updateQueryParams = (key: string, value: string) => {
         const params = new URLSearchParams(searchParams as any);
@@ -80,11 +106,9 @@ export function SheetWindow() {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All categories</SelectItem>
-                            <SelectItem value="Entertainment">Entertainment</SelectItem>
-                            <SelectItem value="Work">Work</SelectItem>
-                            <SelectItem value="Food">Food</SelectItem>
-                            <SelectItem value="Utilities">Utilities</SelectItem>
-                            <SelectItem value="Salary">Salary</SelectItem>
+                            {options.map((option) => (
+                                <SelectItem value={option.nombre}>{option.nombre}</SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
                     <Select
@@ -96,9 +120,9 @@ export function SheetWindow() {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All Dates</SelectItem>
-                            <SelectItem value="2023-12-01">December 2023</SelectItem>
-                            <SelectItem value="2024-01-01">January 2024</SelectItem>
-                            <SelectItem value="2024-12-01">December 2024</SelectItem>
+                            {months.map((month) => (
+                                <SelectItem value={month.fecha}>{month.mes}</SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
                 </div>
