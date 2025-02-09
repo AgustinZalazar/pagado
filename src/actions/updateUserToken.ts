@@ -20,8 +20,10 @@ export async function refreshAccessToken(refreshToken: string, userId: string) {
             }),
         });
 
+        // console.log(refreshToken)
         const refreshedTokens = await response.json();
 
+        console.log(refreshedTokens)
         if (!response.ok) {
             throw new Error(refreshedTokens.error);
         }

@@ -8,6 +8,8 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request) {
     const session = await auth();
     try {
+        const url = new URL(request.url);
+        const monthParam = url.searchParams.get("month");
         const accessToken = session?.accessToken;
         const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/${session?.user.email}`).then((res) => res.json());
         const { sheetId } = user;
@@ -18,6 +20,12 @@ export async function GET(request: Request) {
             );
         }
 
+        if (!monthParam) {
+            return NextResponse.json(
+                { error: "Falta el parámetro 'month' en la consulta" },
+                { status: 400 }
+            );
+        }
         const auth = new google.auth.OAuth2();
         auth.setCredentials({ access_token: accessToken });
 
@@ -31,10 +39,20 @@ export async function GET(request: Request) {
         ];
         const currentMonth = monthNames[now.getMonth()];
 
+        const [year, month] = monthParam.split("-").map(Number);
+        const requestedDate = new Date(Date.UTC(year, month - 1, 1));
+
+        const getMonthName = (date: Date) => {
+            return date.toLocaleString("es-ES", { month: "long", timeZone: "UTC" })
+                .replace(/^\w/, (c) => c.toUpperCase());
+        };
+
+        const requestedMonth = getMonthName(requestedDate);
+
         // Buscar el ID de la hoja correspondiente al mes actual
         const sheet = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
         const sheetForMonth = sheet.data.sheets?.find(
-            (s) => s.properties?.title === currentMonth
+            (s) => s.properties?.title === requestedMonth
         );
         if (!sheetForMonth) {
             console.log("error 41")
@@ -45,7 +63,7 @@ export async function GET(request: Request) {
         }
 
         // Leer los datos de la hoja del mes actual
-        const range = `${currentMonth}!A:G`; // Ajusta el rango según la estructura de tu hoja
+        const range = `${requestedMonth}!A:G`; // Ajusta el rango según la estructura de tu hoja
         const response = await sheets.spreadsheets.values.get({
             spreadsheetId: sheetId,
             range,

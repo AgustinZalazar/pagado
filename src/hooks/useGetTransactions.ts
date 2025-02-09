@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_NEXTAUTH_URL;
 
-export const useGetTransactions = () => {
+export const useGetTransactions = (month: string) => {
     const [transactions, setTransactions] = useState<Payment[]>([]);
     const [totalIncome, setTotalIncome] = useState(0);
     const [totalExpenses, setTotalExpenses] = useState(0);
@@ -16,7 +16,7 @@ export const useGetTransactions = () => {
         const fetchTransactions = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch(`${API_URL}/api/transaction`, { next: { tags: ["transactions"] } });
+                const response = await fetch(`${API_URL}/api/transaction?month=${month}`, { next: { tags: ["transactions"] } });
                 const { formattedTransactions } = await response.json();
 
                 if (formattedTransactions) {

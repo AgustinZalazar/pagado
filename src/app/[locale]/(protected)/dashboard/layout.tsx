@@ -11,6 +11,7 @@ import { notFound, redirect } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Toaster } from "@/components/ui/toaster"
 import { auth } from "@/auth";
+import { MonthProvider } from "@/context/monthContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -46,21 +47,23 @@ export default async function RootLayout({
                     disableTransitionOnChange
                 >
                     <SessionProvider>
-                        <SidebarProvider>
-                            <AppSidebar locale={locale} />
-                            <SidebarInset>
-                                <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-                                    <div className="w-full flex justify-between items-center gap-2 px-4">
-                                        <SidebarTrigger className="-ml-1" />
-                                        <div className="ml-auto">
-                                            <DarkmodeToggle />
+                        <MonthProvider>
+                            <SidebarProvider>
+                                <AppSidebar locale={locale} />
+                                <SidebarInset>
+                                    <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+                                        <div className="w-full flex justify-between items-center gap-2 px-4">
+                                            <SidebarTrigger className="-ml-1" />
+                                            <div className="ml-auto">
+                                                <DarkmodeToggle />
+                                            </div>
                                         </div>
-                                    </div>
-                                </header>
-                                {children}
-                                <Toaster />
-                            </SidebarInset>
-                        </SidebarProvider>
+                                    </header>
+                                    {children}
+                                    <Toaster />
+                                </SidebarInset>
+                            </SidebarProvider>
+                        </MonthProvider>
                     </SessionProvider>
                 </ThemeProvider>
             </body>
