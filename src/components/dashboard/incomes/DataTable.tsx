@@ -8,6 +8,7 @@ import { NewTransactionWindow } from "./dialogWindows/newTransactionWindow";
 import { FilterSheetWindow } from "./filtersSheetWindow";
 import { Input } from "../../ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
+import { getMonthName } from "@/helpers/getMonthName";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -42,15 +43,16 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
             let matchesDate = true;
             if (filters.date && filters.date !== "all") {
-                const filterDate = new Date(filters.date);
-                const filterYear = filterDate.getFullYear();
-                const filterMonth = filterDate.getMonth();
+                const filterDateMonth = getMonthName(filters.date)
+                const itemDateMonth = getMonthName(item.date)
+                // const filterYear = filterDate.getFullYear();
+                // const filterMonth = filterDate.getMonth();
 
-                const itemDate = new Date(item.date);
-                const itemYear = itemDate.getFullYear();
-                const itemMonth = itemDate.getMonth();
-
-                matchesDate = filterYear === itemYear && filterMonth === itemMonth;
+                // const itemYear = itemDate.getFullYear();
+                // const itemDate = new Date(item.date);
+                // const itemMonth = itemDate.getMonth();
+                // matchesDate = filterYear === itemYear && filterMonth === itemMonth;
+                matchesDate = filterDateMonth === itemDateMonth;
             }
 
             return matchesType && matchesCategory && matchesDate && matchesTypePayment && matchesDescription;
@@ -72,8 +74,10 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             params.set(key, value);
         }
         router.push(`?${params.toString()}`);
+        router.refresh()
     };
 
+    // console.log({ pg: paginatedData })
     const table = useReactTable({
         data: paginatedData,
         columns,

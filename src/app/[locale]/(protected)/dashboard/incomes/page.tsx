@@ -26,6 +26,7 @@ const Incomes = () => {
     const { totalMethod, totalMetCurrentMonth } = useTotalByMethod(selectedMonth)
 
     const t = useTranslations('Dashboard.Incomes');
+    // console.log(transactions)
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <h1 className="text-3xl font-bold">{t('title')}</h1>
@@ -39,7 +40,7 @@ const Incomes = () => {
                 totalLastIncome={totalLastIncome}
                 totalLastExpense={totalLastExpenses}
             />
-            <DataTableContainer data={!isLoading ? transactions : []} />
+            <DataTableContainer data={transactions} />
         </div>
     )
 }

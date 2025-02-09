@@ -13,6 +13,8 @@ export const useGetTransactions = (month: string) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
+        const controller = new AbortController();
+        const signal = controller.signal;
         const fetchTransactions = async () => {
             try {
                 setIsLoading(true);
@@ -34,7 +36,10 @@ export const useGetTransactions = (month: string) => {
         };
 
         fetchTransactions();
-    }, []);
+        return () => {
+            controller.abort();
+        };
+    }, [month]);
 
     return { transactions, totalIncome, totalExpenses, isLoading };
 };

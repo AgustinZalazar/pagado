@@ -1,11 +1,7 @@
 "use client"
-import { createContext, useContext, useState, ReactNode } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
-
-const getMonthName = (date: string) => {
-    const formatter = new Intl.DateTimeFormat("es-ES", { month: "long", timeZone: "UTC" });
-    return formatter.format(new Date(date)).replace(/^\w/, (c) => c.toUpperCase()); // Primera letra mayúscula
-};
 
 // Definir el tipo del contexto
 interface MonthContextType {
@@ -17,10 +13,18 @@ const MonthContext = createContext<MonthContextType | undefined>(undefined);
 
 export const MonthProvider = ({ children }: { children: ReactNode }) => {
     const date = new Date().toISOString();
+    const params = useSearchParams();
+    const router = useRouter()
+    const monthParam = params.get("date")
     const initialDate = date.split("T")[0];
-    console.log(initialDate)
-    const [selectedMonth, setSelectedMonth] = useState<string>(initialDate); // Formato "YYYY-MM-DD"
+    const [selectedMonth, setSelectedMonth] = useState<string>(monthParam ? monthParam : initialDate); // Formato "YYYY-MM-DD"
 
+    useEffect(() => {
+        if (monthParam) {
+            setSelectedMonth(monthParam)
+            router.refresh()
+        }
+    }, [monthParam])
     return (
         <MonthContext.Provider value={{ selectedMonth, setSelectedMonth }}>
             {children}

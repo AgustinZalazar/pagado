@@ -106,8 +106,8 @@ export function FilterSheetWindow() {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All categories</SelectItem>
-                            {options.map((option) => (
-                                <SelectItem value={option.nombre}>{option.nombre}</SelectItem>
+                            {options.map((option, index) => (
+                                <SelectItem key={index} value={option.nombre}>{option.nombre}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
@@ -120,8 +120,8 @@ export function FilterSheetWindow() {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All Dates</SelectItem>
-                            {months.map((month) => (
-                                <SelectItem value={month.fecha}>{month.mes}</SelectItem>
+                            {months.map((month, index) => (
+                                <SelectItem key={index} value={month.fecha}>{month.mes}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
 import { auth } from "@/auth";
+import { getMonthNameByDate } from "@/helpers/getMonthName";
 
 export async function GET(request: Request) {
     const session = await auth();
@@ -33,10 +34,6 @@ export async function GET(request: Request) {
 
         const sheets = google.sheets({ version: "v4", auth });
 
-        const getMonthName = (date: Date) => {
-            return date.toLocaleString("es-ES", { month: "long", timeZone: "UTC" })
-                .replace(/^\w/, (c) => c.toUpperCase());
-        };
 
         // Extraer manualmente año y mes del parámetro recibido
         const [year, month] = monthParam.split("-").map(Number);
@@ -46,8 +43,8 @@ export async function GET(request: Request) {
         const previousDate = new Date(Date.UTC(year, month - 2, 1));
 
         // Obtener los nombres de los meses correctamente
-        const requestedMonth = getMonthName(requestedDate);
-        const previousMonth = getMonthName(previousDate);
+        const requestedMonth = getMonthNameByDate(requestedDate);
+        const previousMonth = getMonthNameByDate(previousDate);
 
         // Obtener datos del mes solicitado y el anterior
         const getSheetData = async (monthName: string) => {

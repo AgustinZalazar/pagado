@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { getMonthNameByDate } from "@/helpers/getMonthName";
 import { google } from "googleapis";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
@@ -13,6 +14,7 @@ export async function GET(request: Request) {
         const accessToken = session?.accessToken;
         const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/${session?.user.email}`).then((res) => res.json());
         const { sheetId } = user;
+        // console.log("hola")
         if (!accessToken || !sheetId) {
             return NextResponse.json(
                 { error: "Faltan parámetros: accessToken o sheetId" },
@@ -42,12 +44,7 @@ export async function GET(request: Request) {
         const [year, month] = monthParam.split("-").map(Number);
         const requestedDate = new Date(Date.UTC(year, month - 1, 1));
 
-        const getMonthName = (date: Date) => {
-            return date.toLocaleString("es-ES", { month: "long", timeZone: "UTC" })
-                .replace(/^\w/, (c) => c.toUpperCase());
-        };
-
-        const requestedMonth = getMonthName(requestedDate);
+        const requestedMonth = getMonthNameByDate(requestedDate);
 
         // Buscar el ID de la hoja correspondiente al mes actual
         const sheet = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
