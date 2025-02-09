@@ -90,9 +90,11 @@ export const SearchableColorfulSelect = ({ field }: any) => {
             porcentaje: 0
         };
         const idNewCategory = await createCategory(newOption)
+
         newOption = { ...newOption, id: idNewCategory }
         setOptions((prev) => [...prev, newOption]);
-        setSelectedOption(newOption.id);
+        setSelectedOption(newOption.nombre);
+        field.onChange(newOption.nombre);
         setSearchTerm("");
         setIsOpen(false);
     };
@@ -107,7 +109,7 @@ export const SearchableColorfulSelect = ({ field }: any) => {
             >
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     {selectedOption
-                        ? options.find((opt) => opt.id === selectedOption)?.nombre
+                        ? options.find((opt) => opt.nombre === selectedOption)?.nombre
                         : "Selecciona una opcion o crea una"}
                 </span>
                 {isOpen ? (
