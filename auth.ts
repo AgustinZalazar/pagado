@@ -93,7 +93,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async signIn({ account, profile }) {
       if (account?.provider === "google" && account?.access_token) {
-        // console.log({ acc_s: account })
+        //console.log({ acc_s: account })
         try {
           const userEmail = profile?.email;
           // Verificar si el usuario existe en la base de datos

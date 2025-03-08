@@ -23,6 +23,9 @@
             "header5": "Amount",
             "header6": "Date",
             "header7": "Payment method"
+        },
+        "Budget": {
+            "title": "Dashboard of budget"
         }
     }
 }

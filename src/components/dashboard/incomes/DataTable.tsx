@@ -45,13 +45,6 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             if (filters.date && filters.date !== "all") {
                 const filterDateMonth = getMonthName(filters.date)
                 const itemDateMonth = getMonthName(item.date)
-                // const filterYear = filterDate.getFullYear();
-                // const filterMonth = filterDate.getMonth();
-
-                // const itemYear = itemDate.getFullYear();
-                // const itemDate = new Date(item.date);
-                // const itemMonth = itemDate.getMonth();
-                // matchesDate = filterYear === itemYear && filterMonth === itemMonth;
                 matchesDate = filterDateMonth === itemDateMonth;
             }
 

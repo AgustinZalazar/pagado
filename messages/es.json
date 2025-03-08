@@ -23,6 +23,9 @@
             "header5": "Monto",
             "header6": "Fecha",
             "header7": "Metodo de pago"
+        },
+        "Budget": {
+            "title": "Tablero de presupuesto"
         }
     }
 }

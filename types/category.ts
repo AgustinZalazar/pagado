@@ -1,8 +1,9 @@
 export interface Category {
     id: string;
     nombre: string;
-    color: string;
+    color?: string;
     porcentaje: number;
+    icon: string;
 }
 
 export interface SummaryCategory {

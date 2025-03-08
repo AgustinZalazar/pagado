@@ -8,6 +8,7 @@ import {
     SidebarGroup,
     SidebarGroupContent,
     SidebarGroupLabel,
+    SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
@@ -19,6 +20,8 @@ import { signOut } from 'next-auth/react'
 import { useSession } from "next-auth/react"
 import Link from 'next/link'
 import ButtonShineBorder from './buttonShineBorder'
+import Image from 'next/image'
+import { useTheme } from 'next-themes'
 
 const items = [
     {
@@ -55,19 +58,22 @@ const items = [
 
 const AppSidebar = ({ locale }: { locale: string }) => {
     const { data: session } = useSession()
+    const { theme } = useTheme()
     // console.log({ s: session })
     return <Sidebar collapsible="icon">
+        <SidebarHeader className='border-b border-gray-200'>
+            <Image className='ml-6 my-4' src={theme === "dark" ? "/logo_white.png" : "/logo_black.png"} alt='logo' width={110} height={30} />
+        </SidebarHeader>
         <SidebarContent>
             <SidebarGroup>
-                <SidebarGroupLabel>Pagado</SidebarGroupLabel>
                 <SidebarGroupContent>
                     <SidebarMenu>
                         {items.map((item) => (
                             <SidebarMenuItem key={item.title} className='py-2'>
                                 <SidebarMenuButton asChild >
-                                    <Link href={`/${locale}${item.url}`}>
+                                    <Link className='p-6' href={`/${locale}${item.url}`}>
                                         <item.icon />
-                                        <span>{item.title}</span>
+                                        <span className='text-base'>{item.title}</span>
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
