@@ -11,6 +11,7 @@ export async function GET(request: Request) {
         const monthParam = url.searchParams.get("month");
 
         // console.log(monthParam)
+
         if (!monthParam) {
             return NextResponse.json(
                 { error: "Falta el parámetro 'month' en la consulta" },

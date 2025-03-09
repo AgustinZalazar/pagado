@@ -2,7 +2,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { toast } from "@/components/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -16,11 +15,10 @@ import { Input } from "@/components/ui/input"
 import { usePathname, useRouter } from "next/navigation"
 import { Category } from "@/types/category"
 import { useEditCategory } from "@/hooks/useGetCategories"
-import { Check } from "lucide-react"
 import { colors } from "@/data/colors"
-import IconSelector from "./IconSelector"
 import { icons } from "@/data/icons"
-import { useState } from "react"
+import { Dispatch, SetStateAction } from "react"
+import { toast } from "sonner";
 
 const FormSchema = z.object({
     nombre: z.string().min(2, {
@@ -33,13 +31,12 @@ const FormSchema = z.object({
 
 interface formProps {
     category?: Category,
-    totalPercentage: number
+    totalPercentage: number,
+    setOpenPopover: Dispatch<SetStateAction<boolean>>
 }
 
-export function FormCategory({ category, totalPercentage }: formProps) {
-    const router = useRouter()
-    const path = usePathname()
-    const { editCategory, isLoadingEdit } = useEditCategory()
+export function FormCategory({ category, totalPercentage, setOpenPopover }: formProps) {
+    const { editCategory } = useEditCategory(setOpenPopover)
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -51,31 +48,11 @@ export function FormCategory({ category, totalPercentage }: formProps) {
         },
     })
     async function onSubmit(data: z.infer<typeof FormSchema>) {
-        // setOpenDialog(!openDialog)
-        // console.log(data, totalPercentage, category)
         if (category && totalPercentage <= 100 && totalPercentage + data.porcentaje <= 100) {
-            // console.log(data)
             const allData = { id: category.id, ...data }
             const updateCategory = editCategory(allData)
-            toast({
-                title: "Listo!",
-                description: (
-                    <p className="mt-2 w-[340px] rounded-md  p-4">
-                        Categoria {category ? "editada" : "creada"} correctamente!
-                    </p>
-                ),
-            })
-            router.push(path, { scroll: false })
-            router.refresh()
         } else {
-            toast({
-                title: "Error!",
-                description: (
-                    <p className="mt-2 w-[340px] rounded-md  p-4">
-                        La sumatoria de los porcentajes no puede ser mayor al 100%
-                    </p>
-                ),
-            })
+            toast.error("Error, La sumatoria de los porcentajes no puede ser mayor al 100%.");
         }
         // else {
         // const newTransaction = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/transaction`, {
@@ -83,7 +60,6 @@ export function FormCategory({ category, totalPercentage }: formProps) {
         //     headers: { "Content-Type": "application/json" },
         //     body: JSON.stringify(data),
         // });
-        // router.refresh()
         // }
     }
 

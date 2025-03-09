@@ -9,9 +9,10 @@ import { DarkmodeToggle } from "@/components/dashboard/darkModeToggle";
 import { setRequestLocale } from 'next-intl/server';
 import { notFound, redirect } from 'next/navigation';
 import { routing } from '@/i18n/routing';
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from 'sonner';
 import { auth } from "@/auth";
 import { MonthProvider } from "@/context/monthContext";
+import QueryProvider from "@/lib/QueryProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -36,6 +37,7 @@ export default async function RootLayout({
         redirect(`/login`);
     }
     // Enable static rendering
+
     setRequestLocale(locale);
     return (
         <html lang="en">
@@ -47,23 +49,25 @@ export default async function RootLayout({
                     disableTransitionOnChange
                 >
                     <SessionProvider>
-                        <MonthProvider>
-                            <SidebarProvider>
-                                <AppSidebar locale={locale} />
-                                <SidebarInset>
-                                    <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-                                        <div className="w-full flex justify-between items-center gap-2 px-4">
-                                            <SidebarTrigger className="-ml-1" />
-                                            <div className="ml-auto">
-                                                <DarkmodeToggle />
+                        <QueryProvider>
+                            <MonthProvider>
+                                <SidebarProvider>
+                                    <AppSidebar locale={locale} />
+                                    <SidebarInset>
+                                        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+                                            <div className="w-full flex justify-between items-center gap-2 px-4">
+                                                <SidebarTrigger className="-ml-1" />
+                                                <div className="ml-auto">
+                                                    <DarkmodeToggle />
+                                                </div>
                                             </div>
-                                        </div>
-                                    </header>
-                                    {children}
-                                    <Toaster />
-                                </SidebarInset>
-                            </SidebarProvider>
-                        </MonthProvider>
+                                        </header>
+                                        {children}
+                                        <Toaster />
+                                    </SidebarInset>
+                                </SidebarProvider>
+                            </MonthProvider>
+                        </QueryProvider>
                     </SessionProvider>
                 </ThemeProvider>
             </body>

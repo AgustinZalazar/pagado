@@ -220,12 +220,13 @@ export async function DELETE(request: Request) {
         const accessToken = session?.accessToken;
         const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/${session?.user.email}`).then((res) => res.json());
         const { sheetId } = user;
-        const body = await request.json();
-        const { id, date } = body;
+        const id = await request.json();
 
-        if (!accessToken || !sheetId || !id || !date) {
+
+        // console.log(id)
+        if (!accessToken || !sheetId || !id) {
             return NextResponse.json(
-                { error: "Faltan parámetros: accessToken, sheetId, id o date" },
+                { error: "Faltan parámetros: accessToken, sheetId, id" },
                 { status: 400 }
             );
         }
@@ -234,32 +235,18 @@ export async function DELETE(request: Request) {
         auth.setCredentials({ access_token: accessToken });
 
         const sheets = google.sheets({ version: "v4", auth });
-        const dateNow = new Date(date);
-        const monthNames = [
-            "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
-        ];
-        const month = monthNames[dateNow.getMonth()];
-        const sheet = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
-        const sheetIdForMonth = sheet.data.sheets
-            ?.find((s) => s.properties?.title === month)
-            ?.properties?.sheetId;
 
-        if (!sheetIdForMonth) {
-            return NextResponse.json(
-                { error: `No se encontró la hoja para el mes: ${month}` },
-                { status: 404 }
-            );
-        }
-
-        const range = `${month}!A:G`; // Asumiendo que los datos están entre las columnas A y G
+        const range = `Config!A2:E`; // Asumiendo que los datos están entre las columnas A y D
         const existingData = await sheets.spreadsheets.values.get({
             spreadsheetId: sheetId,
             range,
         });
 
         const rows = existingData.data.values || [];
-        const rowIndex = rows.findIndex((row) => row[0] === id.toString());
+        const rowIndex = rows.findIndex((row) => {
+            // Asegurémonos de que ambos valores sean cadenas antes de compararlos
+            return row[0].toString() === id.toString(); // Aseguramos que ambos sean cadenas
+        });
 
         if (rowIndex === -1) {
             return NextResponse.json(
@@ -267,23 +254,33 @@ export async function DELETE(request: Request) {
                 { status: 404 }
             );
         }
+        // Aquí calculamos la fila real en Google Sheets
+        const realRowIndex = rowIndex + 2; // Agregar 2 para ajustar al índice real (fila 2 en Google Sheets es la primera fila de datos)
 
-        // Elimina la fila configurando las celdas en blanco
-        const deleteRange = `${month}!A${rowIndex + 1}:G${rowIndex + 1}`;
-        await sheets.spreadsheets.values.update({
-            spreadsheetId: sheetId,
-            range: deleteRange,
-            valueInputOption: "USER_ENTERED",
-            requestBody: {
-                values: [["", "", "", "", "", "", ""]],
+        // Solicitar la eliminación de la fila usando batchUpdate
+        const requests = [
+            {
+                deleteRange: {
+                    range: {
+                        sheetId: 108754243,
+                        startRowIndex: realRowIndex - 1, // Google Sheets usa índices basados en cero
+                        endRowIndex: realRowIndex, // Solo eliminamos esa fila
+                    },
+                    shiftDimension: "ROWS", // Para eliminar la fila y mover las demás filas hacia arriba
+                },
             },
+        ];
+
+        const batchUpdateRequest = { requests };
+        await sheets.spreadsheets.batchUpdate({
+            spreadsheetId: sheetId,
+            requestBody: batchUpdateRequest,
         });
-        revalidateTag("transactions");
-        return NextResponse.json({ message: "Transacción eliminada exitosamente" });
+        return NextResponse.json({ message: "Categoria eliminada exitosamente" });
     } catch (error: any) {
-        console.error("Error al eliminar la transacción:", error.message || error);
+        console.error("Error al eliminar la categoria:", error.message || error);
         return NextResponse.json(
-            { error: "Error al eliminar la transacción" },
+            { error: "Error al eliminar la categoria" },
             { status: 500 }
         );
     }

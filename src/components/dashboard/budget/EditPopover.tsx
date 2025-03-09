@@ -8,6 +8,7 @@ import { FormCategory } from './FormCategories'
 import { Button } from '@/components/ui/button'
 import { Category } from '@/types/category'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useDeleteCategory } from '@/hooks/useGetCategories';
 
 interface Props {
     item: Category,
@@ -16,6 +17,8 @@ interface Props {
 
 const EditPopover = ({ item, totalPercentage }: Props) => {
     const [openEditCatDialog, setOpenEditCatDialog] = useState(false)
+    const { deleteCategory } = useDeleteCategory()
+
     return <Popover>
         <PopoverTrigger asChild>
             <button className='bg-transparent rounded-sm hover:bg-slate-100 p-1'>
@@ -39,10 +42,10 @@ const EditPopover = ({ item, totalPercentage }: Props) => {
                             Modifica las categorias
                         </DialogDescription>
                     </DialogHeader>
-                    <FormCategory category={item} totalPercentage={totalPercentage} />
+                    <FormCategory category={item} totalPercentage={totalPercentage} setOpenPopover={setOpenEditCatDialog} />
                 </DialogContent>
             </Dialog>
-            <Button variant="outline" className='mt-2'>
+            <Button variant="outline" className='mt-2' onClick={() => deleteCategory(item.id)}>
                 <Trash />   Delete
             </Button>
         </PopoverContent>

@@ -13,8 +13,6 @@ interface Props {
 
 const CardsContainer = ({ categories, type }: Props) => {
     const totalPercentage = categories?.reduce((sum, category) => sum + (+category.porcentaje || 0), 0);
-
-    // console.log(categories)
     return (
         <div className='flex flex-row flex-wrap gap-4 max-w-[1440px] mx-auto'>
             {categories.map((item) => {
@@ -31,7 +29,7 @@ const CardsContainer = ({ categories, type }: Props) => {
                                     }
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    <span className="text-sm text-muted-foreground">#{item.id}</span>
+                                    {/* <span className="text-sm text-muted-foreground">#{item.id}</span> */}
                                     <EditPopover item={item} totalPercentage={totalPercentage} />
                                 </div>
                             </div>
