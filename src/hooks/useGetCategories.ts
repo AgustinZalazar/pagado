@@ -24,6 +24,55 @@ export const useGetCategories = () => {
 };
 
 
+export const useCreateCategory = (setOpenPopover: Dispatch<SetStateAction<boolean>>) => {
+    const queryClient = useQueryClient()
+    const mutation = useMutation({
+        mutationFn: async (data: Category) => {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/category`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+
+            return response.json();
+        },
+        onMutate: () => {
+            const toastId = toast.loading("Creando categoría...");
+            return { toastId };
+        },
+        onSuccess: (_, __, context) => {
+            if (context?.toastId) {
+                toast.dismiss(context.toastId);
+            }
+            toast.success("¡Categoría creada correctamente!");
+        },
+        onError: (error, _, context) => {
+            if (context?.toastId) {
+                toast.dismiss(context.toastId);
+            }
+            toast.error("Error al crear la categoría.");
+            console.error(error);
+        },
+        onSettled: (context) => {
+            queryClient.invalidateQueries({ queryKey: ['categories'] })
+            setOpenPopover(false)
+        },
+    });
+
+    return {
+        createCategory: mutation.mutate,
+        isLoadingCreate: mutation.isPending,
+        isSuccess: mutation.isSuccess,
+        isError: mutation.isError,
+        error: mutation.error,
+    };
+};
+
+
 export const useEditCategory = (setOpenPopover: Dispatch<SetStateAction<boolean>>) => {
     const queryClient = useQueryClient()
     const mutation = useMutation({
@@ -42,25 +91,23 @@ export const useEditCategory = (setOpenPopover: Dispatch<SetStateAction<boolean>
         },
         onMutate: () => {
             // Muestra el toast de loading cuando se inicie la mutación
-            const loadingToast = toast.loading("Editando categoría...");
-            return loadingToast;  // Devolvemos el toast para manipularlo más tarde
+            const toastId = toast.loading("Editando categoría...");
+            return { toastId }; // Devolvemos el toast para manipularlo más tarde
         },
-        onSuccess: (data, variables, context) => {
-            // Muestra el toast de éxito y cierra el toast de loading
+        onSuccess: (_, __, context) => {
+            if (context?.toastId) {
+                toast.dismiss(context.toastId);
+            }
             toast.success("¡Categoría editada correctamente!");
-            toast.dismiss(context); // Cierra el toast de loading
         },
-        onError: (error, variables, context) => {
-            // Muestra el toast de error y cierra el toast de loading
+        onError: (error, _, context) => {
+            if (context?.toastId) {
+                toast.dismiss(context.toastId);
+            }
             toast.error("Error al editar la categoría.");
-            toast.dismiss(context); // Cierra el toast de loading
             console.error(error); // Log para depuración
         },
-        onSettled: (data, error, variables, context) => {
-            // Asegura que el toast de loading se cierre si no se ha hecho aún
-            if (context) {
-                toast.dismiss(context); // Cierra el toast de loading
-            }
+        onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ['categories'] })
             setOpenPopover(false)
         },
@@ -97,7 +144,6 @@ export const useDeleteCategory = () => {
             return { toastId };
         },
         onSuccess: (_, __, context) => {
-            console.log(context)
             if (context?.toastId) {
                 toast.dismiss(context.toastId);
             }

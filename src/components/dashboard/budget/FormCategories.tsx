@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { usePathname, useRouter } from "next/navigation"
 import { Category } from "@/types/category"
-import { useEditCategory } from "@/hooks/useGetCategories"
+import { useCreateCategory, useEditCategory } from "@/hooks/useGetCategories"
 import { colors } from "@/data/colors"
 import { icons } from "@/data/icons"
 import { Dispatch, SetStateAction } from "react"
@@ -24,19 +24,27 @@ const FormSchema = z.object({
     nombre: z.string().min(2, {
         message: "El nombre debe contener al menos 2 caracteres",
     }),
-    porcentaje: z.string().transform((v) => Number(v) || 0),
+    // porcentaje: z.string().transform((v) => Number(v) || 0),
+    porcentaje: z
+        .preprocess(
+            (val) => Number(val), // 🔹 Convierte el valor a número antes de validarlo
+            z.number()
+                .min(0, { message: "El porcentaje debe ser al menos 0" })
+                .max(100, { message: "El porcentaje no puede ser mayor a 100" })
+        ),
     color: z.string(),
     icon: z.string()
 })
 
 interface formProps {
     category?: Category,
-    totalPercentage: number,
+    totalPercentage?: number,
     setOpenPopover: Dispatch<SetStateAction<boolean>>
 }
 
 export function FormCategory({ category, totalPercentage, setOpenPopover }: formProps) {
     const { editCategory } = useEditCategory(setOpenPopover)
+    const { createCategory } = useCreateCategory(setOpenPopover)
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -48,19 +56,16 @@ export function FormCategory({ category, totalPercentage, setOpenPopover }: form
         },
     })
     async function onSubmit(data: z.infer<typeof FormSchema>) {
-        if (category && totalPercentage <= 100 && totalPercentage + data.porcentaje <= 100) {
+        // console.log(data, category)
+        if (category && totalPercentage! <= 100 && totalPercentage! + data.porcentaje <= 100) {
             const allData = { id: category.id, ...data }
             const updateCategory = editCategory(allData)
-        } else {
+        } else if (totalPercentage == 100 && totalPercentage + data.porcentaje >= 100) {
             toast.error("Error, La sumatoria de los porcentajes no puede ser mayor al 100%.");
         }
-        // else {
-        // const newTransaction = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/transaction`, {
-        //     method: "POST",
-        //     headers: { "Content-Type": "application/json" },
-        //     body: JSON.stringify(data),
-        // });
-        // }
+        else if (!category) {
+            const newCategory = createCategory({ id: "", ...data })
+        }
     }
 
     return (
@@ -87,7 +92,13 @@ export function FormCategory({ category, totalPercentage, setOpenPopover }: form
                         <FormItem>
                             <FormLabel>Porcentaje</FormLabel>
                             <FormControl>
-                                <Input type="number" placeholder="20%" {...field} />
+                                <Input
+                                    type="number"
+                                    min={0}
+                                    max={100}
+                                    placeholder="20%"
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -164,7 +175,7 @@ export function FormCategory({ category, totalPercentage, setOpenPopover }: form
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Submit</Button>
+                <Button type="submit">Guardar</Button>
             </form>
         </Form>
     )

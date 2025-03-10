@@ -117,7 +117,7 @@ export async function POST(request: Request) {
         // Insertar la transacción en la hoja
         await sheets.spreadsheets.values.append({
             spreadsheetId: sheetId,
-            range: `Config!A1:D1`,
+            range: `Config!A1:E1`,
             valueInputOption: "USER_ENTERED",
             requestBody: {
                 values: [
@@ -125,7 +125,6 @@ export async function POST(request: Request) {
                 ],
             },
         });
-        // revalidateTag('category')
         return NextResponse.json(newId, { status: 201 });
     } catch (error: any) {
         console.error("Error al guardar la transacción:", error.message || error);

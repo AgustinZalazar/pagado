@@ -14,7 +14,7 @@ interface Props {
 const CardsContainer = ({ categories, type }: Props) => {
     const totalPercentage = categories?.reduce((sum, category) => sum + (+category.porcentaje || 0), 0);
     return (
-        <div className='flex flex-row flex-wrap gap-4 max-w-[1440px] mx-auto'>
+        <div className='flex flex-row flex-wrap gap-4'>
             {categories.map((item) => {
                 const IconComponent = getIconComponent(item.icon);
                 return (

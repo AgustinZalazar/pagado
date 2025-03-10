@@ -39,7 +39,7 @@ const EditPopover = ({ item, totalPercentage }: Props) => {
                     <DialogHeader>
                         <DialogTitle>Editar categoria</DialogTitle>
                         <DialogDescription>
-                            Modifica las categorias
+                            Modifica la categoria
                         </DialogDescription>
                     </DialogHeader>
                     <FormCategory category={item} totalPercentage={totalPercentage} setOpenPopover={setOpenEditCatDialog} />
