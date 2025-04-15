@@ -66,7 +66,7 @@ export async function POST(req: Request) {
                                     startRowIndex: 0,
                                     startColumnIndex: 0,
                                     endRowIndex: 1,
-                                    endColumnIndex: 3,
+                                    endColumnIndex: 10,
                                 },
                                 rows: [
                                     {
@@ -74,6 +74,11 @@ export async function POST(req: Request) {
                                             { userEnteredValue: { stringValue: "id" } },
                                             { userEnteredValue: { stringValue: "nombre" } },
                                             { userEnteredValue: { stringValue: "color" } },
+                                            {}, {}, {},
+                                            { userEnteredValue: { stringValue: "id" } },
+                                            { userEnteredValue: { stringValue: "title" } },
+                                            { userEnteredValue: { stringValue: "type" } },
+                                            { userEnteredValue: { stringValue: "color" } }
                                         ],
                                     },
                                 ],
@@ -87,12 +92,34 @@ export async function POST(req: Request) {
                                     startRowIndex: 1,
                                     startColumnIndex: 0,
                                     endRowIndex: 1 + categories.length,
-                                    endColumnIndex: 3,
+                                    endColumnIndex: 4,
                                 },
                                 rows: categoryRows.map((row) => ({ values: row })),
                                 fields: "userEnteredValue",
                             },
                         },
+                        {
+                            updateCells: {
+                                range: {
+                                    sheetId: configSheetId,
+                                    startRowIndex: 0,
+                                    startColumnIndex: 11,
+                                    endRowIndex: 1,
+                                    endColumnIndex: 15,
+                                },
+                                rows: [
+                                    {
+                                        values: [
+                                            { userEnteredValue: { stringValue: "id" } },
+                                            { userEnteredValue: { stringValue: "title" } },
+                                            { userEnteredValue: { stringValue: "cardType" } },
+                                            { userEnteredValue: { stringValue: "idAccount" } }
+                                        ],
+                                    },
+                                ],
+                                fields: "userEnteredValue",
+                            },
+                        }
                     ],
                 },
             });

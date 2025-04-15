@@ -93,14 +93,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async signIn({ account, profile }) {
       if (account?.provider === "google" && account?.access_token) {
-        //console.log({ acc_s: account })
+        console.log({ acc_s: account })
         try {
           const userEmail = profile?.email;
           // Verificar si el usuario existe en la base de datos
-          // console.log(account)
           const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/${userEmail}`).then((res) => res.json());
           // console.log(user)
-          if (!user) {
+          if (!user || user?.error === "User not found") {
             // Crear un Google Sheet para el nuevo usuario
             const response = await fetch(`${process.env.NEXTAUTH_URL}/api/google-sheets`, {
               method: "POST",
@@ -109,6 +108,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             });
 
             const data = await response.json();
+            // console.log(data)
 
             const responseConfig = await fetch(`${process.env.NEXTAUTH_URL}/api/setup-sheet`, {
               method: "POST",
@@ -116,6 +116,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               body: JSON.stringify({ accessToken: account.access_token, sheetId: data.id }),
             });
 
+            // console.log(responseConfig)
             if (!response.ok) {
               console.error("Error en el fetch a /api/google-sheets:", data);
               return false;

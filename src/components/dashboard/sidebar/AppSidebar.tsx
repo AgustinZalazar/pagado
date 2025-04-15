@@ -1,6 +1,6 @@
 "use client"
 import React from 'react'
-import { PieChart, Home, Inbox, CalendarRange, Settings, NotebookPen, ChevronUp, User2, TrendingUp, LogOut } from "lucide-react"
+import { PieChart, Home, Landmark, CalendarRange, Settings, NotebookPen, ChevronUp, User2, TrendingUp, LogOut, PiggyBank, UsersRound } from "lucide-react"
 import {
     Sidebar,
     SidebarContent,
@@ -22,37 +22,69 @@ import Link from 'next/link'
 import ButtonShineBorder from './buttonShineBorder'
 import Image from 'next/image'
 import { useTheme } from 'next-themes'
+import { Badge } from '@/components/ui/badge'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 const items = [
     {
         title: "Home",
         url: "/dashboard",
         icon: Home,
+        coming: true
+    },
+    {
+        title: "Cuentas",
+        url: "/dashboard/accounts",
+        icon: Landmark,
+        coming: false
     },
     {
         title: "Presupuestos",
         url: "/dashboard/budget",
         icon: PieChart,
+        coming: false
     },
     {
         title: "Ingresos y Gastos",
         url: "/dashboard/incomes",
         icon: NotebookPen,
+        coming: false
     },
     {
         title: "Gastos fijos",
         url: "/dashboard/monthlyExpenses",
         icon: CalendarRange,
+        coming: true
     },
     {
         title: "Inversiones",
         url: "/dashboard/investments",
         icon: TrendingUp,
+        coming: true
+    },
+    {
+        title: "Ahorros",
+        url: "/dashboard/",
+        icon: PiggyBank,
+        coming: true
+    },
+    {
+        title: "Deudas",
+        url: "/dashboard/",
+        icon: Landmark,
+        coming: true
+    },
+    {
+        title: "Gastos compartidos",
+        url: "/dashboard/",
+        icon: UsersRound,
+        coming: true
     },
     {
         title: "Settings",
         url: "/dashboard/settings",
         icon: Settings,
+        coming: true
     },
 ]
 
@@ -70,11 +102,27 @@ const AppSidebar = ({ locale }: { locale: string }) => {
                     <SidebarMenu>
                         {items.map((item) => (
                             <SidebarMenuItem key={item.title} className='py-2'>
-                                <SidebarMenuButton asChild >
-                                    <Link className='p-6' href={`/${locale}${item.url}`}>
-                                        <item.icon />
-                                        <span className='text-base'>{item.title}</span>
-                                    </Link>
+                                <SidebarMenuButton asChild>
+                                    {item.coming ? (
+                                        // <div >
+                                        <TooltipProvider >
+                                            <Tooltip >
+                                                <TooltipTrigger className="px-5 py-2 opacity-50 cursor-not-allowed flex items-center gap-2 relative">
+                                                    <item.icon width={16} height={16} />
+                                                    <span className="text-base">{item.title}</span>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>Muy pronto!</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                        // </div>
+                                    ) : (
+                                        <Link className="p-5 flex items-center gap-2" href={`/${locale}${item.url}`}>
+                                            <item.icon />
+                                            <span className="text-base">{item.title}</span>
+                                        </Link>
+                                    )}
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                         ))}
