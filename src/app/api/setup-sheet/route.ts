@@ -74,6 +74,8 @@ export async function POST(req: Request) {
                                             { userEnteredValue: { stringValue: "id" } },
                                             { userEnteredValue: { stringValue: "nombre" } },
                                             { userEnteredValue: { stringValue: "color" } },
+                                            { userEnteredValue: { stringValue: "porcentaje" } },
+                                            { userEnteredValue: { stringValue: "icon" } },
                                             {}, {}, {},
                                             { userEnteredValue: { stringValue: "id" } },
                                             { userEnteredValue: { stringValue: "title" } },

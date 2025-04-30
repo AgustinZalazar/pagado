@@ -17,7 +17,7 @@ export default function AuthLayout({
     return (
         <html lang="en">
             <body className={inter.className}>
-                <main className="flex h-svh flex-col items-center justify-center bg-light_gray">
+                <main>
                     {children}
                 </main>
             </body>

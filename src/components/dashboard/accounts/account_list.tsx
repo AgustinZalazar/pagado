@@ -1,0 +1,90 @@
+"use client"
+
+import { useState } from "react"
+import { Building, Wallet, ChevronsUpDown } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import CardMethod from "./CardMethod"
+import { DialogMethod } from "./DialogWindowMethod"
+import { useGetAccounts } from "@/hooks/useAccount"
+import { Account, Method } from "@/types/Accounts"
+import { useGetMethods } from "@/hooks/useMethod"
+
+
+export function AccountsList() {
+    const [expandedAccounts, setExpandedAccounts] = useState<number[]>([])
+    const { accounts, isLoading } = useGetAccounts();
+    const { methods, isLoading: isLoadingMethods } = useGetMethods();
+
+    // console.log(methods)
+    const toggleAccountExpansion = (accountId: number) => {
+        setExpandedAccounts((prev) =>
+            prev.includes(accountId) ? prev.filter((id) => id !== accountId) : [...prev, accountId],
+        )
+    }
+
+    return (
+        <div className="flex flex-wrap gap-4">
+            {accounts.map((account: Account) => (
+                <div
+                    key={account.id}
+                    className="rounded-xl overflow-hidden shadow-lg border border-gray-100 w-[395px] flex-shrink-0"
+                    style={{ height: expandedAccounts.includes(+account.id) ? "fit-content" : "fit-content" }}
+                >
+                    <div className={`bg-gradient-to-r ${account.color} p-6 text-white`}>
+                        <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-white/20 backdrop-blur-sm p-2 rounded-full">
+                                    <Building className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold">{account.title}</h3>
+                                    <p className="text-white/80 text-sm">
+                                        • {account.type}
+                                    </p>
+                                </div>
+                            </div>
+                            {/* <div className="text-right">
+                            <p className="text-white/80 text-xs uppercase tracking-wider">Available Balance</p>
+                            <p className="text-2xl font-bold flex items-center justify-end">
+                                <DollarSign className="h-5 w-5" />
+                                {account.balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </p>
+                            </div> */}
+                        </div>
+                    </div>
+
+                    <div className="bg-white">
+                        <button
+                            onClick={() => toggleAccountExpansion(+account.id)}
+                            className="flex items-center justify-between w-full p-4 hover:bg-gray-50 transition-colors"
+                        >
+                            <div className="flex items-center gap-2 font-medium text-gray-700">
+                                <Wallet className="h-5 w-5" />
+                                <span>Metodos de pago</span>
+                                <Badge variant="outline" className="ml-2 bg-gray-100">
+                                    {methods.filter((method: Method) => method.idAccount === account.id).length}
+                                </Badge>
+                            </div>
+                            <ChevronsUpDown className="h-4 w-4 text-gray-500" />
+                        </button>
+
+                        {expandedAccounts.includes(+account.id) && (
+                            <div className="px-4 pb-4">
+                                <Separator className="my-2" />
+
+                                <div className="space-y-3 mt-3">
+                                    {methods.filter((method: Method) => method.idAccount === account.id).map((method: Method) => (
+                                        <CardMethod method={method} />
+                                    ))}
+
+                                    <DialogMethod idAccount={account.id} />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            ))}
+        </div>
+    )
+}

@@ -15,16 +15,17 @@ interface CardWrapperProps {
 
 const CardWrapper = ({ children, headerLabel, backButtonLabel, backButtonHref, showSocial }: CardWrapperProps) => {
     return (
-        <Card className='w-[400px] bg-white'>
+        <Card className='w-[350px] h-[250px] bg-white flex justify-center items-center flex-col'>
             <CardHeader className='text-center'>
-                <h2>{headerLabel}</h2>
+                <img src='/logo_black.png' alt='logo' className='w-[140px] mx-auto mb-4' />
+                <h2 className='text-lg text-slate-700'>{headerLabel}</h2>
             </CardHeader>
             {/* <CardContent>
                 {children}
             </CardContent> */}
-            <CardFooter className='flex flex-col'>
+            <CardFooter className='p-0 w-full px-4'>
                 <Social />
-                <BackButton label={backButtonLabel} href={backButtonHref} />
+                {/* <BackButton label={backButtonLabel} href={backButtonHref} /> */}
             </CardFooter>
         </Card>
     )

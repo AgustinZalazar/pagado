@@ -65,6 +65,9 @@ export const icons: IconType[] = [
     { name: "PlugZap", icon: PlugZap },
     { name: "Flame", icon: Flame },
     { name: "Water", icon: Droplet },
+    { name: "Gift", icon: Gift },
+    { name: "Wallet", icon: Wallet },
+    { name: "Home", icon: Home },
 ]
 
 export const getIconComponent = (iconName: string) => {

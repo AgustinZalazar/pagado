@@ -8,6 +8,21 @@ const config = {
 		'./app/**/*.{ts,tsx}',
 		'./src/**/*.{ts,tsx}',
 	],
+	safelist: [
+		'from-sky-600', 'to-sky-400',
+		'from-orange-600', 'to-orange-400',
+		'from-slate-700', 'to-slate-500',
+		'from-purple-700', 'to-purple-500',
+		'from-purple-600', 'to-purple-400',
+		'from-green-600', 'to-green-400',
+		'from-amber-600', 'to-amber-400',
+		'from-yellow-600', 'to-yellow-400',
+		'from-lime-600', 'to-lime-400',
+		'from-rose-600', 'to-rose-400',
+		'from-pink-600', 'to-pink-400',
+		'from-fuchsia-600', 'to-fuchsia-400',
+		'from-teal-600', 'to-teal-400',
+	],
 	prefix: "",
 	theme: {
 		container: {

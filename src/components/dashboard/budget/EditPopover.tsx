@@ -1,9 +1,6 @@
 import React, { useState } from 'react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-// import { EllipsisVertical, Trash2 } from 'lucide-react'
-import { Edit, Home, MoreVertical, Trash } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { DialogWindow } from '../windows/DialogWindow'
+import { Edit, MoreVertical, Trash } from 'lucide-react';
 import { FormCategory } from './FormCategories'
 import { Button } from '@/components/ui/button'
 import { Category } from '@/types/category'

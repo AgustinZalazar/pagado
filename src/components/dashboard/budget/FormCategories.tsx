@@ -12,7 +12,6 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { usePathname, useRouter } from "next/navigation"
 import { Category } from "@/types/category"
 import { useCreateCategory, useEditCategory } from "@/hooks/useGetCategories"
 import { colors } from "@/data/colors"

@@ -98,7 +98,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const userEmail = profile?.email;
           // Verificar si el usuario existe en la base de datos
           const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/${userEmail}`).then((res) => res.json());
-          // console.log(user)
+          console.log(user)
           if (!user || user?.error === "User not found") {
             // Crear un Google Sheet para el nuevo usuario
             const response = await fetch(`${process.env.NEXTAUTH_URL}/api/google-sheets`, {
