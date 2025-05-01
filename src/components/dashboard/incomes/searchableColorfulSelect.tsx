@@ -24,7 +24,7 @@ export const SearchableColorfulSelect = ({ field }: any) => {
     const getCategories = async () => {
         try {
             setIsLoading(true)
-            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/category`, { cache: 'no-store', credentials: 'include' }).then((resp) => resp.json())
+            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/category`, { cache: 'no-store', credentials: 'include' }).then((resp) => resp.json())
             const { formattedCategories } = await response
             if (formattedCategories) {
                 setOptions(formattedCategories)
@@ -38,7 +38,7 @@ export const SearchableColorfulSelect = ({ field }: any) => {
     }
 
     async function createCategory(data: Category) {
-        const newCategory = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/category`, {
+        const newCategory = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/category`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),

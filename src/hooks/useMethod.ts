@@ -28,7 +28,7 @@ export const useCreateMethod = (setOpenPopover: Dispatch<SetStateAction<boolean>
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationFn: async (data: Method) => {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/methods`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/methods`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
@@ -77,7 +77,7 @@ export const useEditMethod = (setOpenPopover: Dispatch<SetStateAction<boolean>>)
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationFn: async (data: Method) => {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/methods`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/methods`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
@@ -126,7 +126,7 @@ export const useDeleteMethod = () => {
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationFn: async (methodId: string) => {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/methods`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/methods`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(methodId),

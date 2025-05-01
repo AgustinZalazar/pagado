@@ -7,7 +7,7 @@ export async function GET(request: Request) {
     const session = await auth();
     try {
         const accessToken = session?.accessToken;
-        const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/agusstiin.az@gmail.com`).then((res) => res.json());
+        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`).then((res) => res.json());
         const { sheetId } = user;
 
         if (!accessToken || !sheetId) {
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
     const session = await auth();
     try {
         const accessToken = session?.accessToken;
-        const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/${session?.user.email}`).then((res) => res.json());
+        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`).then((res) => res.json());
         const { sheetId } = user;
         const body = await request.json();
         const { nombre, color, porcentaje, icon } = body;
@@ -139,7 +139,7 @@ export async function PUT(request: Request) {
     const session = await auth();
     try {
         const accessToken = session?.accessToken;
-        const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/${session?.user.email}`).then((res) => res.json());
+        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`).then((res) => res.json());
         const { sheetId } = user;
         const body = await request.json();
         const { id, nombre, color, porcentaje, icon } = body;
@@ -217,7 +217,7 @@ export async function DELETE(request: Request) {
     const session = await auth();
     try {
         const accessToken = session?.accessToken;
-        const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/${session?.user.email}`).then((res) => res.json());
+        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`).then((res) => res.json());
         const { sheetId } = user;
         const id = await request.json();
 

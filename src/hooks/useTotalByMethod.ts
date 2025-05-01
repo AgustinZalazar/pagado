@@ -39,7 +39,7 @@ export const useTotalByMethod = (month: string) => {
     const { data, isLoading, error } = useQuery({
         queryKey: ["totalByMethod", month], // Cachea la consulta por mes
         queryFn: async () => {
-            const response = await fetch(`${API_URL}/api/transaction/method?month=${month}`);
+            const response = await fetch(`${API_URL}api/transaction/method?month=${month}`);
             if (!response.ok) throw new Error(`Error: ${response.statusText}`);
 
             return response.json();

@@ -49,7 +49,7 @@ export const useGetTransactions = (month: string) => {
     const { data, isLoading, error } = useQuery({
         queryKey: ["transactions", month], // 🟢 Cachea por mes
         queryFn: async () => {
-            const response = await fetch(`${API_URL}/api/transaction?month=${month}`);
+            const response = await fetch(`${API_URL}api/transaction?month=${month}`);
             if (!response.ok) throw new Error(`Error: ${response.statusText}`);
 
             const { formattedTransactions } = await response.json();

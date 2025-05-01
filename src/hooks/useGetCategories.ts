@@ -10,7 +10,7 @@ export const useGetCategories = () => {
     const { data: categories = [], isLoading, error } = useQuery({
         queryKey: ["categories"],
         queryFn: async () => {
-            const response = await fetch(`${API_URL}/api/category`);
+            const response = await fetch(`${API_URL}api/category`);
 
             if (!response.ok) throw new Error(`Error: ${response.statusText}`);
 
@@ -28,7 +28,7 @@ export const useCreateCategory = (setOpenPopover: Dispatch<SetStateAction<boolea
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationFn: async (data: Category) => {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/category`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/category`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
@@ -77,7 +77,7 @@ export const useEditCategory = (setOpenPopover: Dispatch<SetStateAction<boolean>
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationFn: async (data: Category) => {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/category`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/category`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
@@ -127,7 +127,7 @@ export const useDeleteCategory = () => {
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationFn: async (categoryId: string) => {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/category`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/category`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(categoryId),

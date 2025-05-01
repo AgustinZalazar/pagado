@@ -69,7 +69,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
 
         if (transaction) {
             const allData = { id: transaction.id, ...data }
-            const editTransaction = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/transaction`, {
+            const editTransaction = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/transaction`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(allData),
@@ -77,7 +77,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
             router.push(path, { scroll: false })
             router.refresh()
         } else {
-            const newTransaction = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/transaction`, {
+            const newTransaction = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/transaction`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),

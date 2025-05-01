@@ -27,7 +27,7 @@ export const FilterControls = ({ onFilterChange }: FilterControlsProps) => {
         const getCategories = async () => {
             try {
                 setIsLoading(true)
-                const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/category`, { cache: 'no-store', credentials: 'include' }).then((resp) => resp.json())
+                const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/category`, { cache: 'no-store', credentials: 'include' }).then((resp) => resp.json())
                 const { formattedCategories } = await response
                 if (formattedCategories) {
                     setOptions(formattedCategories)

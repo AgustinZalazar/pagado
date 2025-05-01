@@ -74,10 +74,10 @@ export const authConfig = async (): Promise<NextAuthConfig> => {
                 if (account?.provider === "google" && account?.access_token) {
                     try {
                         const userEmail = profile?.email;
-                        const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/${userEmail}`).then((res) => res.json());
+                        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${userEmail}`).then((res) => res.json());
 
                         if (!user || user?.error === "User not found") {
-                            const response = await fetch(`${process.env.NEXTAUTH_URL}/api/google-sheets`, {
+                            const response = await fetch(`${process.env.NEXTAUTH_URL}api/google-sheets`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ accessToken: account.access_token }),
@@ -85,7 +85,7 @@ export const authConfig = async (): Promise<NextAuthConfig> => {
 
                             const data = await response.json();
 
-                            const responseConfig = await fetch(`${process.env.NEXTAUTH_URL}/api/setup-sheet`, {
+                            const responseConfig = await fetch(`${process.env.NEXTAUTH_URL}api/setup-sheet`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ accessToken: account.access_token, sheetId: data.id }),
@@ -93,7 +93,7 @@ export const authConfig = async (): Promise<NextAuthConfig> => {
 
                             if (!response.ok) return false;
 
-                            const newUserResponse = await fetch(`${process.env.NEXTAUTH_URL}/api/user`, {
+                            const newUserResponse = await fetch(`${process.env.NEXTAUTH_URL}api/user`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({

@@ -13,7 +13,7 @@ const DeleteButton = ({ id, date }: Props) => {
     const handleDelete = async () => {
         setIsDeleting(true);
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/transaction`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/transaction`, {
                 method: "DELETE",
                 body: JSON.stringify({ id, date }),
                 headers: { "Content-Type": "application/json" },

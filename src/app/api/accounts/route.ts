@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     const session = await auth();
     try {
         const accessToken = session?.accessToken;
-        const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/${session?.user.email}`).then((res) => res.json());
+        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`).then((res) => res.json());
         const { sheetId } = user;
         const body = await request.json();
         const { title, type, color } = body;
@@ -134,7 +134,7 @@ export async function PUT(request: Request) {
     const session = await auth();
     try {
         const accessToken = session?.accessToken;
-        const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/${session?.user.email}`).then((res) => res.json());
+        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`).then((res) => res.json());
         const { sheetId } = user;
         const body = await request.json();
         const { id, title, type } = body;
@@ -209,7 +209,7 @@ export async function DELETE(request: Request) {
     const session = await auth();
     try {
         const accessToken = session?.accessToken;
-        const user = await fetch(`${process.env.NEXTAUTH_URL}/api/user/${session?.user.email}`).then((res) => res.json());
+        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`).then((res) => res.json());
         const { sheetId } = user;
         const id = await request.json();
 
