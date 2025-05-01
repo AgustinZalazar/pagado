@@ -10,7 +10,7 @@ export const useGetMethods = () => {
     const { data: methods = [], isLoading, error } = useQuery({
         queryKey: ["methods"],
         queryFn: async () => {
-            const response = await fetch(`${API_URL}/api/methods`);
+            const response = await fetch(`${API_URL}api/methods`);
 
             if (!response.ok) throw new Error(`Error: ${response.statusText}`);
 

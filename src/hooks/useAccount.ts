@@ -10,7 +10,7 @@ export const useGetAccounts = () => {
     const { data: accounts = [], isLoading, error } = useQuery({
         queryKey: ["accounts"],
         queryFn: async () => {
-            const response = await fetch(`${API_URL}/api/accounts`);
+            const response = await fetch(`${API_URL}api/accounts`);
 
             if (!response.ok) throw new Error(`Error: ${response.statusText}`);
 
