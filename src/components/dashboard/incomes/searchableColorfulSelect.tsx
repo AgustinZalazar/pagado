@@ -87,7 +87,8 @@ export const SearchableColorfulSelect = ({ field }: any) => {
             id: "0",
             nombre: searchTerm,
             color: randomColor,
-            porcentaje: 0
+            porcentaje: 0,
+            icon: ""
         };
         const idNewCategory = await createCategory(newOption)
 
