@@ -1,7 +1,5 @@
 "use client"
 import CardsContainer from '@/components/dashboard/budget/CardsContainer';
-import getColumnsCategories from '@/components/dashboard/budget/Columns';
-import { DataTableContainer } from '@/components/dashboard/budget/DataTableContainer';
 import { NewCategoryWindow } from '@/components/dashboard/budget/dialogWindows/newCategory';
 import { useGetCategories } from '@/hooks/useGetCategories';
 import { useLocale, useTranslations } from 'next-intl';
