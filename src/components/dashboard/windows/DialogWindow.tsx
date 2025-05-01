@@ -6,18 +6,20 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { Pencil } from "lucide-react";
 
 interface Props {
     children: JSX.Element,
     title: string,
     description: string,
-    btnText?: string
+    btnText?: string,
+    openEditDialog: boolean,
+    setOpenEditDialog: Dispatch<SetStateAction<boolean>>
 }
 
-export function DialogWindow({ children, title, description, btnText }: Props) {
-    const [openEditDialog, setOpenEditDialog] = useState(false)
+export function DialogWindow({ children, title, description, btnText, openEditDialog, setOpenEditDialog }: Props) {
+    // const [openEditDialog, setOpenEditDialog] = useState(false)
     return (
         <Dialog
             open={openEditDialog}

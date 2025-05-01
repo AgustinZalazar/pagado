@@ -7,9 +7,11 @@ import { Category } from "@/types/category"
 import { DialogWindow } from "../windows/DialogWindow"
 import { FormCategory } from "./FormCategories"
 import { Progress } from "@/components/ui/progress"
+import { useState } from "react"
 
 const getColumnsCategories = (locale: string, categories: Category[]): ColumnDef<Category>[] => {
     const totalPercentage = categories?.reduce((sum, category) => sum + (+category.porcentaje || 0), 0);
+    const [openEditDialog, setOpenEditDialog] = useState(false)
     return [
         {
             accessorKey: "id",
@@ -61,8 +63,8 @@ const getColumnsCategories = (locale: string, categories: Category[]): ColumnDef
                 const category = row.original
                 return (
                     <div className="flex gap-4">
-                        <DialogWindow title="Editar categoria" description="Modifica las categorias" >
-                            <FormCategory category={category} totalPercentage={totalPercentage} />
+                        <DialogWindow title="Editar categoria" description="Modifica las categorias" openEditDialog={openEditDialog} setOpenEditDialog={setOpenEditDialog} >
+                            <FormCategory category={category} totalPercentage={totalPercentage} setOpenPopover={setOpenEditDialog} />
                         </DialogWindow>
                         {/* <DeleteButton id={transaction.id} date={transaction.date} /> */}
                     </div>
