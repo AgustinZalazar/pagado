@@ -101,7 +101,7 @@ export const FilterControls = ({ onFilterChange }: FilterControlsProps) => {
                 <SelectContent>
                     <SelectItem value="all">All categories</SelectItem>
                     {options.map((option) => (
-                        <SelectItem value={option.nombre}>{option.nombre}</SelectItem>
+                        <SelectItem key={option.id} value={option.nombre}>{option.nombre}</SelectItem>
                     ))}
                 </SelectContent>
             </Select>
@@ -115,7 +115,7 @@ export const FilterControls = ({ onFilterChange }: FilterControlsProps) => {
                 <SelectContent>
                     <SelectItem value="all">All Dates</SelectItem>
                     {months.map((month) => (
-                        <SelectItem value="2023-12-01">{month}</SelectItem>
+                        <SelectItem key={month.mes} value="2023-12-01">{month.mes}</SelectItem>
                     ))}
                 </SelectContent>
             </Select>

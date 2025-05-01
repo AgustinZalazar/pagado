@@ -75,7 +75,7 @@ export function AccountsList() {
 
                                 <div className="space-y-3 mt-3">
                                     {methods.filter((method: Method) => method.idAccount === account.id).map((method: Method) => (
-                                        <CardMethod method={method} />
+                                        <CardMethod key={method.id} method={method} />
                                     ))}
 
                                     <DialogMethod idAccount={account.id} />
