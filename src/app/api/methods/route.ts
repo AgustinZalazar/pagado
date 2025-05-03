@@ -73,7 +73,7 @@ export async function POST(request: Request) {
             );
         }
 
-        if (!title || !cardType || !idAccount) {
+        if (!title || !idAccount) {
             return NextResponse.json(
                 { error: "Datos incompletos en la transacción" },
                 { status: 400 }
@@ -146,7 +146,7 @@ export async function PUT(request: Request) {
             );
         }
 
-        if (!id || !title || !cardType || !idAccount) {
+        if (!id || !title || !idAccount) {
             return NextResponse.json(
                 { error: "Datos incompletos en la transacción" },
                 { status: 400 }

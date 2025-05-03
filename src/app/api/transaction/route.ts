@@ -60,7 +60,7 @@ export async function GET(request: Request) {
         }
 
         // Leer los datos de la hoja del mes actual
-        const range = `${requestedMonth}!A:G`; // Ajusta el rango según la estructura de tu hoja
+        const range = `${requestedMonth}!A:H`; // Ajusta el rango según la estructura de tu hoja
         const response = await sheets.spreadsheets.values.get({
             spreadsheetId: sheetId,
             range,
@@ -92,7 +92,7 @@ export async function POST(request: Request) {
         const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`).then((res) => res.json());
         const { sheetId } = user;
         const body = await request.json();
-        const { id = 1, description, type, category, amount, date, paymentMethod } = body;
+        const { id = 1, description, type, category, amount, date, account, method } = body;
 
         if (!accessToken || !sheetId) {
             return NextResponse.json(
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
             );
         }
 
-        if (!id || !description || !type || !category || !amount || !date || !paymentMethod) {
+        if (!id || !description || !type || !category || !amount || !date || !account || !method) {
             return NextResponse.json(
                 { error: "Datos incompletos en la transacción" },
                 { status: 400 }
@@ -160,12 +160,10 @@ export async function POST(request: Request) {
             valueInputOption: "USER_ENTERED",
             requestBody: {
                 values: [
-                    [newId, description, type, category, amount, date, paymentMethod], // Filas de la transacción
+                    [newId, description, type, category, amount, date, account, method], // Filas de la transacción
                 ],
             },
         });
-        revalidatePath('/dashboard/incomes')
-        revalidateTag("transactions")
         return NextResponse.json({ message: "Transacción guardada exitosamente" });
     } catch (error: any) {
         console.error("Error al guardar la transacción:", error.message || error);
@@ -184,7 +182,7 @@ export async function PUT(request: Request) {
         const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`).then((res) => res.json());
         const { sheetId } = user;
         const body = await request.json();
-        const { id, description, type, category, amount, date, paymentMethod } = body;
+        const { id, description, type, category, amount, date, account, method } = body;
 
         if (!accessToken || !sheetId) {
             return NextResponse.json(
@@ -193,7 +191,7 @@ export async function PUT(request: Request) {
             );
         }
 
-        if (!id || !description || !type || !category || !amount || !date || !paymentMethod) {
+        if (!id || !description || !type || !category || !amount || !date || !account || !method) {
             return NextResponse.json(
                 { error: "Datos incompletos en la transacción" },
                 { status: 400 }
@@ -222,7 +220,7 @@ export async function PUT(request: Request) {
             );
         }
 
-        const range = `${month}!A:G`; // Asumiendo que los datos están entre las columnas A y G
+        const range = `${month}!A:H`; // Asumiendo que los datos están entre las columnas A y H
         const existingData = await sheets.spreadsheets.values.get({
             spreadsheetId: sheetId,
             range,
@@ -239,17 +237,16 @@ export async function PUT(request: Request) {
         }
 
         // Actualiza los datos en la hoja
-        const updateRange = `${month}!A${rowIndex + 1}:G${rowIndex + 1}`;
+        const updateRange = `${month}!A${rowIndex + 1}:H${rowIndex + 1}`;
         await sheets.spreadsheets.values.update({
             spreadsheetId: sheetId,
             range: updateRange,
             valueInputOption: "USER_ENTERED",
             requestBody: {
-                values: [[id, description, type, category, amount, date, paymentMethod]],
+                values: [[id, description, type, category, amount, date, account, method]],
             },
         });
-        revalidatePath('/dashboard/incomes')
-        revalidateTag("transactions")
+
         return NextResponse.json({ message: "Transacción actualizada exitosamente" });
     } catch (error: any) {
         console.error("Error al actualizar la transacción:", error.message || error);
@@ -299,7 +296,7 @@ export async function DELETE(request: Request) {
             );
         }
 
-        const range = `${month}!A:G`; // Asumiendo que los datos están entre las columnas A y G
+        const range = `${month}!A:H`; // Asumiendo que los datos están entre las columnas A y H
         const existingData = await sheets.spreadsheets.values.get({
             spreadsheetId: sheetId,
             range,
@@ -316,16 +313,15 @@ export async function DELETE(request: Request) {
         }
 
         // Elimina la fila configurando las celdas en blanco
-        const deleteRange = `${month}!A${rowIndex + 1}:G${rowIndex + 1}`;
+        const deleteRange = `${month}!A${rowIndex + 1}:H${rowIndex + 1}`;
         await sheets.spreadsheets.values.update({
             spreadsheetId: sheetId,
             range: deleteRange,
             valueInputOption: "USER_ENTERED",
             requestBody: {
-                values: [["", "", "", "", "", "", ""]],
+                values: [["", "", "", "", "", "", "", ""]],
             },
         });
-        revalidateTag("transactions");
         return NextResponse.json({ message: "Transacción eliminada exitosamente" });
     } catch (error: any) {
         console.error("Error al eliminar la transacción:", error.message || error);

@@ -75,7 +75,7 @@ export const authConfig = async (): Promise<NextAuthConfig> => {
                     try {
                         const userEmail = profile?.email;
                         const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${userEmail}`).then((res) => res.json());
-
+                        // console.log(account)
                         if (!user || user?.error === "User not found") {
                             const response = await fetch(`${process.env.NEXTAUTH_URL}api/google-sheets`, {
                                 method: "POST",

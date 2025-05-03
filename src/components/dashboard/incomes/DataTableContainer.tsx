@@ -3,10 +3,10 @@ import React from "react"
 import { DataTable } from '@/components/dashboard/incomes/DataTable'
 import { useLocale } from "next-intl";
 import getColumns from "../DataTableComponents/columns";
-import { Payment } from "@/types/payment";
+import { Transaction } from "@/types/transaction";
 
 interface Props {
-    data: Payment[]
+    data: Transaction[]
 }
 
 export function DataTableContainer({ data }: Props) {

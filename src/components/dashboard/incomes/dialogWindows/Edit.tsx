@@ -13,10 +13,10 @@ import { useTranslations } from "next-intl";
 import React, { useState } from "react";
 import { FormTransaction } from "../formTransaction";
 import { Pencil } from "lucide-react";
-import { Payment } from "@/types/payment";
+import { Transaction } from "@/types/transaction";
 
 interface Props {
-    transaction: Payment
+    transaction: Transaction
 }
 
 export function EditDialogWindow({ transaction }: Props) {

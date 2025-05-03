@@ -1,6 +1,6 @@
-import { Payment } from "@/types/payment"
+import { Transaction } from "@/types/transaction"
 
-export const getTotalExpenses = async (expenses: Payment[]) => {
+export const getTotalExpenses = async (expenses: Transaction[]) => {
     if (!expenses) return 0
     const incomeItems = expenses.filter((item) => item.type === "expense");
 

@@ -133,15 +133,17 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                     </TableBody>
                 </Table>
             </div>
-            <PaginationTable
-                totalPages={Math.ceil(filteredData.length / itemsPerPage)}
-                onPageChange={(page) => {
-                    const params = new URLSearchParams(searchParams as any);
-                    params.set("page", page.toString());
-                    router.push(`?${params.toString()}`);
-                    setCurrentPage(page);
-                }}
-            />
+            {paginatedData.length > 5 &&
+                <PaginationTable
+                    totalPages={Math.ceil(filteredData.length / itemsPerPage)}
+                    onPageChange={(page) => {
+                        const params = new URLSearchParams(searchParams as any);
+                        params.set("page", page.toString());
+                        router.push(`?${params.toString()}`);
+                        setCurrentPage(page);
+                    }}
+                />
+            }
         </div>
     );
 }

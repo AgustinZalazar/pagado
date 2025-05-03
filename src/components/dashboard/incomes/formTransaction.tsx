@@ -2,12 +2,10 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { toast } from "@/components/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -27,9 +25,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
-import { Payment } from "@/types/payment"
+import { Transaction } from "@/types/transaction"
+import { useCreateTransaction, useEditTransaction } from "@/hooks/useGetTransactions"
+import { useGetAccounts } from "@/hooks/useAccount"
+import { useGetMethods } from "@/hooks/useMethod"
+import { Account, Method } from "@/types/Accounts"
 
 const FormSchema = z.object({
     description: z.string().min(2, {
@@ -41,18 +43,25 @@ const FormSchema = z.object({
     }),
     category: z.string(),
     date: z.date(),
-    paymentMethod: z.string(),
+    account: z.string(),
+    method: z.string(),
 })
 
 interface formProps {
     openDialog: boolean,
     setOpenDialog: Dispatch<SetStateAction<boolean>>
-    transaction?: Payment
+    transaction?: Transaction
 }
 
 export function FormTransaction({ openDialog, setOpenDialog, transaction }: formProps) {
     const router = useRouter()
     const path = usePathname()
+    const { createTransaction } = useCreateTransaction(setOpenDialog)
+    const { editTransaction } = useEditTransaction(setOpenDialog)
+    const { accounts } = useGetAccounts();
+    const { methods } = useGetMethods();
+    const [selectedAccount, setSelectedAccount] = useState<string>("")
+
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -60,7 +69,8 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
             amount: transaction ? transaction.amount : 0,
             type: transaction ? transaction.type : "",
             category: transaction ? transaction.category : "",
-            paymentMethod: transaction ? transaction.typeOfPayment : "",
+            account: transaction ? transaction.account : "",
+            method: transaction ? transaction.method : "",
             date: transaction && new Date(transaction.date)
         },
     })
@@ -68,30 +78,28 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
         setOpenDialog(!openDialog)
 
         if (transaction) {
-            const allData = { id: transaction.id, ...data }
-            const editTransaction = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/transaction`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(allData),
-            });
-            router.push(path, { scroll: false })
-            router.refresh()
+            const allData = {
+                id: transaction.id,
+                ...data,
+                type: data.type as "income" | "expense",
+                date: data.date.toString()
+            }
+            editTransaction(allData)
+            // const editTransaction = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/transaction`, {
+            //     method: "PUT",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(allData),
+            // });
+            // router.push(path, { scroll: false })
+            // router.refresh()
         } else {
-            const newTransaction = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/transaction`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-            });
-            router.refresh()
+            createTransaction({
+                ...data,
+                id: "",
+                type: data.type as "income" | "expense",
+                date: data.date.toString()
+            })
         }
-        toast({
-            title: "Listo!",
-            description: (
-                <p className="mt-2 w-[340px] rounded-md  p-4">
-                    Transaccion {transaction ? "editada" : "creada"} correctamente!
-                </p>
-            ),
-        })
     }
 
     return (
@@ -209,24 +217,27 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
                 {/* Campo PaymentMethod */}
                 <FormField
                     control={form.control}
-                    name="paymentMethod"
+                    name="account"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Metodo de pago</FormLabel>
+                            <FormLabel>Cuenta</FormLabel>
                             <FormControl>
                                 <Select
-                                    onValueChange={(value) => field.onChange(value)} // Actualización manual del valor
-                                    defaultValue={field.value} // Configuración inicial
+                                    onValueChange={(value) => {
+                                        field.onChange(value);
+                                        const account = accounts.find((acc: Account) => acc.title === value);
+                                        if (account) setSelectedAccount(account.id);
+                                    }}
+                                    defaultValue={field.value}
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Seleccione un metodo de pago" />
+                                        <SelectValue placeholder="Seleccione una cuenta" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="Tarjeta de Credito">Tarjeta de credito</SelectItem>
-                                        <SelectItem value="Tarjeta de Debito">Tarjeta de debito</SelectItem>
-                                        <SelectItem value="Efectivo">Efectivo</SelectItem>
-                                        <SelectItem value="mp">Mercado pago</SelectItem>
-                                        <SelectItem value="Caja de ahorro">Caja de ahorro</SelectItem>
+                                        {accounts.map((account: Account) => (
+                                            <SelectItem value={account.title}>{account.title}</SelectItem>
+                                        ))
+                                        }
                                     </SelectContent>
                                 </Select>
                             </FormControl>
@@ -234,7 +245,34 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Submit</Button>
+                <FormField
+                    control={form.control}
+                    name="method"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Metodo de pago</FormLabel>
+                            <FormControl>
+                                <Select
+                                    onValueChange={(value) => field.onChange(value)}
+                                    defaultValue={field.value}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Seleccione un metodo de pago" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {methods.filter((method: Method) => method.idAccount === selectedAccount).map((method: Method) => (
+                                            <SelectItem value={method.cardType ? `${method.title} - ${method.cardType}` : `${method.title}`}>
+                                                {method.cardType !== "" ? `${method.title} - ${method.cardType}` : `${method.title}`}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <Button type="submit">Guardar</Button>
             </form>
         </Form>
     )

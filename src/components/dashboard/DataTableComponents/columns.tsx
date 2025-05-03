@@ -3,11 +3,11 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Trash2 } from "lucide-react"
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Payment } from "@/types/payment"
+import { Transaction } from "@/types/transaction"
 import { EditDialogWindow } from "../incomes/dialogWindows/Edit"
 import DeleteButton from "../buttons/deleteButton"
 
-const getColumns = (locale: string): ColumnDef<Payment>[] => {
+const getColumns = (locale: string): ColumnDef<Transaction>[] => {
     const formatCurrency = (value: number) =>
         new Intl.NumberFormat(locale, {
             style: "currency",
@@ -97,7 +97,11 @@ const getColumns = (locale: string): ColumnDef<Payment>[] => {
             },
         },
         {
-            accessorKey: "typeOfPayment",
+            accessorKey: "account",
+            header: "Cuenta",
+        },
+        {
+            accessorKey: "method",
             header: "Metodo de pago",
         },
         {

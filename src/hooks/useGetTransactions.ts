@@ -1,49 +1,12 @@
 "use client"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { getTotalExpenses } from "@/actions/getTotalExpenses";
 import { getTotalIncomes } from "@/actions/getTotalIncomes";
-import { Payment } from "@/types/payment";
-import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { Transaction } from "@/types/transaction";
+import { Dispatch, SetStateAction } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_NEXTAUTH_URL;
-
-// export const useGetTransactions = (month: string) => {
-//     const [transactions, setTransactions] = useState<Payment[]>([]);
-//     const [totalIncome, setTotalIncome] = useState(0);
-//     const [totalExpenses, setTotalExpenses] = useState(0);
-//     const [isLoading, setIsLoading] = useState<boolean>(true);
-
-//     useEffect(() => {
-//         const controller = new AbortController();
-//         const signal = controller.signal;
-//         const fetchTransactions = async () => {
-//             try {
-//                 setIsLoading(true);
-//                 const response = await fetch(`${API_URL}/api/transaction?month=${month}`, { next: { tags: ["transactions"] } });
-//                 const { formattedTransactions } = await response.json();
-
-//                 if (formattedTransactions) {
-//                     setTransactions(formattedTransactions);
-//                     const totalIncomes = await getTotalIncomes(formattedTransactions)
-//                     const totalExpenses = await getTotalExpenses(formattedTransactions)
-//                     setTotalIncome(totalIncomes)
-//                     setTotalExpenses(totalExpenses)
-//                 }
-//             } catch (error) {
-//                 console.error("Error fetching transactions:", error);
-//             } finally {
-//                 setIsLoading(false);
-//             }
-//         };
-
-//         fetchTransactions();
-//         return () => {
-//             controller.abort();
-//         };
-//     }, [month]);
-
-//     return { transactions, totalIncome, totalExpenses, isLoading };
-// };
 
 export const useGetTransactions = (month: string) => {
     const { data, isLoading, error } = useQuery({
@@ -67,5 +30,152 @@ export const useGetTransactions = (month: string) => {
         totalExpenses: data?.totalExpenses || 0,
         isLoading,
         error,
+    };
+};
+
+
+export const useCreateTransaction = (setOpenPopover: Dispatch<SetStateAction<boolean>>) => {
+    const queryClient = useQueryClient()
+    const mutation = useMutation({
+        mutationFn: async (data: Transaction) => {
+            console.log(data)
+            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/transaction`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+
+            return response.json();
+        },
+        onMutate: () => {
+            const toastId = toast.loading("Creando transaccion...");
+            return { toastId };
+        },
+        onSuccess: (_, __, context) => {
+            if (context?.toastId) {
+                toast.dismiss(context.toastId);
+            }
+            toast.success("¡Transaccion creada correctamente!");
+        },
+        onError: (error, _, context) => {
+            if (context?.toastId) {
+                toast.dismiss(context.toastId);
+            }
+            toast.error("Error al crear la transaccion.");
+            console.error(error);
+        },
+        onSettled: (context) => {
+            queryClient.invalidateQueries({ queryKey: ['transactions'] })
+            setOpenPopover(false)
+        },
+    });
+
+    return {
+        createTransaction: mutation.mutate,
+        isLoadingCreate: mutation.isPending,
+        isSuccess: mutation.isSuccess,
+        isError: mutation.isError,
+        error: mutation.error,
+    };
+};
+
+
+export const useEditTransaction = (setOpenPopover: Dispatch<SetStateAction<boolean>>) => {
+    const queryClient = useQueryClient()
+    const mutation = useMutation({
+        mutationFn: async (data: Transaction) => {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/transaction`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+
+            return response.json();
+        },
+        onMutate: () => {
+            const toastId = toast.loading("Editando transaccion...");
+            return { toastId };
+        },
+        onSuccess: (_, __, context) => {
+            if (context?.toastId) {
+                toast.dismiss(context.toastId);
+            }
+            toast.success("¡Transaccion editada correctamente!");
+        },
+        onError: (error, _, context) => {
+            if (context?.toastId) {
+                toast.dismiss(context.toastId);
+            }
+            toast.error("Error al editar la cuenta.");
+            console.error(error);
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['transactions'] })
+            setOpenPopover(false)
+        },
+    });
+
+    return {
+        editTransaction: mutation.mutate,
+        isLoadingEdit: mutation.isPending,
+        isSuccess: mutation.isSuccess,
+        isError: mutation.isError,
+        error: mutation.error,
+    };
+};
+
+
+export const useDeleteTransaction = () => {
+    const queryClient = useQueryClient()
+    const mutation = useMutation({
+        mutationFn: async (transactionId: string) => {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/transaction`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(transactionId),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+
+            return response.json();
+        },
+        onMutate: () => {
+            const toastId = toast.loading("Eliminando transaccion...");
+            return { toastId };
+        },
+        onSuccess: (_, __, context) => {
+            if (context?.toastId) {
+                toast.dismiss(context.toastId);
+            }
+            toast.success("¡Transaccion eliminada correctamente!");
+        },
+        onError: (error, _, context) => {
+            if (context?.toastId) {
+                toast.dismiss(context.toastId);
+            }
+            toast.error("Error al eliminar la transaccion.");
+            console.error(error);
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ["transactions"] });
+        },
+    });
+
+    return {
+        deleteTransaction: mutation.mutate,
+        isLoadingDelete: mutation.isPending,
+        isSuccess: mutation.isSuccess,
+        isError: mutation.isError,
+        error: mutation.error,
     };
 };
