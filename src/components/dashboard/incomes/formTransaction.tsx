@@ -235,7 +235,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
                                     </SelectTrigger>
                                     <SelectContent>
                                         {accounts.map((account: Account) => (
-                                            <SelectItem value={account.title}>{account.title}</SelectItem>
+                                            <SelectItem key={account.id} value={account.title}>{account.title}</SelectItem>
                                         ))
                                         }
                                     </SelectContent>
@@ -261,7 +261,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
                                     </SelectTrigger>
                                     <SelectContent>
                                         {methods.filter((method: Method) => method.idAccount === selectedAccount).map((method: Method) => (
-                                            <SelectItem value={method.cardType ? `${method.title} - ${method.cardType}` : `${method.title}`}>
+                                            <SelectItem key={method.id} value={method.cardType ? `${method.title} - ${method.cardType}` : `${method.title}`}>
                                                 {method.cardType !== "" ? `${method.title} - ${method.cardType}` : `${method.title}`}
                                             </SelectItem>
                                         ))}
