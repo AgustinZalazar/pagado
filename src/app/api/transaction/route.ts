@@ -12,7 +12,11 @@ export async function GET(request: Request) {
         const url = new URL(request.url);
         const monthParam = url.searchParams.get("month");
         const accessToken = session?.accessToken;
-        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`).then((res) => res.json());
+        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`, {
+            headers: {
+                'Authorization': `Bearer ${process.env.API_SECRET_TOKEN}`,
+            },
+        }).then((res) => res.json());
         const { sheetId } = user;
         // console.log("hola")
         if (!accessToken || !sheetId) {
@@ -89,10 +93,15 @@ export async function POST(request: Request) {
     const session = await auth();
     try {
         const accessToken = session?.accessToken;
-        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`).then((res) => res.json());
+        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`, {
+            headers: {
+                'Authorization': `Bearer ${process.env.API_SECRET_TOKEN}`,
+            },
+        }).then((res) => res.json());
         const { sheetId } = user;
         const body = await request.json();
-        const { id = 1, description, type, category, amount, date, account, method } = body;
+        const { description, type, category, amount, date, account, method } = body;
+
 
         if (!accessToken || !sheetId) {
             return NextResponse.json(
@@ -101,7 +110,7 @@ export async function POST(request: Request) {
             );
         }
 
-        if (!id || !description || !type || !category || !amount || !date || !account || !method) {
+        if (!description || !type || !category || !amount || !date || !account || !method) {
             return NextResponse.json(
                 { error: "Datos incompletos en la transacción" },
                 { status: 400 }
@@ -179,7 +188,11 @@ export async function PUT(request: Request) {
     const session = await auth();
     try {
         const accessToken = session?.accessToken;
-        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`).then((res) => res.json());
+        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`, {
+            headers: {
+                'Authorization': `Bearer ${process.env.API_SECRET_TOKEN}`,
+            },
+        }).then((res) => res.json());
         const { sheetId } = user;
         const body = await request.json();
         const { id, description, type, category, amount, date, account, method } = body;
@@ -262,7 +275,11 @@ export async function DELETE(request: Request) {
     const session = await auth();
     try {
         const accessToken = session?.accessToken;
-        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`).then((res) => res.json());
+        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`, {
+            headers: {
+                'Authorization': `Bearer ${process.env.API_SECRET_TOKEN}`,
+            },
+        }).then((res) => res.json());
         const { sheetId } = user;
         const body = await request.json();
         const { id, date } = body;

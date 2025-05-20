@@ -19,7 +19,11 @@ export async function GET(request: Request) {
         }
 
         const accessToken = session?.accessToken;
-        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`).then((res) => res.json());
+        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`, {
+            headers: {
+                'Authorization': `Bearer ${process.env.API_SECRET_TOKEN}`,
+            },
+        }).then((res) => res.json());
         const { sheetId } = user;
 
         if (!accessToken || !sheetId) {
