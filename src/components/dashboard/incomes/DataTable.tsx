@@ -21,7 +21,9 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5; // Items per page
-    const [sorting, setSorting] = React.useState<SortingState>([])
+    const [sorting, setSorting] = React.useState<SortingState>([
+        { id: "date", desc: true }
+    ])
 
     // Update filters and page from query params
     useEffect(() => {
@@ -35,7 +37,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     }, [searchParams]);
 
     const filteredData = useMemo(() => {
-        return data.filter((item: any) => {
+        const base = data.filter((item: any) => {
             const matchesType = !filters.type || filters.type === "all" || item.type === filters.type;
             const matchesCategory = !filters.category || filters.category === "all" || item.category === filters.category;
             const matchesTypePayment = !filters.paymentType || filters.paymentType === "all" || item.typeOfPayment === filters.paymentType;
@@ -50,6 +52,11 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
             return matchesType && matchesCategory && matchesDate && matchesTypePayment && matchesDescription;
         });
+
+        // Ordenar por fecha descendente
+        return base.sort(
+            (a, b) => new Date((b as any).date).getTime() - new Date((a as any).date).getTime()
+        );
     }, [data, filters]);
 
     // Paginated data
@@ -70,7 +77,6 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         router.refresh()
     };
 
-    // console.log({ pg: paginatedData })
     const table = useReactTable({
         data: paginatedData,
         columns,
@@ -133,7 +139,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                     </TableBody>
                 </Table>
             </div>
-            {paginatedData.length > 5 &&
+            {filteredData.length > 5 &&
                 <PaginationTable
                     totalPages={Math.ceil(filteredData.length / itemsPerPage)}
                     onPageChange={(page) => {

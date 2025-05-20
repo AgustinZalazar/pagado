@@ -26,26 +26,43 @@ import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
 import { Dispatch, SetStateAction, useState } from "react"
-import { usePathname, useRouter } from "next/navigation"
 import { Transaction } from "@/types/transaction"
 import { useCreateTransaction, useEditTransaction } from "@/hooks/useGetTransactions"
 import { useGetAccounts } from "@/hooks/useAccount"
 import { useGetMethods } from "@/hooks/useMethod"
 import { Account, Method } from "@/types/Accounts"
 
-const FormSchema = z.object({
+function formatInputAmount(input: string): string {
+    if (input === "") return "";
+    const parts = input.split(",");
+    const intPart = parts[0].replace(/\D/g, "");
+    const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return parts.length === 2 ? `${formattedInt},${parts[1].slice(0, 2)}` : formattedInt;
+}
+
+const RawFormSchema = z.object({
     description: z.string().min(2, {
         message: "La descripcion debe contener al menos 2 caracteres",
     }),
-    amount: z.string().transform((v) => Number(v) || 0),
-    type: z.string().min(2, {
-        message: "Seleccione un tipo por favor",
-    }),
+    amount: z.string().refine(
+        (val) => {
+            const normalized = val.replace(/\./g, "").replace(",", ".");
+            const parsed = parseFloat(normalized);
+            return !isNaN(parsed) && parsed > 0;
+        },
+        { message: "El monto debe ser un número válido y mayor que 0" }
+    ),
+    type: z.string().min(2, { message: "Seleccione un tipo por favor" }),
     category: z.string(),
     date: z.date(),
     account: z.string(),
     method: z.string(),
-})
+});
+
+const FormSchema = RawFormSchema.transform((data) => ({
+    ...data,
+    amount: parseFloat(data.amount.replace(/\./g, "").replace(",", ".")),
+}));
 
 interface formProps {
     openDialog: boolean,
@@ -54,19 +71,20 @@ interface formProps {
 }
 
 export function FormTransaction({ openDialog, setOpenDialog, transaction }: formProps) {
-    const router = useRouter()
-    const path = usePathname()
     const { createTransaction } = useCreateTransaction(setOpenDialog)
     const { editTransaction } = useEditTransaction(setOpenDialog)
     const { accounts } = useGetAccounts();
     const { methods } = useGetMethods();
     const [selectedAccount, setSelectedAccount] = useState<string>("")
+    const [amountDisplay, setAmountDisplay] = useState<string>(
+        transaction ? formatInputAmount(transaction.amount.toString().replace('.', ',')) : ''
+    );
 
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
+    const form = useForm<z.infer<typeof RawFormSchema>>({
+        resolver: zodResolver(RawFormSchema),
         defaultValues: {
             description: transaction ? transaction.description : "",
-            amount: transaction ? transaction.amount : 0,
+            amount: transaction ? formatInputAmount(transaction.amount.toString().replace('.', ',')) : "",
             type: transaction ? transaction.type : "",
             category: transaction ? transaction.category : "",
             account: transaction ? transaction.account : "",
@@ -74,31 +92,31 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
             date: transaction && new Date(transaction.date)
         },
     })
-    async function onSubmit(data: z.infer<typeof FormSchema>) {
-        setOpenDialog(!openDialog)
+    async function onSubmit(rawData: z.infer<typeof RawFormSchema>) {
+        const result = FormSchema.safeParse(rawData);
+        if (!result.success) {
+            console.error("Transformación fallida", result.error);
+            return;
+        }
+
+        const data = result.data; // `amount` es number
+
+        setOpenDialog(!openDialog);
 
         if (transaction) {
-            const allData = {
+            editTransaction({
                 id: transaction.id,
                 ...data,
                 type: data.type as "income" | "expense",
-                date: data.date.toString()
-            }
-            editTransaction(allData)
-            // const editTransaction = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/transaction`, {
-            //     method: "PUT",
-            //     headers: { "Content-Type": "application/json" },
-            //     body: JSON.stringify(allData),
-            // });
-            // router.push(path, { scroll: false })
-            // router.refresh()
+                date: data.date.toString(),
+            });
         } else {
             createTransaction({
-                ...data,
                 id: "",
+                ...data,
                 type: data.type as "income" | "expense",
-                date: data.date.toString()
-            })
+                date: data.date.toString(),
+            });
         }
     }
 
@@ -126,11 +144,25 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
                         <FormItem>
                             <FormLabel>Monto</FormLabel>
                             <FormControl>
-                                <Input type="number" placeholder="2000" {...field} />
+                                <Input
+                                    type="text"
+                                    inputMode="decimal"
+                                    placeholder="1.234,56"
+                                    value={amountDisplay}
+                                    onChange={(e) => {
+                                        const raw = e.target.value;
+                                        const cleaned = raw.replace(/[^\d,]/g, '');
+                                        const parts = cleaned.split(',');
+                                        if (parts.length > 2) return;
+                                        const formattedInt = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                                        const display = parts.length === 2 ? `${formattedInt},${parts[1]}` : formattedInt;
+                                        setAmountDisplay(display);
+                                        field.onChange(cleaned);
+                                    }}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
-
                     )}
                 />
                 {/* Campo Email */}
@@ -262,7 +294,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
                                     <SelectContent>
                                         {methods.filter((method: Method) => method.idAccount === selectedAccount).map((method: Method) => (
                                             <SelectItem key={method.id} value={method.cardType ? `${method.title} - ${method.cardType}` : `${method.title}`}>
-                                                {method.cardType !== "" ? `${method.title} - ${method.cardType}` : `${method.title}`}
+                                                {method.cardType ? `${method.title} - ${method.cardType}` : `${method.title}`}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>

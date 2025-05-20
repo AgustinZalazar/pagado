@@ -12,6 +12,8 @@ const getColumns = (locale: string): ColumnDef<Transaction>[] => {
         new Intl.NumberFormat(locale, {
             style: "currency",
             currency: "ARS",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
         }).format(value);
 
     return [
@@ -53,7 +55,6 @@ const getColumns = (locale: string): ColumnDef<Transaction>[] => {
         },
         {
             accessorKey: "amount",
-            // header: () => <div className="text-right">Amount</div>,
             header: ({ column }) => {
                 return (
                     <Button
@@ -67,7 +68,17 @@ const getColumns = (locale: string): ColumnDef<Transaction>[] => {
                 )
             },
             cell: ({ row }) => {
-                const amount = parseFloat(row.getValue("amount"));
+                const rawAmount = row.getValue("amount");
+                let amount: number;
+
+                if (typeof rawAmount === "string") {
+                    amount = parseFloat(rawAmount.replace(",", "."));
+                } else if (typeof rawAmount === "number") {
+                    amount = rawAmount;
+                } else {
+                    amount = 0; // fallback seguro
+                }
+
                 const formatted = formatCurrency(amount);
                 if (row.getValue("type") === "expense") {
                     return (
