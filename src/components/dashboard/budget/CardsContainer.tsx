@@ -4,15 +4,48 @@ import { Category } from '@/types/category';
 import { Home } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import EditPopover from './EditPopover';
-import { getIconComponent, icons, IconType } from '@/data/icons';
+import { getIconComponent } from '@/data/icons';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const CardSkeleton = () => {
+    return (
+        <Card className="overflow-hidden relative w-[250px]">
+            <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                    <Skeleton className="h-8 w-8 rounded-md" />
+                </div>
+                <div className="space-y-2">
+                    <Skeleton className="h-8 w-32" />
+                    <Skeleton className="h-4 w-16" />
+                </div>
+            </CardContent>
+            <CardFooter className="p-0">
+                <Skeleton className="h-1 w-full" />
+            </CardFooter>
+        </Card>
+    );
+};
 
 interface Props {
     categories: Category[]
     type: "category" | "method";
+    isLoading?: boolean;
 }
 
-const CardsContainer = ({ categories, type }: Props) => {
+const CardsContainer = ({ categories, type, isLoading }: Props) => {
     const totalPercentage = categories?.reduce((sum, category) => sum + (+category.porcentaje || 0), 0);
+
+    if (isLoading) {
+        return (
+            <div className='flex flex-row flex-wrap gap-4'>
+                {[1, 2, 3, 4, 5, 6].map((index) => (
+                    <CardSkeleton key={index} />
+                ))}
+            </div>
+        );
+    }
+
     return (
         <div className='flex flex-row flex-wrap gap-4'>
             {categories.map((item) => {
