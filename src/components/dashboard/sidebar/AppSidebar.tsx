@@ -12,6 +12,7 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    useSidebar
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -91,10 +92,24 @@ const items = [
 const AppSidebar = ({ locale }: { locale: string }) => {
     const { data: session } = useSession()
     const { theme } = useTheme()
+    const {
+        open,
+        openMobile,
+        setOpenMobile,
+        isMobile,
+    } = useSidebar()
     // console.log({ s: session })
+
+    const handleSidebarMobile = () => {
+        if (isMobile && openMobile) setOpenMobile(false);
+    }
     return <Sidebar collapsible="icon">
         <SidebarHeader className='border-b border-gray-200'>
-            <Image className='ml-6 my-4' src={theme === "dark" ? "/logo_white.png" : "/logo_black.png"} alt='logo' width={110} height={30} />
+            {open ?
+                <Image className='ml-6 my-4' src={theme === "dark" ? "/logo_white.png" : "/logo_black.png"} alt='logo' width={110} height={30} />
+                :
+                <Image className='ml-1 my-4' src={theme === "dark" ? "/mini_logo_white.png" : "/mini_logo_black.png"} alt='logo' width={110} height={30} />
+            }
         </SidebarHeader>
         <SidebarContent>
             <SidebarGroup>
@@ -107,9 +122,9 @@ const AppSidebar = ({ locale }: { locale: string }) => {
                                         // <div >
                                         <TooltipProvider >
                                             <Tooltip >
-                                                <TooltipTrigger className="px-5 py-2 opacity-50 cursor-not-allowed flex items-center gap-2 relative">
+                                                <TooltipTrigger className={`${open ? "px-5 py-2" : "p-2 h-8"} opacity-50 cursor-not-allowed flex items-center gap-2 relative`}>
                                                     <item.icon width={16} height={16} />
-                                                    <span className="text-base">{item.title}</span>
+                                                    <span className={`text-base ${open ? "block" : "hidden"}`}>{item.title}</span>
                                                 </TooltipTrigger>
                                                 <TooltipContent>
                                                     <p>Muy pronto!</p>
@@ -118,7 +133,7 @@ const AppSidebar = ({ locale }: { locale: string }) => {
                                         </TooltipProvider>
                                         // </div>
                                     ) : (
-                                        <Link className="p-5 flex items-center gap-2" href={`/${locale}${item.url}`}>
+                                        <Link className="p-5 flex items-center gap-2" href={`/${locale}${item.url}`} onClick={() => handleSidebarMobile()}>
                                             <item.icon />
                                             <span className="text-base">{item.title}</span>
                                         </Link>
@@ -133,21 +148,21 @@ const AppSidebar = ({ locale }: { locale: string }) => {
         </SidebarContent>
         <SidebarFooter>
             <SidebarMenu>
-                <SidebarMenuItem>
+                {/* <SidebarMenuItem>
                     <ButtonShineBorder />
-                </SidebarMenuItem>
+                </SidebarMenuItem> */}
                 <SidebarMenuItem>
                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild className=' h-fit'>
-                            <SidebarMenuButton>
+                        <DropdownMenuTrigger asChild className={`h-fit ${!open && "p-0"}`}>
+                            <SidebarMenuButton className={`${!open && "p-0"}`}>
                                 {session &&
                                     <>
-                                        <Avatar>
+                                        <Avatar className={`${!open && "w-6 h-6 p-0"}`}>
                                             <AvatarImage src={session?.user?.image ?? undefined} />
                                             <AvatarFallback>A</AvatarFallback>
                                         </Avatar>
-                                        {session?.user?.name}
-                                        <ChevronUp className="ml-auto" />
+                                        {open && session?.user?.name}
+                                        <ChevronUp className={`ml-auto ${open ? "block" : "hidden"}`} />
                                     </>
                                 }
                             </SidebarMenuButton>
@@ -156,14 +171,17 @@ const AppSidebar = ({ locale }: { locale: string }) => {
                             side="top"
                             className="w-[--radix-popper-anchor-width]"
                         >
-                            <DropdownMenuItem>
+                            {/* <DropdownMenuItem>
                                 <span className='w-full text-center'>Mejorar el plan</span>
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
                             <DropdownMenuItem>
                                 <button className='w-full' onClick={() => signOut()}>Cerrar Sesion</button>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                    <p className={`text-xs text-gray-400 text-center ${open ? "block" : "hidden"}`}>Version Beta 0.0.1</p>
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarFooter>
