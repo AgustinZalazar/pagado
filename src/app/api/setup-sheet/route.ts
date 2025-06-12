@@ -1,151 +1,43 @@
 import { google } from "googleapis";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-    if (req.method === "POST") {
+    try {
         const { accessToken, sheetId } = await req.json();
-        // console.log(accessToken, sheetId)
 
         if (!accessToken || !sheetId) {
-            // res.status(400).json({ error: "Faltan parámetros: accessToken o sheetId" });
-            return new Response('Faltan parámetros: accessToken o sheetId', { status: 400 })
+            return NextResponse.json({ error: "Missing required parameters: accessToken or sheetId" }, { status: 400 });
         }
 
-        try {
-            const auth = new google.auth.OAuth2();
-            auth.setCredentials({ access_token: accessToken });
+        const auth = new google.auth.OAuth2();
+        auth.setCredentials({ access_token: accessToken });
+        const sheets = google.sheets({ version: "v4", auth });
 
-            const sheets = google.sheets({ version: "v4", auth });
+        // First, get existing sheets
+        const spreadsheet = await sheets.spreadsheets.get({
+            spreadsheetId: sheetId,
+        });
 
-            // Configurar la hoja "Config"
-            const configSheetResponse = await sheets.spreadsheets.batchUpdate({
-                spreadsheetId: sheetId,
-                requestBody: {
-                    requests: [
-                        {
-                            addSheet: {
-                                properties: {
-                                    title: "Config",
-                                },
-                            },
-                        },
-                    ],
-                },
-            });
+        const existingSheets = spreadsheet.data.sheets || [];
+        const existingSheetTitles = existingSheets.map(sheet => sheet.properties?.title);
 
-            const configSheetId =
-                configSheetResponse.data.replies?.[0]?.addSheet?.properties?.sheetId;
+        // Required sheets: Config and monthly sheets
+        const months = [
+            "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+        ];
+        const requiredSheets = ["Config", ...months];
 
-            if (!configSheetId) {
-                throw new Error("No se pudo crear la hoja 'Config'.");
-            }
+        const sheetsToCreate = requiredSheets.filter(
+            sheetName => !existingSheetTitles.includes(sheetName)
+        );
 
-            // Insertar cabeceras y categorías predeterminadas
-            const categories = [
-                { id: 0, name: "Servicio", color: "#FF5733", porcentaje: 0 },
-                { id: 1, name: "Alquiler", color: "#33FF57", porcentaje: 0 },
-                { id: 2, name: "Entretenimiento", color: "#3357FF", porcentaje: 0 },
-                { id: 3, name: "Comida", color: "#FF33A6", porcentaje: 0 },
-            ];
-
-            const categoryRows = categories.map((category) => [
-                { userEnteredValue: { numberValue: category.id } },
-                { userEnteredValue: { stringValue: category.name } },
-                { userEnteredValue: { stringValue: category.color } },
-                { userEnteredValue: { numberValue: category.porcentaje } }
-            ]);
-
-            await sheets.spreadsheets.batchUpdate({
-                spreadsheetId: sheetId,
-                requestBody: {
-                    requests: [
-                        {
-                            updateCells: {
-                                range: {
-                                    sheetId: configSheetId,
-                                    startRowIndex: 0,
-                                    startColumnIndex: 0,
-                                    endRowIndex: 1,
-                                    endColumnIndex: 10,
-                                },
-                                rows: [
-                                    {
-                                        values: [
-                                            { userEnteredValue: { stringValue: "id" } },
-                                            { userEnteredValue: { stringValue: "nombre" } },
-                                            { userEnteredValue: { stringValue: "color" } },
-                                            { userEnteredValue: { stringValue: "porcentaje" } },
-                                            { userEnteredValue: { stringValue: "icon" } },
-                                            {}, {}, {},
-                                            { userEnteredValue: { stringValue: "id" } },
-                                            { userEnteredValue: { stringValue: "title" } },
-                                            { userEnteredValue: { stringValue: "type" } },
-                                            { userEnteredValue: { stringValue: "color" } }
-                                        ],
-                                    },
-                                ],
-                                fields: "userEnteredValue",
-                            },
-                        },
-                        {
-                            updateCells: {
-                                range: {
-                                    sheetId: configSheetId,
-                                    startRowIndex: 1,
-                                    startColumnIndex: 0,
-                                    endRowIndex: 1 + categories.length,
-                                    endColumnIndex: 4,
-                                },
-                                rows: categoryRows.map((row) => ({ values: row })),
-                                fields: "userEnteredValue",
-                            },
-                        },
-                        {
-                            updateCells: {
-                                range: {
-                                    sheetId: configSheetId,
-                                    startRowIndex: 0,
-                                    startColumnIndex: 11,
-                                    endRowIndex: 1,
-                                    endColumnIndex: 15,
-                                },
-                                rows: [
-                                    {
-                                        values: [
-                                            { userEnteredValue: { stringValue: "id" } },
-                                            { userEnteredValue: { stringValue: "title" } },
-                                            { userEnteredValue: { stringValue: "cardType" } },
-                                            { userEnteredValue: { stringValue: "idAccount" } }
-                                        ],
-                                    },
-                                ],
-                                fields: "userEnteredValue",
-                            },
-                        }
-                    ],
-                },
-            });
-
-            // Crear hojas para cada mes
-            const months = [
-                "Enero",
-                "Febrero",
-                "Marzo",
-                "Abril",
-                "Mayo",
-                "Junio",
-                "Julio",
-                "Agosto",
-                "Septiembre",
-                "Octubre",
-                "Noviembre",
-                "Diciembre",
-            ];
-
-            const requests = months.map((month) => ({
+        if (sheetsToCreate.length > 0) {
+            // Only create sheets that don't exist
+            const requests = sheetsToCreate.map(sheetName => ({
                 addSheet: {
                     properties: {
-                        title: month,
+                        title: sheetName,
                     },
                 },
             }));
@@ -154,64 +46,60 @@ export async function POST(req: Request) {
                 spreadsheetId: sheetId,
                 requestBody: { requests },
             });
-
-            // Configurar la tabla "Transacciones" en cada hoja de mes
-            for (const month of months) {
-                const sheet = await sheets.spreadsheets.get({
-                    spreadsheetId: sheetId,
-                });
-
-                const sheetIdForMonth = sheet.data.sheets
-                    ?.find((s) => s.properties?.title === month)
-                    ?.properties?.sheetId;
-
-                if (sheetIdForMonth !== undefined) {
-                    await sheets.spreadsheets.batchUpdate({
-                        spreadsheetId: sheetId,
-                        requestBody: {
-                            requests: [
-                                {
-                                    updateCells: {
-                                        range: {
-                                            sheetId: sheetIdForMonth,
-                                            startRowIndex: 0,
-                                            startColumnIndex: 0,
-                                            endRowIndex: 1,
-                                            endColumnIndex: 7,
-                                        },
-                                        rows: [
-                                            {
-                                                values: [
-                                                    { userEnteredValue: { stringValue: "id" } },
-                                                    { userEnteredValue: { stringValue: "description" } },
-                                                    { userEnteredValue: { stringValue: "type" } },
-                                                    { userEnteredValue: { stringValue: "category" } },
-                                                    { userEnteredValue: { stringValue: "amount" } },
-                                                    { userEnteredValue: { stringValue: "date" } },
-                                                    { userEnteredValue: { stringValue: "account" } },
-                                                    { userEnteredValue: { stringValue: "method" } },
-                                                ],
-                                            },
-                                        ],
-                                        fields: "userEnteredValue",
-                                    },
-                                },
-                            ],
-                        },
-                    });
-                } else {
-                    console.warn(`No se encontró la hoja para el mes: ${month}`);
-                }
-            }
-            return new Response('Google Sheet configurado exitosamente', { status: 200 })
-            // res.status(200).json({ message: "Google Sheet configurado exitosamente" });
-        } catch (error) {
-            console.error("Error al configurar el Google Sheet:", error);
-            return new Response('Error al configurar el Google Sheet', { status: 500 })
-            // res.status(500).json({ error: "Error al configurar el Google Sheet" });
         }
-    } else {
-        // res.status(405).json({ error: "Método no permitido" });
-        return new Response('Método no permitido', { status: 405 })
+
+        // Set up Config sheet headers if they don't exist
+        const configHeaders = await sheets.spreadsheets.values.get({
+            spreadsheetId: sheetId,
+            range: "Config!A1:O1"
+        });
+
+        if (!configHeaders.data.values?.[0]?.length) {
+            // Set up the three sections in Config: Categories, Accounts, and Methods
+            await sheets.spreadsheets.values.update({
+                spreadsheetId: sheetId,
+                range: "Config!A1:O1",
+                valueInputOption: "RAW",
+                requestBody: {
+                    values: [[
+                        // Categories (A-E)
+                        "id", "nombre", "color", "porcentaje", "icon",
+                        "", // Empty column F as separator
+                        // Accounts (G-J)
+                        "id", "title", "type", "color",
+                        "", // Empty column K as separator
+                        // Methods (L-O)
+                        "id", "title", "cardType", "idAccount"
+                    ]]
+                },
+            });
+        }
+
+        // Set up monthly sheets headers if they don't have them
+        for (const month of months) {
+            const monthHeaders = await sheets.spreadsheets.values.get({
+                spreadsheetId: sheetId,
+                range: `${month}!A1:H1`
+            });
+
+            if (!monthHeaders.data.values?.[0]?.length) {
+                await sheets.spreadsheets.values.update({
+                    spreadsheetId: sheetId,
+                    range: `${month}!A1:H1`,
+                    valueInputOption: "RAW",
+                    requestBody: {
+                        values: [[
+                            "id", "description", "type", "category",
+                            "amount", "date", "account", "method"
+                        ]]
+                    },
+                });
+            }
+        }
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error("Error al configurar el Google Sheet:", error);
+        return NextResponse.json({ error: "Failed to setup spreadsheet" }, { status: 500 });
     }
 }

@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
 import { getMonthNameByDate } from "@/helpers/getMonthName";
 import { google } from "googleapis";
-import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 
@@ -11,20 +10,21 @@ export async function GET(request: Request) {
     try {
         const url = new URL(request.url);
         const monthParam = url.searchParams.get("month");
+        const mailParam = url.searchParams.get("mail");
         const accessToken = session?.accessToken;
-        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`, {
+        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${!mailParam ? session?.user.email : mailParam}`, {
             headers: {
                 'Authorization': `Bearer ${process.env.API_SECRET_TOKEN}`,
             },
         }).then((res) => res.json());
         const { sheetId } = user;
-        // console.log("hola")
-        if (!accessToken || !sheetId) {
-            return NextResponse.json(
-                { error: "Faltan parámetros: accessToken o sheetId" },
-                { status: 400 }
-            );
-        }
+        console.log({ user: user })
+        // if (!accessToken || !sheetId) {
+        //     return NextResponse.json(
+        //         { error: "Faltan parámetros: accessToken o sheetId" },
+        //         { status: 400 }
+        //     );
+        // }
 
         if (!monthParam) {
             return NextResponse.json(
@@ -33,7 +33,7 @@ export async function GET(request: Request) {
             );
         }
         const auth = new google.auth.OAuth2();
-        auth.setCredentials({ access_token: accessToken });
+        auth.setCredentials({ access_token: user.accessToken });
 
         const sheets = google.sheets({ version: "v4", auth });
 

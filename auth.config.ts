@@ -7,6 +7,92 @@ import { users, accounts, sessions, verificationTokens } from "@/db/schema"
 import { refreshAccessToken } from "@/actions/updateUserToken";
 import { eq } from "drizzle-orm";
 
+async function validateAndSetupGoogleSheets(accessToken: string, userEmail: string) {
+    try {
+        // First, check if user has available space
+        const driveResponse = await fetch(`${process.env.NEXTAUTH_URL}api/drive/check-quota`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const driveData = await driveResponse.json();
+        if (!driveResponse.ok) {
+            console.error('Drive quota check failed:', driveData.error);
+            return { success: false, error: 'Failed to check drive quota' };
+        }
+
+        // Create the spreadsheet
+        const createSheetResponse = await fetch(`${process.env.NEXTAUTH_URL}api/google-sheets`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accessToken }),
+        });
+
+        if (!createSheetResponse.ok) {
+            console.error('Failed to create spreadsheet');
+            return { success: false, error: 'Failed to create spreadsheet' };
+        }
+
+        const data = await createSheetResponse.json();
+
+        // Setup the sheet with initial data
+        const setupResponse = await fetch(`${process.env.NEXTAUTH_URL}api/setup-sheet`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accessToken, sheetId: data.id }),
+        });
+
+        if (!setupResponse.ok) {
+            console.error('Failed to setup spreadsheet');
+            return { success: false, error: 'Failed to setup spreadsheet' };
+        }
+
+        return { success: true, sheetId: data.id };
+    } catch (error) {
+        console.error('Sheet setup error:', error);
+        return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    }
+}
+
+async function validateExistingSheet(accessToken: string, sheetId: string | undefined) {
+    try {
+
+        if (!sheetId) {
+            console.error('No sheet ID provided for validation');
+            return { exists: false, isValid: false };
+        }
+
+        const validateResponse = await fetch(
+            `${process.env.NEXTAUTH_URL}api/google-sheets/validate?sheetId=${sheetId}`,
+            {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        console.log({ validateResponse: validateResponse })
+        if (!validateResponse.ok) {
+            console.error('Sheet validation request failed:', validateResponse.status);
+            return { exists: false, isValid: false };
+        }
+
+        const validation = await validateResponse.json();
+        return {
+            exists: validation.exists === true,
+            isValid: validation.isValid === true,
+            needsSetup: validation.needsSetup === true
+        };
+    } catch (error) {
+        console.error('Sheet validation error:', error);
+        return { exists: false, isValid: false };
+    }
+}
+
 export const authConfig = async (): Promise<NextAuthConfig> => {
     const db = await getDb();
 
@@ -71,47 +157,123 @@ export const authConfig = async (): Promise<NextAuthConfig> => {
                 return session;
             },
             async signIn({ account, profile }) {
-                if (account?.provider === "google" && account?.access_token) {
-                    try {
-                        const userEmail = profile?.email;
-                        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${userEmail}`).then((res) => res.json());
-                        // console.log(account)
-                        if (!user || user?.error === "User not found") {
-                            const response = await fetch(`${process.env.NEXTAUTH_URL}api/google-sheets`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ accessToken: account.access_token }),
-                            });
+                if (account?.provider !== "google" || !account?.access_token || !profile?.email) {
+                    return false;
+                }
+                // console.log({ account: account })
+                try {
+                    // Check if user exists
+                    const userResponse = await fetch(`${process.env.NEXTAUTH_URL}api/user/${profile.email}`, {
+                        headers: {
+                            'Authorization': `Bearer ${process.env.API_SECRET_TOKEN}`,
+                        },
+                    });
+                    const userData = await userResponse.json();
 
-                            const data = await response.json();
 
-                            const responseConfig = await fetch(`${process.env.NEXTAUTH_URL}api/setup-sheet`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ accessToken: account.access_token, sheetId: data.id }),
-                            });
+                    if (!userData || userData?.error === "User not found") {
+                        // New user - create sheets and user account
+                        const sheetsSetup = await validateAndSetupGoogleSheets(account.access_token, profile.email);
 
-                            if (!response.ok) return false;
+                        if (!sheetsSetup.success) {
+                            console.error('Failed to setup sheets:', sheetsSetup.error);
+                            return false;
+                        }
 
-                            const newUserResponse = await fetch(`${process.env.NEXTAUTH_URL}api/user`, {
-                                method: "POST",
+                        // Create new user
+                        const newUserResponse = await fetch(`${process.env.NEXTAUTH_URL}api/user`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                name: profile.name,
+                                phone: "",
+                                email: profile.email,
+                                sheetId: sheetsSetup.sheetId,
+                            }),
+                        });
+
+                        if (!newUserResponse.ok) {
+                            console.error('Failed to create user');
+                            return false;
+                        }
+
+                        return true;
+                    }
+
+                    // Existing user - first check if they have a sheetId
+                    if (!userData.sheetId) {
+                        console.log('User exists but has no sheetId, creating new sheet...');
+                        const sheetsSetup = await validateAndSetupGoogleSheets(account.access_token, profile.email);
+                        if (!sheetsSetup.success) {
+                            console.error('Failed to setup sheets for user without sheetId:', sheetsSetup.error);
+                            return false;
+                        }
+
+                        // Update user with new sheet ID
+                        const updateUserResponse = await fetch(`${process.env.NEXTAUTH_URL}api/user/${profile.email}`, {
+                            method: "PATCH",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                sheetId: sheetsSetup.sheetId,
+                            }),
+                        });
+
+                        if (!updateUserResponse.ok) {
+                            console.error('Failed to update user with new sheet ID');
+                            return false;
+                        }
+                    } else {
+                        // User has a sheetId, validate it exists and is properly set up
+                        const validation = await validateExistingSheet(account.access_token, userData.sheetId);
+                        console.log({ validation: validation })
+                        if (!validation.exists) {
+                            console.log('Sheet does not exist, creating new one...');
+                            const sheetsSetup = await validateAndSetupGoogleSheets(account.access_token, profile.email);
+
+                            if (!sheetsSetup.success) {
+                                console.error('Failed to setup replacement sheets:', sheetsSetup.error);
+                                return false;
+                            }
+
+                            // Update user with new sheet ID
+                            const updateUserResponse = await fetch(`${process.env.NEXTAUTH_URL}api/user/${profile.email}`, {
+                                method: "PATCH",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({
-                                    name: profile?.name,
-                                    phone: "",
-                                    email: userEmail,
-                                    sheetId: data.id,
+                                    sheetId: sheetsSetup.sheetId,
                                 }),
                             });
 
-                            if (!newUserResponse.ok) return false;
+                            if (!updateUserResponse.ok) {
+                                console.error('Failed to update user with new sheet ID');
+                                return false;
+                            }
+                        } else if (!validation.isValid) {
+                            console.log('Sheet exists but needs setup...');
+                            // Sheet exists but needs to be set up
+                            const setupResponse = await fetch(`${process.env.NEXTAUTH_URL}api/setup-sheet`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    accessToken: account.access_token,
+                                    sheetId: userData.sheetId
+                                }),
+                            });
+
+                            if (!setupResponse.ok) {
+                                console.error('Failed to setup existing sheet');
+                                return false;
+                            }
+                        } else {
+                            console.log('Sheet exists and is properly configured');
                         }
-                    } catch (error) {
-                        console.error("Error al gestionar el usuario y Google Sheets:", error);
-                        return false;
                     }
+
+                    return true;
+                } catch (error) {
+                    console.error("Error in sign in process:", error);
+                    return false;
                 }
-                return true;
             },
         },
         pages: {

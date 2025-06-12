@@ -13,6 +13,15 @@ const nextConfig = {
             },
         ]
     },
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'flagcdn.com',
+                pathname: '/w20/**',
+            },
+        ],
+    },
 };
 
 export default withNextIntl(nextConfig);

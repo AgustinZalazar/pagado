@@ -44,3 +44,36 @@ export async function GET(
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
+
+export async function PATCH(
+    request: Request,
+    { params }: { params: { email: string } }
+) {
+    const { email } = params;
+
+    try {
+        const db = await getDb();
+        const { sheetId } = await request.json();
+
+        if (!sheetId) {
+            return NextResponse.json({ error: "Sheet ID is required" }, { status: 400 });
+        }
+
+        // Find user first
+        const userResult = await db.select().from(users).where(eq(users.email, email)).limit(1);
+        if (userResult.length === 0) {
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
+
+        // Update user's sheetId
+        await db
+            .update(users)
+            .set({ sheetId })
+            .where(eq(users.email, email));
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error("Error updating user:", error);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
+}

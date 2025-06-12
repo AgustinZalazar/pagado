@@ -15,10 +15,10 @@ interface CardWrapperProps {
 
 const CardWrapper = ({ children, headerLabel, backButtonLabel, backButtonHref, showSocial }: CardWrapperProps) => {
     return (
-        <Card className='w-[350px] h-[250px] bg-white flex justify-center items-center flex-col'>
+        <Card className='w-[350px] h-[250px] border-none shadow-lg bg-white flex justify-center items-center flex-col'>
             <CardHeader className='text-center'>
                 <img src='/logo_black.png' alt='logo' className='w-[140px] mx-auto mb-4' />
-                <h2 className='text-lg text-slate-700'>{headerLabel}</h2>
+                {/* <h2 className='text-lg text-slate-700'>{headerLabel}</h2> */}
             </CardHeader>
             {/* <CardContent>
                 {children}
