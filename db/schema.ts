@@ -20,7 +20,9 @@ export const users = mysqlTable("user", {
     }),
     image: varchar("image", { length: 255 }),
     sheetId: varchar("sheetId", { length: 255 }),
-    phone: varchar("phone", { length: 255 })
+    phone: varchar("phone", { length: 255 }),
+    country: varchar("country", { length: 255 }),
+    currency: varchar("currency", { length: 255 }),
 })
 
 export const accounts = mysqlTable(

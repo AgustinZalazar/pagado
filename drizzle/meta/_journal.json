@@ -8,6 +8,13 @@
       "when": 1737675959703,
       "tag": "0000_third_synch",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1749688585650,
+      "tag": "0001_old_swordsman",
+      "breakpoints": true
     }
   ]
 }

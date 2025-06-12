@@ -13,6 +13,7 @@ import { Toaster } from 'sonner';
 import { auth } from "@/auth";
 import { MonthProvider } from "@/context/monthContext";
 import QueryProvider from "@/lib/QueryProvider";
+import DashboardLayout from '@/components/dashboard/layout/DashboardLayout'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,6 +40,8 @@ export default async function RootLayout({
     // Enable static rendering
 
     setRequestLocale(locale);
+
+
     return (
         <html lang="en">
             <body className={inter.className}>
@@ -62,7 +65,9 @@ export default async function RootLayout({
                                                 </div>
                                             </div>
                                         </header>
-                                        {children}
+                                        <DashboardLayout>
+                                            {children}
+                                        </DashboardLayout>
                                         <Toaster />
                                     </SidebarInset>
                                 </SidebarProvider>
