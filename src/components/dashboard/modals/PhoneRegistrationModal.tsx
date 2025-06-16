@@ -21,8 +21,6 @@ import {
 import { Loader2 } from 'lucide-react'
 import { CustomSelect } from '@/components/ui/custom-select'
 
-// Add a list of all available currencies
-const availableCurrencies = [...new Set(countryCurrencyMap.map(item => item.currency))].sort()
 
 interface ModalProps {
     open: boolean;
@@ -74,10 +72,16 @@ const NewUser = ({ onSubmit }: { onSubmit?: (data: z.infer<typeof phoneRegistrat
         ),
     }))
 
-    const currencyOptions = availableCurrencies.map(currency => ({
-        value: currency,
-        label: currency,
-    }))
+    const availableCurrencies = Array.from(
+        new Map(
+            countryCurrencyMap.map(({ currency, code }) => [code, { currency, code }])
+        ).values()
+    ).sort((a, b) => a.currency.localeCompare(b.currency));
+
+    const currencyOptions = availableCurrencies.map(({ currency, code }) => ({
+        value: code,
+        label: `${currency} (${code})`,
+    }));
 
     return (
         <Form {...form}>

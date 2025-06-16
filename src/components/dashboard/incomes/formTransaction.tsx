@@ -20,7 +20,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { SearchableColorfulSelect } from "./searchableColorfulSelect"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, Currency } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
@@ -31,6 +31,8 @@ import { useCreateTransaction, useEditTransaction } from "@/hooks/useGetTransact
 import { useGetAccounts } from "@/hooks/useAccount"
 import { useGetMethods } from "@/hooks/useMethod"
 import { Account, Method } from "@/types/Accounts"
+import { CustomSelect } from "@/components/ui/custom-select"
+import { countryCurrencyMap } from "@/data/currency"
 
 function formatInputAmount(input: string): string {
     if (input === "") return "";
@@ -52,6 +54,7 @@ const RawFormSchema = z.object({
         },
         { message: "El monto debe ser un número válido y mayor que 0" }
     ),
+    currency: z.string(),
     type: z.string().min(2, { message: "Seleccione un tipo por favor" }),
     category: z.string(),
     date: z.date(),
@@ -85,6 +88,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
         defaultValues: {
             description: transaction ? transaction.description : "",
             amount: transaction ? formatInputAmount(transaction.amount.toString().replace('.', ',')) : "",
+            currency: transaction ? transaction.currency : "",
             type: transaction ? transaction.type : "",
             category: transaction ? transaction.category : "",
             account: transaction ? transaction.account : "",
@@ -120,6 +124,16 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
         }
     }
 
+    const availableCurrencies = Array.from(
+        new Map(
+            countryCurrencyMap.map(({ currency, code }) => [code, { currency, code }])
+        ).values()
+    ).sort((a, b) => a.currency.localeCompare(b.currency));
+
+    const currencyOptions = availableCurrencies.map(({ currency, code }) => ({
+        value: code,
+        label: `${currency} (${code})`,
+    }));
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
@@ -165,7 +179,25 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
                         </FormItem>
                     )}
                 />
-                {/* Campo Email */}
+                <FormField
+                    control={form.control}
+                    name="currency"
+                    render={({ field }) => (
+                        <FormItem className="relative">
+                            <FormLabel>Moneda</FormLabel>
+                            <FormControl>
+                                <CustomSelect
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                    options={currencyOptions}
+                                    placeholder="Selecciona una moneda"
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                {/* Campo Tipo */}
                 <FormField
                     control={form.control}
                     name="type"

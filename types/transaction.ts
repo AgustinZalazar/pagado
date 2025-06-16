@@ -4,6 +4,7 @@ export type Transaction = {
     type: "income" | "expense",
     category: string,
     amount: number,
+    currency: string,
     date: string,
     account: string,
     method: string

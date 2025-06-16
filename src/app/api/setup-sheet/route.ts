@@ -90,7 +90,7 @@ export async function POST(req: Request) {
                     requestBody: {
                         values: [[
                             "id", "description", "type", "category",
-                            "amount", "date", "account", "method"
+                            "amount", "currency", "date", "account", "method"
                         ]]
                     },
                 });

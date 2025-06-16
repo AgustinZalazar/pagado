@@ -7,11 +7,13 @@ import { Transaction } from "@/types/transaction"
 import { EditDialogWindow } from "../incomes/dialogWindows/Edit"
 import DeleteButton from "../buttons/deleteButton"
 
+
 const getColumns = (locale: string): ColumnDef<Transaction>[] => {
-    const formatCurrency = (value: number) =>
+
+    const formatCurrency = (value: number, currency: string) =>
         new Intl.NumberFormat(locale, {
             style: "currency",
-            currency: "ARS",
+            currency: currency,
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         }).format(value);
@@ -69,6 +71,7 @@ const getColumns = (locale: string): ColumnDef<Transaction>[] => {
             },
             cell: ({ row }) => {
                 const rawAmount = row.getValue("amount");
+                const currency = row.getValue("currency");
                 let amount: number;
 
                 if (typeof rawAmount === "string") {
@@ -79,7 +82,7 @@ const getColumns = (locale: string): ColumnDef<Transaction>[] => {
                     amount = 0; // fallback seguro
                 }
 
-                const formatted = formatCurrency(amount);
+                const formatted = formatCurrency(amount, currency as string);
                 if (row.getValue("type") === "expense") {
                     return (
                         <p className=" text-[#dc4a46] text-left font-bold">
@@ -94,6 +97,10 @@ const getColumns = (locale: string): ColumnDef<Transaction>[] => {
                     );
                 }
             },
+        },
+        {
+            accessorKey: "currency",
+            header: "Moneda",
         },
         {
             accessorKey: "date",

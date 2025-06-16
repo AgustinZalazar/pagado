@@ -87,6 +87,11 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         state: {
             sorting,
         },
+        initialState: {
+            columnVisibility: {
+                currency: false
+            }
+        }
     });
 
 

@@ -5,6 +5,8 @@ import { DataTableContainer } from '@/components/dashboard/incomes/DataTableCont
 import { useTranslations } from 'next-intl';
 import { useMonth } from '@/context/monthContext';
 import { useTransactionsSummary } from '@/hooks/useTransactionsSummary';
+import { useSession } from 'next-auth/react';
+import { useGetUserInfo } from '@/hooks/useUser';
 
 const getLastMonth = (date: string) => {
     const [year, month] = date.split("-").map(Number);
@@ -15,6 +17,8 @@ const getLastMonth = (date: string) => {
 const Incomes = () => {
     const { selectedMonth } = useMonth();
     const lastMonth = getLastMonth(selectedMonth);
+    const { data: session } = useSession()
+    const { user, isLoading: isLoadingUser } = useGetUserInfo(session?.user.email as string)
     const {
         transactions,
         totalIncome,
@@ -23,9 +27,11 @@ const Incomes = () => {
         totalLastExpenses,
         categorySummary: { totalCategory, totalCat },
         methodSummary: { totalMethod, totalMetCurrentMonth },
-        isLoading
-    } = useTransactionsSummary(selectedMonth, lastMonth);
+        isLoading,
+        otherCurrencies
+    } = useTransactionsSummary(selectedMonth, lastMonth, user.currency);
 
+    // console.log({ otherCurrencies })
     const t = useTranslations('Dashboard.Incomes');
 
     return (
@@ -40,6 +46,7 @@ const Incomes = () => {
                 totalMetCurrentMonth={totalMetCurrentMonth}
                 totalLastIncome={totalLastIncome}
                 totalLastExpense={totalLastExpenses}
+                otherCurrencies={otherCurrencies}
             />
             <DataTableContainer data={transactions} isLoading={isLoading} />
         </div>

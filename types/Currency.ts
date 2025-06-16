@@ -5,3 +5,14 @@ export interface CountryCurrency {
     phoneCode: string
     iso: string
 }
+
+
+type CurrencyTotals = {
+    income: number;
+    expenses: number;
+};
+
+export type OtherCurrencies = {
+    current: Record<string, CurrencyTotals>;
+    previous: Record<string, CurrencyTotals>;
+};

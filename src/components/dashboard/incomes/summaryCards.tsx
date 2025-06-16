@@ -2,11 +2,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { changePercentage } from "@/helpers/calculatePercentage"
 import { SummaryCategory } from "@/types/category"
+import { OtherCurrencies } from "@/types/Currency"
 import { SummaryMethod } from "@/types/PaymentMethod"
 import NumberFlow from "@number-flow/react"
-import { TrendingDown, TrendingUp } from 'lucide-react'
+import { CircleDollarSign, TrendingDown, TrendingUp } from 'lucide-react'
 import { useLocale, useTranslations } from "next-intl"
 import { getLocale } from "next-intl/server"
+import HoverCardsTemplate from "../hoverCards"
 
 type SummaryCardsProps = {
     totalIncome: number
@@ -17,15 +19,17 @@ type SummaryCardsProps = {
     totalMetCurrentMonth: number
     totalLastExpense: number
     totalLastIncome: number
+    otherCurrencies: OtherCurrencies
 }
 
-export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory, totalMethod, totalCat, totalMetCurrentMonth, totalLastExpense, totalLastIncome }: SummaryCardsProps) {
+export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory, totalMethod, totalCat, totalMetCurrentMonth, totalLastExpense, totalLastIncome, otherCurrencies }: SummaryCardsProps) {
     const t = useTranslations('Dashboard.Incomes');
     const locale = useLocale()
     const incomePercentage = changePercentage(totalIncome, totalLastIncome);
     const expensePercentage = changePercentage(totalExpenses, totalLastExpense);
 
 
+    console.log(otherCurrencies)
     return (
         <div className="flex flex-col md:flex-row gap-4">
             <Card className="drop-shadow-md w-full md:w-[25%] h-[142px]">
@@ -33,31 +37,40 @@ export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory
                     <CardTitle className="text-xs font-medium text-muted-foreground">{t('card1')}</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col items-start">
-                    <div className="flex gap-x-3">
-                        <NumberFlow
-                            className="text-2xl font-bold text-black relative -top-1"
-                            value={+totalIncome.toFixed(0)}
-                            format={{
-                                style: 'currency',
-                                currency: 'ARS',
-                                minimumFractionDigits: 0
-                            }}
-                            transformTiming={{
-                                duration: 500,
-                                easing: 'ease-out'
-                            }}
-                        />
-                        {!incomePercentage.includes("-") ?
-                            <div className="flex bg-badge_light_green rounded-xl h-fit py-0.5 px-2">
-                                <TrendingUp className="h-3 w-3  text-badge_text_green mr-1" />
-                                <p className="text-xs text-badge_text_green">{incomePercentage}</p>
-                            </div>
-                            :
-                            <div className="flex bg-badge_light_red rounded-xl h-fit py-0.5 px-2">
-                                <TrendingDown className="h-3 w-3 text-badge_text_red mr-1" />
-                                <p className="text-xs text-badge_text_red ">{incomePercentage}</p>
-                            </div>
-                        }
+                    <div className="w-full flex justify-between">
+                        <div className="flex gap-x-3">
+                            <NumberFlow
+                                className="text-2xl font-bold text-black relative -top-1"
+                                value={+totalIncome.toFixed(0)}
+                                format={{
+                                    style: 'currency',
+                                    currency: 'ARS',
+                                    minimumFractionDigits: 0
+                                }}
+                                transformTiming={{
+                                    duration: 500,
+                                    easing: 'ease-out'
+                                }}
+                            />
+                            {!incomePercentage.includes("-") ?
+                                <div className="flex bg-badge_light_green rounded-xl h-fit py-0.5 px-2">
+                                    <TrendingUp className="h-3 w-3  text-badge_text_green mr-1" />
+                                    <p className="text-xs text-badge_text_green">{incomePercentage}</p>
+                                </div>
+                                :
+                                <div className="flex bg-badge_light_red rounded-xl h-fit py-0.5 px-2">
+                                    <TrendingDown className="h-3 w-3 text-badge_text_red mr-1" />
+                                    <p className="text-xs text-badge_text_red ">{incomePercentage}</p>
+                                </div>
+                            }
+                        </div>
+                        <HoverCardsTemplate isTransactions={true}>
+                            {Object.entries(otherCurrencies.current).map(([currency, totals]) => (
+                                <div key={currency} className="mb-2">
+                                    <p><strong>{currency}</strong> - {totals.income}</p>
+                                </div>
+                            ))}
+                        </HoverCardsTemplate>
                     </div>
                     <div>
                         <p className="text-xs text-muted-foreground">Mes Pasado</p>
@@ -82,31 +95,42 @@ export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory
                     <CardTitle className="text-xs font-medium text-muted-foreground">{t('card2')}</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col items-start">
-                    <div className="flex gap-x-3">
-                        <NumberFlow
-                            className="text-2xl font-bold text-black relative -top-1"
-                            value={+totalExpenses}
-                            format={{
-                                style: 'currency',
-                                currency: 'ARS',
-                                minimumFractionDigits: 0
-                            }}
-                            transformTiming={{
-                                duration: 500,
-                                easing: 'ease-out'
-                            }}
-                        />
-                        {expensePercentage.includes("-") ?
-                            <div className="flex bg-badge_light_green rounded-xl h-fit py-0.5 px-2">
-                                <TrendingDown className="h-3 w-3  text-badge_text_green mr-1" />
-                                <p className="text-xs text-badge_text_green">{expensePercentage}</p>
-                            </div>
-                            :
-                            <div className="flex bg-badge_light_red rounded-xl h-fit py-0.5 px-2">
-                                <TrendingUp className="h-3 w-3 text-badge_text_red mr-1" />
-                                <p className="text-xs text-badge_text_red ">{expensePercentage}</p>
-                            </div>
-                        }
+                    <div className="flex w-full justify-between">
+                        <div className="flex gap-x-3">
+                            <NumberFlow
+                                className="text-2xl font-bold text-black relative -top-1"
+                                value={+totalExpenses}
+                                format={{
+                                    style: 'currency',
+                                    currency: 'ARS',
+                                    minimumFractionDigits: 0
+                                }}
+                                transformTiming={{
+                                    duration: 500,
+                                    easing: 'ease-out'
+                                }}
+                            />
+                            {expensePercentage.includes("-") ?
+                                <div className="flex bg-badge_light_green rounded-xl h-fit py-0.5 px-2">
+                                    <TrendingDown className="h-3 w-3  text-badge_text_green mr-1" />
+                                    <p className="text-xs text-badge_text_green">{expensePercentage}</p>
+                                </div>
+                                :
+                                <div className="flex bg-badge_light_red rounded-xl h-fit py-0.5 px-2">
+                                    <TrendingUp className="h-3 w-3 text-badge_text_red mr-1" />
+                                    <p className="text-xs text-badge_text_red ">{expensePercentage}</p>
+                                </div>
+                            }
+
+                        </div>
+                        <HoverCardsTemplate isTransactions={true}>
+                            {Object.entries(otherCurrencies.current).map(([currency, totals]) => (
+                                <div key={currency} className="mb-2">
+                                    <p><strong>{currency}</strong> - {totals.expenses}</p>
+                                </div>
+                            ))}
+
+                        </HoverCardsTemplate>
                     </div>
                     <div>
                         <p className="text-xs text-muted-foreground">Mes Pasado</p>

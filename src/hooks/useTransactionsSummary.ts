@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Transaction } from "@/types/transaction";
 import { SummaryCategory } from "@/types/category";
 import { SummaryMethod } from "@/types/PaymentMethod";
+import { OtherCurrencies } from "@/types/Currency";
 
 const API_URL = process.env.NEXT_PUBLIC_NEXTAUTH_URL;
 
@@ -21,22 +22,34 @@ interface TransactionsSummary {
     };
     isLoading: boolean;
     error: Error | null;
+    otherCurrencies: OtherCurrencies
 }
 
-const calculateTotals = (transactions: Transaction[]) => {
-    return transactions.reduce(
-        (acc, transaction) => {
-            const amount = parseFloat(transaction.amount.toString());
-            if (transaction.type === "income") {
-                acc.income += amount;
-            } else {
-                acc.expenses += amount;
-            }
-            return acc;
-        },
-        { income: 0, expenses: 0 }
-    );
+const calculateTotalsByCurrency = (transactions: Transaction[], defaultCurrency: string) => {
+    // console.log({ defaultCurrency: defaultCurrency })
+    const totals = {
+        default: { income: 0, expenses: 0 },
+        others: {} as Record<string, { income: number, expenses: number }>
+    };
+
+    for (const transaction of transactions) {
+        const amount = parseFloat(transaction.amount.toString());
+        const currency = transaction.currency;
+
+        const target = currency === defaultCurrency
+            ? totals.default
+            : (totals.others[currency] ||= { income: 0, expenses: 0 });
+
+        if (transaction.type === "income") {
+            target.income += amount;
+        } else {
+            target.expenses += amount;
+        }
+    }
+
+    return totals;
 };
+
 
 const calculateCategorySummary = (currentTransactions: Transaction[], previousTransactions: Transaction[]) => {
     // Calculate category totals for current month
@@ -86,6 +99,8 @@ const calculateCategorySummary = (currentTransactions: Transaction[], previousTr
     };
 };
 
+
+
 const calculateMethodSummary = (currentTransactions: Transaction[], previousTransactions: Transaction[]) => {
     // Calculate method totals for current month
     const methodTotals = currentTransactions.reduce((acc, t) => {
@@ -134,37 +149,53 @@ const calculateMethodSummary = (currentTransactions: Transaction[], previousTran
     };
 };
 
-export const useTransactionsSummary = (currentMonth: string, previousMonth: string): TransactionsSummary => {
+
+export const useTransactionsSummary = (
+    currentMonth: string,
+    previousMonth: string,
+    defaultCurrency: string
+): TransactionsSummary => {
     const { data, isLoading, error } = useQuery({
-        queryKey: ["transactionsSummary", currentMonth, previousMonth],
+        queryKey: ["transactionsSummary", currentMonth, previousMonth, defaultCurrency],
         queryFn: async () => {
-            // Fetch current month transactions
-            const currentResponse = await fetch(`${API_URL}api/transaction?month=${currentMonth}`);
-            if (!currentResponse.ok) throw new Error(`Error: ${currentResponse.statusText}`);
-            const { formattedTransactions: currentTransactions } = await currentResponse.json();
+            const currentRes = await fetch(`${API_URL}api/transaction?month=${currentMonth}`);
+            const previousRes = await fetch(`${API_URL}api/transaction?month=${previousMonth}`);
 
-            // Fetch previous month transactions
-            const previousResponse = await fetch(`${API_URL}api/transaction?month=${previousMonth}`);
-            if (!previousResponse.ok) throw new Error(`Error: ${previousResponse.statusText}`);
-            const { formattedTransactions: previousTransactions } = await previousResponse.json();
+            if (!currentRes.ok || !previousRes.ok)
+                throw new Error("Error al cargar transacciones");
 
-            // Calculate all summaries
-            const currentTotals = calculateTotals(currentTransactions);
-            const previousTotals = calculateTotals(previousTransactions);
-            const categorySummary = calculateCategorySummary(currentTransactions, previousTransactions);
-            const methodSummary = calculateMethodSummary(currentTransactions, previousTransactions);
+            const { formattedTransactions: currentTransactions } = await currentRes.json();
+            const { formattedTransactions: previousTransactions } = await previousRes.json();
+
+            // 🎯 Calcula totales solo para moneda por defecto
+            const currentTotals = calculateTotalsByCurrency(currentTransactions, defaultCurrency);
+            const previousTotals = calculateTotalsByCurrency(previousTransactions, defaultCurrency);
+
+            const categorySummary = calculateCategorySummary(
+                currentTransactions.filter((t: Transaction) => t.currency === defaultCurrency),
+                previousTransactions.filter((t: Transaction) => t.currency === defaultCurrency)
+            );
+
+            const methodSummary = calculateMethodSummary(
+                currentTransactions.filter((t: Transaction) => t.currency === defaultCurrency),
+                previousTransactions.filter((t: Transaction) => t.currency === defaultCurrency)
+            );
 
             return {
                 transactions: currentTransactions,
-                totalIncome: currentTotals.income,
-                totalExpenses: currentTotals.expenses,
-                totalLastIncome: previousTotals.income,
-                totalLastExpenses: previousTotals.expenses,
+                totalIncome: currentTotals.default.income,
+                totalExpenses: currentTotals.default.expenses,
+                totalLastIncome: previousTotals.default.income,
+                totalLastExpenses: previousTotals.default.expenses,
                 categorySummary,
-                methodSummary
+                methodSummary,
+                otherCurrencies: {
+                    current: currentTotals.others,
+                    previous: previousTotals.others
+                }
             };
         },
-        staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+        staleTime: 1000 * 60 * 5,
     });
 
     return {
@@ -173,15 +204,10 @@ export const useTransactionsSummary = (currentMonth: string, previousMonth: stri
         totalExpenses: data?.totalExpenses || 0,
         totalLastIncome: data?.totalLastIncome || 0,
         totalLastExpenses: data?.totalLastExpenses || 0,
-        categorySummary: {
-            totalCategory: data?.categorySummary.totalCategory || null,
-            totalCat: data?.categorySummary.totalCat || 0
-        },
-        methodSummary: {
-            totalMethod: data?.methodSummary.totalMethod || null,
-            totalMetCurrentMonth: data?.methodSummary.totalMetCurrentMonth || 0
-        },
-        isLoading: isLoading,
-        error: error as Error | null
+        categorySummary: data?.categorySummary || { totalCategory: null, totalCat: 0 },
+        methodSummary: data?.methodSummary || { totalMethod: null, totalMetCurrentMonth: 0 },
+        isLoading,
+        error,
+        otherCurrencies: data?.otherCurrencies || { current: {}, previous: {} }
     };
-}; 
+};

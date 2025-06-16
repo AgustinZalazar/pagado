@@ -18,7 +18,7 @@ export async function GET(request: Request) {
             },
         }).then((res) => res.json());
         const { sheetId } = user;
-        console.log({ user: user })
+        // console.log({ user: user })
         // if (!accessToken || !sheetId) {
         //     return NextResponse.json(
         //         { error: "Faltan parámetros: accessToken o sheetId" },
@@ -100,7 +100,7 @@ export async function POST(request: Request) {
         }).then((res) => res.json());
         const { sheetId } = user;
         const body = await request.json();
-        const { description, type, category, amount, date, account, method } = body;
+        const { description, type, category, amount, currency, date, account, method } = body;
 
 
         if (!accessToken || !sheetId) {
@@ -110,7 +110,7 @@ export async function POST(request: Request) {
             );
         }
 
-        if (!description || !type || !category || !amount || !date || !account || !method) {
+        if (!description || !type || !category || !amount || !currency || !date || !account || !method) {
             return NextResponse.json(
                 { error: "Datos incompletos en la transacción" },
                 { status: 400 }
@@ -169,7 +169,7 @@ export async function POST(request: Request) {
             valueInputOption: "USER_ENTERED",
             requestBody: {
                 values: [
-                    [newId, description, type, category, amount, date, account, method], // Filas de la transacción
+                    [newId, description, type, category, amount, currency, date, account, method], // Filas de la transacción
                 ],
             },
         });
@@ -195,7 +195,7 @@ export async function PUT(request: Request) {
         }).then((res) => res.json());
         const { sheetId } = user;
         const body = await request.json();
-        const { id, description, type, category, amount, date, account, method } = body;
+        const { id, description, type, category, amount, currency, date, account, method } = body;
 
         if (!accessToken || !sheetId) {
             return NextResponse.json(
@@ -204,7 +204,7 @@ export async function PUT(request: Request) {
             );
         }
 
-        if (!id || !description || !type || !category || !amount || !date || !account || !method) {
+        if (!id || !description || !type || !category || !amount || !currency || !date || !account || !method) {
             return NextResponse.json(
                 { error: "Datos incompletos en la transacción" },
                 { status: 400 }
@@ -256,7 +256,7 @@ export async function PUT(request: Request) {
             range: updateRange,
             valueInputOption: "USER_ENTERED",
             requestBody: {
-                values: [[id, description, type, category, amount, date, account, method]],
+                values: [[id, description, type, category, amount, currency, date, account, method]],
             },
         });
 
@@ -336,7 +336,7 @@ export async function DELETE(request: Request) {
             range: deleteRange,
             valueInputOption: "USER_ENTERED",
             requestBody: {
-                values: [["", "", "", "", "", "", "", ""]],
+                values: [["", "", "", "", "", "", "", "", ""]],
             },
         });
         return NextResponse.json({ message: "Transacción eliminada exitosamente" });
