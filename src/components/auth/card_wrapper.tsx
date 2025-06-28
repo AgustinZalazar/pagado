@@ -20,11 +20,11 @@ const CardWrapper = ({ children, headerLabel, backButtonLabel, backButtonHref, s
                 <img src='/logo_black.png' alt='logo' className='w-[140px] mx-auto mb-4' />
                 {/* <h2 className='text-lg text-slate-700'>{headerLabel}</h2> */}
             </CardHeader>
-            {/* <CardContent>
-                {children}
-            </CardContent> */}
-            <CardFooter className='p-0 w-full px-4'>
+            <CardContent>
                 <Social />
+                {children}
+            </CardContent>
+            <CardFooter className='p-0 w-full px-4'>
                 {/* <BackButton label={backButtonLabel} href={backButtonHref} /> */}
             </CardFooter>
         </Card>

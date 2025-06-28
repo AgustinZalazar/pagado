@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useTransition } from 'react'
+import React, { useEffect, useState, useTransition } from 'react'
 import * as z from "zod"
 import CardWrapper from './card_wrapper'
 import { useForm } from 'react-hook-form'
@@ -18,31 +18,51 @@ import { Button } from '../ui/button'
 import { FormError } from './form_error'
 import { FormSuccess } from './form_success'
 import { login } from '../../../actions/login'
+import { useSearchParams } from 'next/navigation'
 
 const LoginForm = () => {
-    const [isPending, startTransition] = useTransition()
-    const [error, setError] = useState<string | undefined>("")
-    const [succes, setSucces] = useState<string | undefined>("")
+    // const [isPending, startTransition] = useTransition()
+    const [error, setError] = useState<string | null>(null)
+    // const [succes, setSucces] = useState<string | undefined>("")
 
-    const form = useForm<z.infer<typeof LoginSchema>>({
-        resolver: zodResolver(LoginSchema),
-        defaultValues: {
-            email: "",
-            password: ""
+    const searchParams = useSearchParams();
+    const errorParams = searchParams.get("error");
+
+    const errorMessages: Record<string, string> = {
+        unauthorized_email: "Tu correo no está autorizado para acceder a esta aplicación.",
+    };
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const errorParam = params.get("error");
+
+        if (errorParam && errorMessages[errorParam]) {
+            setError(errorMessages[errorParam]);
+        } else {
+            setError(null); // importante resetear a null
         }
-    })
+    }, [errorParams]);
 
-    const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
-        setError("")
-        setSucces("")
-        startTransition(() => {
-            login(values)
-                .then((data) => {
-                    setError(data.error)
-                    setSucces(data.success)
-                })
-        })
-    }
+
+    // const form = useForm<z.infer<typeof LoginSchema>>({
+    //     resolver: zodResolver(LoginSchema),
+    //     defaultValues: {
+    //         email: "",
+    //         password: ""
+    //     }
+    // })
+
+    // const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
+    //     setError("")
+    //     setSucces("")
+    //     startTransition(() => {
+    //         login(values)
+    //             .then((data) => {
+    //                 setError(data.error as string)
+    //                 setSucces(data.success)
+    //             })
+    //     })
+    // }
 
     return (
         <CardWrapper headerLabel='Bienvenido otra vez'
@@ -50,7 +70,7 @@ const LoginForm = () => {
             backButtonHref='/register'
             showSocial
         >
-            <Form {...form}>
+            {/* <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}
                     className='space-y-6'>
                     <div className='space-y-4'>
@@ -73,13 +93,13 @@ const LoginForm = () => {
                             </FormItem>
                         )} />
                     </div>
-                    <FormError message={error} />
                     <FormSuccess message={succes} />
                     <Button type='submit' className='w-full' disabled={isPending}>
-                        Iniciar Sesion
+                    Iniciar Sesion
                     </Button>
                 </form>
-            </Form>
+            </Form> */}
+            <FormError message={error} />
         </CardWrapper>
     )
 }

@@ -30,8 +30,6 @@ const Incomes = () => {
         isLoading,
         otherCurrencies
     } = useTransactionsSummary(selectedMonth, lastMonth, user.currency);
-
-    // console.log({ otherCurrencies })
     const t = useTranslations('Dashboard.Incomes');
 
     return (

@@ -6,17 +6,15 @@ import { Button } from "@/components/ui/button"
 import { Transaction } from "@/types/transaction"
 import { EditDialogWindow } from "../incomes/dialogWindows/Edit"
 import DeleteButton from "../buttons/deleteButton"
+import { renderFormattedAmount } from "@/helpers/formatAmount"
+
+
+
 
 
 const getColumns = (locale: string): ColumnDef<Transaction>[] => {
 
-    const formatCurrency = (value: number, currency: string) =>
-        new Intl.NumberFormat(locale, {
-            style: "currency",
-            currency: currency,
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        }).format(value);
+
 
     return [
         {
@@ -69,34 +67,12 @@ const getColumns = (locale: string): ColumnDef<Transaction>[] => {
                     </Button>
                 )
             },
-            cell: ({ row }) => {
-                const rawAmount = row.getValue("amount");
-                const currency = row.getValue("currency");
-                let amount: number;
-
-                if (typeof rawAmount === "string") {
-                    amount = parseFloat(rawAmount.replace(",", "."));
-                } else if (typeof rawAmount === "number") {
-                    amount = rawAmount;
-                } else {
-                    amount = 0; // fallback seguro
-                }
-
-                const formatted = formatCurrency(amount, currency as string);
-                if (row.getValue("type") === "expense") {
-                    return (
-                        <p className=" text-[#dc4a46] text-left font-bold">
-                            -{formatted}
-                        </p>
-                    );
-                } else {
-                    return (
-                        <p className=" text-[#008f4c] text-left font-bold ">
-                            +{formatted}
-                        </p>
-                    );
-                }
-            },
+            cell: ({ row }) => renderFormattedAmount(
+                row.getValue("amount"),
+                row.getValue("currency"),
+                row.getValue("type"),
+                locale
+            )
         },
         {
             accessorKey: "currency",

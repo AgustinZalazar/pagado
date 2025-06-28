@@ -15,13 +15,13 @@ const HoverCardsTemplate = ({ children, isTransactions }: props) => {
                 <div className="relative w-8 h-5">
                     <CircleDollarSign className="w-5 h-5 text-gray-300 absolute" />
                     <CircleDollarSign className="w-5 h-5 text-gray-400 absolute right-[1px] z-10" />
-                    <CircleDollarSign className="w-5 h-5 text-gray-500 absolute -right-[10px] z-20" />
+                    <CircleDollarSign className="w-5 h-5 text-gray-700 absolute -right-[10px] z-20" />
                 </div>
                 :
                 <Button variant="link">@nextjs</Button>
             }
         </HoverCardTrigger>
-        <HoverCardContent align='end' className="w-40">
+        <HoverCardContent align='end' className="w-40 pr-4">
             {children}
         </HoverCardContent>
     </HoverCard>

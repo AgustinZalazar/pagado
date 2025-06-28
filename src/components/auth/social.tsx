@@ -6,7 +6,7 @@ import { signIn, signOut } from "next-auth/react"
 
 export const Social = () => {
     return (
-        <div className="w-full">
+        <div className="w-full mb-2">
             <Button
                 size="lg"
                 className="w-full"

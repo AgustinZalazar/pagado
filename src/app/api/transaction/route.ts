@@ -8,23 +8,36 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request) {
     const session = await auth();
     try {
+        // const accessToken = session?.accessToken;
         const url = new URL(request.url);
         const monthParam = url.searchParams.get("month");
         const mailParam = url.searchParams.get("mail");
-        const accessToken = session?.accessToken;
+
+        // Validar token desde el header Authorization
+        const authHeader = request.headers.get("authorization");
+        const token = authHeader?.split(" ")[1]; // Espera formato: "Bearer <token>"
+
+        const expectedToken = process.env.API_SECRET_TOKEN;
+
+        if (!token || token !== expectedToken) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+
         const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${!mailParam ? session?.user.email : mailParam}`, {
             headers: {
                 'Authorization': `Bearer ${process.env.API_SECRET_TOKEN}`,
             },
         }).then((res) => res.json());
+
         const { sheetId } = user;
         // console.log({ user: user })
-        // if (!accessToken || !sheetId) {
-        //     return NextResponse.json(
-        //         { error: "Faltan parámetros: accessToken o sheetId" },
-        //         { status: 400 }
-        //     );
-        // }
+        if (!sheetId) {
+            return NextResponse.json(
+                { error: "Faltan parámetros: accessToken o sheetId" },
+                { status: 400 }
+            );
+        }
 
         if (!monthParam) {
             return NextResponse.json(
@@ -64,7 +77,7 @@ export async function GET(request: Request) {
         }
 
         // Leer los datos de la hoja del mes actual
-        const range = `${requestedMonth}!A:H`; // Ajusta el rango según la estructura de tu hoja
+        const range = `${requestedMonth}!A:I`; // Ajusta el rango según la estructura de tu hoja
         const response = await sheets.spreadsheets.values.get({
             spreadsheetId: sheetId,
             range,
@@ -92,18 +105,32 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     const session = await auth();
     try {
-        const accessToken = session?.accessToken;
-        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${session?.user.email}`, {
+        // const accessToken = session?.accessToken;
+        const url = new URL(request.url);
+        const mailParam = url.searchParams.get("mail");
+
+        // Validar token desde el header Authorization
+        const authHeader = request.headers.get("authorization");
+        const token = authHeader?.split(" ")[1]; // Espera formato: "Bearer <token>"
+
+        const expectedToken = process.env.API_SECRET_TOKEN;
+
+        if (!token || token !== expectedToken) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${!mailParam ? session?.user.email : mailParam}`, {
             headers: {
                 'Authorization': `Bearer ${process.env.API_SECRET_TOKEN}`,
             },
         }).then((res) => res.json());
+
         const { sheetId } = user;
         const body = await request.json();
         const { description, type, category, amount, currency, date, account, method } = body;
 
 
-        if (!accessToken || !sheetId) {
+        if (!sheetId) {
             return NextResponse.json(
                 { error: "Faltan parámetros: accessToken, sheetId o transaction" },
                 { status: 400 }
@@ -118,7 +145,7 @@ export async function POST(request: Request) {
         }
 
         const auth = new google.auth.OAuth2();
-        auth.setCredentials({ access_token: accessToken });
+        auth.setCredentials({ access_token: user.accessToken });
 
         const sheets = google.sheets({ version: "v4", auth });
         // Obtener el mes y año de la fecha

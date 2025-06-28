@@ -157,10 +157,16 @@ export const authConfig = async (): Promise<NextAuthConfig> => {
                 return session;
             },
             async signIn({ account, profile }) {
+                const allowedEmails = ["agusstiin.az@gmail.com", "admin@tuempresa.com"];
+
+                if (!profile?.email || !allowedEmails.includes(profile.email)) {
+                    // 🔁 Redirige al login con mensaje de error
+                    return "/login?error=unauthorized_email";
+                }
                 if (account?.provider !== "google" || !account?.access_token || !profile?.email) {
                     return false;
                 }
-                // console.log({ account: account })
+                console.log({ account: account })
                 try {
                     // Check if user exists
                     const userResponse = await fetch(`${process.env.NEXTAUTH_URL}api/user/${profile.email}`, {

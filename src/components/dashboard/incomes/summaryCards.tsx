@@ -9,6 +9,7 @@ import { CircleDollarSign, TrendingDown, TrendingUp } from 'lucide-react'
 import { useLocale, useTranslations } from "next-intl"
 import { getLocale } from "next-intl/server"
 import HoverCardsTemplate from "../hoverCards"
+import { renderFormattedAmount } from "@/helpers/formatAmount"
 
 type SummaryCardsProps = {
     totalIncome: number
@@ -27,9 +28,13 @@ export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory
     const locale = useLocale()
     const incomePercentage = changePercentage(totalIncome, totalLastIncome);
     const expensePercentage = changePercentage(totalExpenses, totalLastExpense);
+    const nonZeroIncomeCurrencies = Object.entries(otherCurrencies.current)
+        .filter(([, totals]) => totals.income !== 0);
 
+    const nonZeroExpensesCurrencies = Object.entries(otherCurrencies.current)
+        .filter(([, totals]) => totals.expenses !== 0);
 
-    console.log(otherCurrencies)
+    // console.log(otherCurrencies)
     return (
         <div className="flex flex-col md:flex-row gap-4">
             <Card className="drop-shadow-md w-full md:w-[25%] h-[142px]">
@@ -64,13 +69,16 @@ export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory
                                 </div>
                             }
                         </div>
-                        <HoverCardsTemplate isTransactions={true}>
-                            {Object.entries(otherCurrencies.current).map(([currency, totals]) => (
-                                <div key={currency} className="mb-2">
-                                    <p><strong>{currency}</strong> - {totals.income}</p>
-                                </div>
-                            ))}
-                        </HoverCardsTemplate>
+                        {nonZeroIncomeCurrencies.length > 0 && (
+                            <HoverCardsTemplate isTransactions={true}>
+                                <p>Otras monedas</p>
+                                {nonZeroIncomeCurrencies.map(([currency, totals]) => (
+                                    <div key={currency} className="mb-2">
+                                        {renderFormattedAmount(totals.income, currency, "income", locale)}
+                                    </div>
+                                ))}
+                            </HoverCardsTemplate>
+                        )}
                     </div>
                     <div>
                         <p className="text-xs text-muted-foreground">Mes Pasado</p>
@@ -123,14 +131,16 @@ export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory
                             }
 
                         </div>
-                        <HoverCardsTemplate isTransactions={true}>
-                            {Object.entries(otherCurrencies.current).map(([currency, totals]) => (
-                                <div key={currency} className="mb-2">
-                                    <p><strong>{currency}</strong> - {totals.expenses}</p>
-                                </div>
-                            ))}
-
-                        </HoverCardsTemplate>
+                        {nonZeroExpensesCurrencies.length > 0 && (
+                            <HoverCardsTemplate isTransactions={true}>
+                                <p className="text-sm text-muted-foreground">Otras monedas</p>
+                                {nonZeroExpensesCurrencies.map(([currency, totals]) => (
+                                    <div key={currency} className="mb-2">
+                                        {renderFormattedAmount(totals.expenses, currency, "expense", locale)}
+                                    </div>
+                                ))}
+                            </HoverCardsTemplate>
+                        )}
                     </div>
                     <div>
                         <p className="text-xs text-muted-foreground">Mes Pasado</p>

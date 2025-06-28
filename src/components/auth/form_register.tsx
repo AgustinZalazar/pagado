@@ -15,9 +15,9 @@ import {
 import { RegisterSchema } from "../../../schemas"
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
-import { FormError } from './form_error'
-import { FormSuccess } from './form_success'
-import { register } from '../../../actions/register'
+// import { FormError } from './form_error'
+// import { FormSuccess } from './form_success'
+// import { register } from '../../../actions/register'
 
 const RegisterForm = () => {
     const [isPending, startTransition] = useTransition()
@@ -34,17 +34,17 @@ const RegisterForm = () => {
         }
     })
 
-    const onSubmit = async (values: z.infer<typeof RegisterSchema>) => {
-        setError("")
-        setSucces("")
-        startTransition(() => {
-            register(values)
-                .then((data) => {
-                    setError(data.error)
-                    setSucces(data.success)
-                })
-        })
-    }
+    // const onSubmit = async (values: z.infer<typeof RegisterSchema>) => {
+    //     setError("")
+    //     setSucces("")
+    //     startTransition(() => {
+    //         register(values)
+    //             .then((data) => {
+    //                 setError(data.error)
+    //                 setSucces(data.success)
+    //             })
+    //     })
+    // }
 
     return (
         <CardWrapper headerLabel='Crea una cuenta'
@@ -53,8 +53,8 @@ const RegisterForm = () => {
             showSocial
         >
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)}
-                    className='space-y-6'>
+                {/* <form onSubmit={form.handleSubmit(onSubmit)} */}
+                <form className='space-y-6'>
                     <div className='space-y-4'>
                         <FormField control={form.control} name='name' render={({ field }) => (
                             <FormItem>
@@ -93,8 +93,8 @@ const RegisterForm = () => {
                             </FormItem>
                         )} />
                     </div>
-                    <FormError message={error} />
-                    <FormSuccess message={succes} />
+                    {/* <FormError message={error} />
+                    <FormSuccess message={succes} /> */}
                     <Button type='submit' className='w-full' disabled={isPending}>
                         Registrarme
                     </Button>
