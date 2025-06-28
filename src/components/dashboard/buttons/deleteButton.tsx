@@ -1,7 +1,7 @@
 "use client"
 import { Trash2 } from 'lucide-react'
 import React, { useState, useTransition } from 'react'
-import { deleteTransaction } from "@/actions/transaction/deleteTransaction"
+// import { deleteTransaction } from "@/actions/transaction/deleteTransaction"
 
 interface Props {
     id: string,
