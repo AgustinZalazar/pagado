@@ -1,4 +1,3 @@
-"use client"
 import { Account } from "@/types/Accounts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Dispatch, SetStateAction } from "react";
@@ -28,7 +27,7 @@ export const useCreateAccount = (setOpenPopover: Dispatch<SetStateAction<boolean
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationFn: async (data: Account) => {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/accounts`, {
+            const response = await fetch(`${API_URL}api/accounts`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
@@ -77,7 +76,7 @@ export const useEditAccount = (setOpenPopover: Dispatch<SetStateAction<boolean>>
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationFn: async (data: Account) => {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/accounts`, {
+            const response = await fetch(`${API_URL}api/accounts`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
@@ -126,7 +125,7 @@ export const useDeleteAccount = () => {
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationFn: async (accountId: string) => {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/accounts`, {
+            const response = await fetch(`${API_URL}api/accounts`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(accountId),

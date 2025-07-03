@@ -7,6 +7,7 @@ import { Transaction } from "@/types/transaction";
 import { Dispatch, SetStateAction } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_NEXTAUTH_URL;
+const TOKEN = process.env.NEXT_PUBLIC_API_SECRET_TOKEN;
 
 export const useGetTransactions = (month: string) => {
     const { data, isLoading, error } = useQuery({
@@ -38,10 +39,12 @@ export const useCreateTransaction = (setOpenPopover: Dispatch<SetStateAction<boo
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationFn: async (data: Transaction) => {
-            console.log(data)
             const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/transaction`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    'Authorization': `Bearer ${TOKEN}`
+                },
                 body: JSON.stringify(data),
             });
 
