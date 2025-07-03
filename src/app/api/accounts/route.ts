@@ -22,6 +22,7 @@ export async function GET(request: Request) {
 
         const isExternalRequest = host !== trustedHost;
         console.log({ isExternalRequest: isExternalRequest })
+        console.log({ host: host })
 
         if (isExternalRequest && (!token || token !== expectedToken)) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
