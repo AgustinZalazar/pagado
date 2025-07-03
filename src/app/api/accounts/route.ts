@@ -21,6 +21,7 @@ export async function GET(request: Request) {
         const trustedHost = new URL(process.env.NEXTAUTH_URL!).host;
 
         const isExternalRequest = host !== trustedHost;
+        console.log({ isExternalRequest: isExternalRequest })
 
         if (isExternalRequest && (!token || token !== expectedToken)) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
