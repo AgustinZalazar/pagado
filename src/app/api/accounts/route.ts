@@ -9,26 +9,17 @@ export async function GET(request: Request) {
         // const accessToken = session?.accessToken;
         const url = new URL(request.url);
         const mailParam = url.searchParams.get("mail");
+        const host = request.headers.get("host") ?? "";
+        const isInternal = host.includes("localhost") || host.includes("pagado-production.up.railway.app");
 
-        // Validar token desde el header Authorization
         const authHeader = request.headers.get("authorization");
-        const token = authHeader?.split(" ")[1]; // Espera formato: "Bearer <token>"
-
+        const token = authHeader?.split(" ")[1];
         const expectedToken = process.env.API_SECRET_TOKEN;
 
-        // Detectar si el request viene de una URL externa
-        const referer = request.headers.get("referer");
-        const origin = request.headers.get("x-forwarded-host");
-        const host = request.headers.get("host") || "";
-        const trustedHost = new URL(process.env.NEXTAUTH_URL!).host;
-        console.log({ request: request })
-
-        const isExternalRequest = host !== trustedHost;
-        console.log({ referer: referer })
-        console.log({ origin: origin })
-
-        if (isExternalRequest && (!token || token !== expectedToken)) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        if (!isInternal) {
+            if (!token || token !== expectedToken) {
+                return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            }
         }
 
 
