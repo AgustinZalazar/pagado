@@ -17,12 +17,14 @@ export async function GET(request: Request) {
         const expectedToken = process.env.API_SECRET_TOKEN;
 
         // Detectar si el request viene de una URL externa
+        const referer = request.headers.get("referer");
+        const origin = request.headers.get("origin");
         const host = request.headers.get("host") || "";
         const trustedHost = new URL(process.env.NEXTAUTH_URL!).host;
 
         const isExternalRequest = host !== trustedHost;
-        console.log({ isExternalRequest: isExternalRequest })
-        console.log({ host: host })
+        console.log({ referer: referer })
+        console.log({ origin: origin })
 
         if (isExternalRequest && (!token || token !== expectedToken)) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
