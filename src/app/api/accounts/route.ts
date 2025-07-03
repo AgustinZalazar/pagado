@@ -18,9 +18,10 @@ export async function GET(request: Request) {
 
         // Detectar si el request viene de una URL externa
         const referer = request.headers.get("referer");
-        const origin = request.headers.get("origin");
+        const origin = request.headers.get("x-forwarded-host");
         const host = request.headers.get("host") || "";
         const trustedHost = new URL(process.env.NEXTAUTH_URL!).host;
+        console.log({ request: request })
 
         const isExternalRequest = host !== trustedHost;
         console.log({ referer: referer })
