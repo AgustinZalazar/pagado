@@ -28,10 +28,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 const items = [
     {
-        title: "Home",
+        title: "Inicio",
         url: "/dashboard",
         icon: Home,
-        coming: true
+        coming: false
     },
     {
         title: "Cuentas",

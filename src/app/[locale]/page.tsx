@@ -1,11 +1,13 @@
-import { Button } from "@/components/ui/button";
+import { CurrencyProvider } from "@/components/landing/currency-context"
+import { LanguageProvider } from "@/components/landing/language-context"
+import LandingPage from "@/components/landing/landing-page"
 
-
-export default function Home() {
+export default function Page() {
   return (
-    <>
-      <p>hola</p>
-      <Button variant="outline"> ola</Button>
-    </>
-  );
+    <LanguageProvider>
+      <CurrencyProvider>
+        <LandingPage />
+      </CurrencyProvider>
+    </LanguageProvider>
+  )
 }
