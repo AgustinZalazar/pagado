@@ -4,6 +4,7 @@ import { Dispatch, SetStateAction } from "react";
 import { toast } from "sonner";
 
 const API_URL = process.env.NEXT_PUBLIC_NEXTAUTH_URL;
+// const TOKEN = process.env.API_SECRET_TOKEN;
 
 export const useGetAccounts = () => {
     const { data: accounts = [], isLoading, error } = useQuery({

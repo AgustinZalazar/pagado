@@ -8,11 +8,7 @@ export const useGetUserInfo = (email: string) => {
     const { data: user = [], isLoading, error } = useQuery({
         queryKey: ["user"],
         queryFn: async () => {
-            const response = await fetch(`${API_URL}api/user/${email}`, {
-                headers: {
-                    'Authorization': `Bearer ${TOKEN}`,
-                },
-            });
+            const response = await fetch(`${API_URL}api/user/${email}`);
 
             if (!response.ok) throw new Error(`Error: ${response.statusText}`);
 

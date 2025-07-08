@@ -3,12 +3,14 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/db";
 import { accounts, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { auth } from "@/auth";
 
 export async function GET(
     request: Request,
     { params }: { params: { email: string } }
 ) {
     const { email } = params;
+    const session = await auth();
 
     // Validar token desde el header Authorization
     const authHeader = request.headers.get("authorization");
@@ -16,8 +18,10 @@ export async function GET(
 
     const expectedToken = process.env.API_SECRET_TOKEN;
 
-    if (!token || token !== expectedToken) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!session) {
+        if (!token || token !== expectedToken) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
     }
 
     try {
