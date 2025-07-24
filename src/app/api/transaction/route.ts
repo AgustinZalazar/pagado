@@ -1,3 +1,4 @@
+import { getUserSensitiveInfo } from "@/actions/getUserSensitiveInfo";
 import { auth } from "@/auth";
 import { getMonthNameByDate } from "@/helpers/getMonthName";
 import { google } from "googleapis";
@@ -15,9 +16,13 @@ export async function GET(request: Request) {
 
         // Validar token desde el header Authorization
         const authHeader = request.headers.get("authorization");
-        const token = authHeader?.split(" ")[1]; // Espera formato: "Bearer <token>"
+        const token = authHeader?.split(" ")[1];
 
         const expectedToken = process.env.API_SECRET_TOKEN;
+        const mail = !mailParam ? session?.user.email : mailParam
+
+        const user = await getUserSensitiveInfo(mail as string)
+        const { sheetId, accessToken } = user;
 
         if (!session) {
             if (!token || token !== expectedToken) {
@@ -25,15 +30,6 @@ export async function GET(request: Request) {
             }
         }
 
-
-        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${!mailParam ? session?.user.email : mailParam}`, {
-            headers: {
-                'Authorization': `Bearer ${process.env.API_SECRET_TOKEN}`,
-            },
-        }).then((res) => res.json());
-
-        const { sheetId } = user;
-        // console.log({ user: user })
         if (!sheetId) {
             return NextResponse.json(
                 { error: "Faltan parámetros: accessToken o sheetId" },
@@ -48,7 +44,7 @@ export async function GET(request: Request) {
             );
         }
         const auth = new google.auth.OAuth2();
-        auth.setCredentials({ access_token: user.accessToken });
+        auth.setCredentials({ access_token: accessToken });
 
         const sheets = google.sheets({ version: "v4", auth });
 
@@ -117,8 +113,10 @@ export async function POST(request: Request) {
 
         const expectedToken = process.env.API_SECRET_TOKEN;
 
-        if (!token || token !== expectedToken) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        if (!session) {
+            if (!token || token !== expectedToken) {
+                return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            }
         }
 
         const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${!mailParam ? session?.user.email : mailParam}`, {

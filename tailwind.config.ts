@@ -90,6 +90,10 @@ const config = {
 				sm: 'calc(var(--radius) - 4px)'
 			},
 			keyframes: {
+				'marquee': {
+					'0%': { transform: 'translateX(100%)' },
+					'100%': { transform: 'translateX(-100%)' },
+				},
 				'accordion-down': {
 					from: {
 						height: '0'
@@ -140,6 +144,8 @@ const config = {
 				"spinner": "spinner 1.2s linear infinite",
 				"flip": "flip 6s infinite steps(2, end)",
 				"rotate": "rotate 3s linear infinite both",
+				'marquee': 'marquee 30s linear infinite',
+				'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
 			}
 		}
 	},

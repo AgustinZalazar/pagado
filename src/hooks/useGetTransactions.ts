@@ -7,7 +7,6 @@ import { Transaction } from "@/types/transaction";
 import { Dispatch, SetStateAction } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_NEXTAUTH_URL;
-const TOKEN = process.env.NEXT_PUBLIC_API_SECRET_TOKEN;
 
 export const useGetTransactions = (month: string) => {
     const { data, isLoading, error } = useQuery({
@@ -43,7 +42,6 @@ export const useCreateTransaction = (setOpenPopover: Dispatch<SetStateAction<boo
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    'Authorization': `Bearer ${TOKEN}`
                 },
                 body: JSON.stringify(data),
             });

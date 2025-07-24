@@ -20,12 +20,12 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { SearchableColorfulSelect } from "./searchableColorfulSelect"
-import { CalendarIcon, Currency } from "lucide-react"
+import { CalendarIcon } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
-import { Dispatch, SetStateAction, useState } from "react"
+import { Dispatch, SetStateAction, useState, useEffect, useMemo } from "react"
 import { Transaction } from "@/types/transaction"
 import { useCreateTransaction, useEditTransaction } from "@/hooks/useGetTransactions"
 import { useGetAccounts } from "@/hooks/useAccount"
@@ -34,106 +34,164 @@ import { Account, Method } from "@/types/Accounts"
 import { CustomSelect } from "@/components/ui/custom-select"
 import { countryCurrencyMap } from "@/data/currency"
 
-function formatInputAmount(input: string): string {
-    if (input === "") return "";
-    const parts = input.split(",");
-    const intPart = parts[0].replace(/\D/g, "");
-    const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    return parts.length === 2 ? `${formattedInt},${parts[1].slice(0, 2)}` : formattedInt;
+// Función para formatear el input de moneda
+function formatCurrencyInput(value: string): string {
+    if (!value) return "";
+
+    // Remover todo excepto dígitos y coma
+    const cleaned = value.replace(/[^\d,]/g, '');
+
+    // Dividir en parte entera y decimal
+    const parts = cleaned.split(',');
+    if (parts.length > 2) return value; // No permitir más de una coma
+
+    // Formatear parte entera con puntos cada 3 dígitos
+    const integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+    // Limitar decimales a 2 dígitos
+    const decimalPart = parts[1] ? parts[1].slice(0, 2) : '';
+
+    return parts.length === 2 ? `${integerPart},${decimalPart}` : integerPart;
 }
 
-const RawFormSchema = z.object({
+// Función para convertir display a número
+function parseDisplayAmount(displayValue: string): number {
+    if (!displayValue) return 0;
+    const normalized = displayValue.replace(/\./g, "").replace(",", ".");
+    return parseFloat(normalized) || 0;
+}
+
+// Función para convertir número a display
+function numberToDisplay(num: number): string {
+    if (!num) return "";
+    return formatCurrencyInput(num.toString().replace('.', ','));
+}
+
+const FormSchema = z.object({
     description: z.string().min(2, {
         message: "La descripcion debe contener al menos 2 caracteres",
     }),
-    amount: z.string().refine(
-        (val) => {
-            const normalized = val.replace(/\./g, "").replace(",", ".");
-            const parsed = parseFloat(normalized);
-            return !isNaN(parsed) && parsed > 0;
-        },
-        { message: "El monto debe ser un número válido y mayor que 0" }
-    ),
-    currency: z.string(),
-    type: z.string().min(2, { message: "Seleccione un tipo por favor" }),
-    category: z.string(),
-    date: z.date(),
-    account: z.string(),
-    method: z.string(),
+    amount: z.number().positive({
+        message: "El monto debe ser mayor que 0"
+    }),
+    currency: z.string().min(1, { message: "Seleccione una moneda" }),
+    type: z.enum(["income", "expense"], {
+        errorMap: () => ({ message: "Seleccione un tipo por favor" })
+    }),
+    category: z.string().min(1, { message: "Seleccione una categoría" }),
+    date: z.date({ required_error: "Seleccione una fecha" }),
+    account: z.string().min(1, { message: "Seleccione una cuenta" }),
+    method: z.string().min(1, { message: "Seleccione un método de pago" }),
 });
 
-const FormSchema = RawFormSchema.transform((data) => ({
-    ...data,
-    amount: parseFloat(data.amount.replace(/\./g, "").replace(",", ".")),
-}));
-
-interface formProps {
-    openDialog: boolean,
-    setOpenDialog: Dispatch<SetStateAction<boolean>>
-    transaction?: Transaction
+interface FormProps {
+    openDialog: boolean;
+    setOpenDialog: Dispatch<SetStateAction<boolean>>;
+    transaction?: Transaction;
 }
 
-export function FormTransaction({ openDialog, setOpenDialog, transaction }: formProps) {
-    const { createTransaction } = useCreateTransaction(setOpenDialog)
-    const { editTransaction } = useEditTransaction(setOpenDialog)
+export function FormTransaction({ openDialog, setOpenDialog, transaction }: FormProps) {
+    const { createTransaction } = useCreateTransaction(setOpenDialog);
+    const { editTransaction } = useEditTransaction(setOpenDialog);
     const { accounts } = useGetAccounts();
     const { methods } = useGetMethods();
-    const [selectedAccount, setSelectedAccount] = useState<string>("")
-    const [amountDisplay, setAmountDisplay] = useState<string>(
-        transaction ? formatInputAmount(transaction.amount.toString().replace('.', ',')) : ''
-    );
 
-    const form = useForm<z.infer<typeof RawFormSchema>>({
-        resolver: zodResolver(RawFormSchema),
+    // Estados locales
+    const [selectedAccountId, setSelectedAccountId] = useState<string>("");
+    const [displayAmount, setDisplayAmount] = useState<string>("");
+
+    // Memoizar las opciones de moneda para evitar re-renders
+    const currencyOptions = useMemo(() => {
+        const availableCurrencies = Array.from(
+            new Map(
+                countryCurrencyMap.map(({ currency, code }) => [code, { currency, code }])
+            ).values()
+        ).sort((a, b) => a.currency.localeCompare(b.currency));
+
+        return availableCurrencies.map(({ currency, code }) => ({
+            value: code,
+            label: `${currency} (${code})`,
+        }));
+    }, []);
+
+    // Memoizar los métodos filtrados
+    const filteredMethods = useMemo(() => {
+        if (!selectedAccountId) return [];
+        return methods.filter((method: Method) => method.idAccount === selectedAccountId);
+    }, [selectedAccountId, methods]);
+
+    const form = useForm<z.infer<typeof FormSchema>>({
+        resolver: zodResolver(FormSchema),
         defaultValues: {
-            description: transaction ? transaction.description : "",
-            amount: transaction ? formatInputAmount(transaction.amount.toString().replace('.', ',')) : "",
-            currency: transaction ? transaction.currency : "",
-            type: transaction ? transaction.type : "",
-            category: transaction ? transaction.category : "",
-            account: transaction ? transaction.account : "",
-            method: transaction ? transaction.method : "",
-            date: transaction && new Date(transaction.date)
+            description: transaction?.description || "",
+            amount: transaction?.amount || 0,
+            currency: transaction?.currency || "",
+            type: transaction?.type as "income" | "expense" || undefined,
+            category: transaction?.category || "",
+            account: transaction?.account || "",
+            method: transaction?.method || "",
+            date: transaction ? new Date(transaction.date) : undefined,
         },
-    })
-    async function onSubmit(rawData: z.infer<typeof RawFormSchema>) {
-        const result = FormSchema.safeParse(rawData);
-        if (!result.success) {
-            console.error("Transformación fallida", result.error);
-            return;
+    });
+
+    // Efecto para inicializar el formulario cuando hay una transacción
+    useEffect(() => {
+        if (transaction) {
+            // Establecer el display amount
+            setDisplayAmount(numberToDisplay(transaction.amount));
+
+            // Encontrar y establecer la cuenta seleccionada
+            const account = accounts.find((acc: Account) => acc.title === transaction.account);
+            if (account) {
+                setSelectedAccountId(account.id);
+            }
+        } else {
+            // Si no hay transacción, establecer valores por defecto
+            setDisplayAmount("");
+            setSelectedAccountId("");
         }
+    }, [transaction, accounts]);
 
-        const data = result.data; // `amount` es number
+    // Función para manejar el cambio de cuenta
+    const handleAccountChange = (accountTitle: string) => {
+        const account = accounts.find((acc: Account) => acc.title === accountTitle);
+        if (account) {
+            setSelectedAccountId(account.id);
+        }
+        // Limpiar método seleccionado cuando cambie la cuenta
+        form.setValue("method", "");
+    };
 
-        setOpenDialog(!openDialog);
+    // Función para manejar el cambio de monto
+    const handleAmountChange = (value: string) => {
+        const formatted = formatCurrencyInput(value);
+        const numericValue = parseDisplayAmount(formatted);
+
+        setDisplayAmount(formatted);
+        form.setValue("amount", numericValue);
+    };
+
+    async function onSubmit(data: z.infer<typeof FormSchema>) {
+        const formattedData = {
+            ...data,
+            date: data.date.toISOString(),
+        };
 
         if (transaction) {
             editTransaction({
                 id: transaction.id,
-                ...data,
-                type: data.type as "income" | "expense",
-                date: data.date.toString(),
+                ...formattedData,
             });
         } else {
             createTransaction({
                 id: "",
-                ...data,
-                type: data.type as "income" | "expense",
-                date: data.date.toString(),
+                ...formattedData,
             });
         }
+
+        setOpenDialog(false);
     }
 
-    const availableCurrencies = Array.from(
-        new Map(
-            countryCurrencyMap.map(({ currency, code }) => [code, { currency, code }])
-        ).values()
-    ).sort((a, b) => a.currency.localeCompare(b.currency));
-
-    const currencyOptions = availableCurrencies.map(({ currency, code }) => ({
-        value: code,
-        label: `${currency} (${code})`,
-    }));
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
@@ -142,62 +200,56 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
                     name="description"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Descripcion</FormLabel>
+                            <FormLabel>Descripción</FormLabel>
                             <FormControl>
                                 <Input placeholder="Alquiler" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
+                    )}
+                />
 
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="amount"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Monto</FormLabel>
-                            <FormControl>
-                                <Input
-                                    type="text"
-                                    inputMode="decimal"
-                                    placeholder="1.234,56"
-                                    value={amountDisplay}
-                                    onChange={(e) => {
-                                        const raw = e.target.value;
-                                        const cleaned = raw.replace(/[^\d,]/g, '');
-                                        const parts = cleaned.split(',');
-                                        if (parts.length > 2) return;
-                                        const formattedInt = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                                        const display = parts.length === 2 ? `${formattedInt},${parts[1]}` : formattedInt;
-                                        setAmountDisplay(display);
-                                        field.onChange(cleaned);
-                                    }}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="currency"
-                    render={({ field }) => (
-                        <FormItem className="relative">
-                            <FormLabel>Moneda</FormLabel>
-                            <FormControl>
-                                <CustomSelect
-                                    value={field.value}
-                                    onValueChange={field.onChange}
-                                    options={currencyOptions}
-                                    placeholder="Selecciona una moneda"
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                {/* Campo Tipo */}
+                <div className="flex gap-4">
+                    <FormField
+                        control={form.control}
+                        name="amount"
+                        render={({ field }) => (
+                            <FormItem className="flex-1" style={{ flexBasis: '70%' }}>
+                                <FormLabel>Monto</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="text"
+                                        inputMode="decimal"
+                                        placeholder="1.234,56"
+                                        value={displayAmount}
+                                        onChange={(e) => handleAmountChange(e.target.value)}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="currency"
+                        render={({ field }) => (
+                            <FormItem className="flex-1" style={{ flexBasis: '30%' }}>
+                                <FormLabel>Moneda</FormLabel>
+                                <FormControl>
+                                    <CustomSelect
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                        options={currencyOptions}
+                                        placeholder="Moneda"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
                 <FormField
                     control={form.control}
                     name="type"
@@ -206,11 +258,11 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
                             <FormLabel>Tipo</FormLabel>
                             <FormControl>
                                 <Select
-                                    onValueChange={(value) => field.onChange(value)} // Actualización manual del valor
-                                    defaultValue={field.value} // Configuración inicial
+                                    onValueChange={field.onChange}
+                                    value={field.value}
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Seleccione un tipo de transaccion" />
+                                        <SelectValue placeholder="Seleccione un tipo de transacción" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="income">Ingreso</SelectItem>
@@ -222,13 +274,13 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
                         </FormItem>
                     )}
                 />
-                {/* Campo Category */}
+
                 <FormField
                     control={form.control}
                     name="category"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Categoria</FormLabel>
+                            <FormLabel>Categoría</FormLabel>
                             <FormControl>
                                 <SearchableColorfulSelect field={field} />
                             </FormControl>
@@ -236,6 +288,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
                         </FormItem>
                     )}
                 />
+
                 {/* Campo Date */}
                 <FormField
                     control={form.control}
@@ -278,7 +331,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
                         </FormItem>
                     )}
                 />
-                {/* Campo PaymentMethod */}
+
                 <FormField
                     control={form.control}
                     name="account"
@@ -289,44 +342,17 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
                                 <Select
                                     onValueChange={(value) => {
                                         field.onChange(value);
-                                        const account = accounts.find((acc: Account) => acc.title === value);
-                                        if (account) setSelectedAccount(account.id);
+                                        handleAccountChange(value);
                                     }}
-                                    defaultValue={field.value}
+                                    value={field.value}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Seleccione una cuenta" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {accounts.map((account: Account) => (
-                                            <SelectItem key={account.id} value={account.title}>{account.title}</SelectItem>
-                                        ))
-                                        }
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="method"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Metodo de pago</FormLabel>
-                            <FormControl>
-                                <Select
-                                    onValueChange={(value) => field.onChange(value)}
-                                    defaultValue={field.value}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Seleccione un metodo de pago" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {methods.filter((method: Method) => method.idAccount === selectedAccount).map((method: Method) => (
-                                            <SelectItem key={method.id} value={method.cardType ? `${method.title} - ${method.cardType}` : `${method.title}`}>
-                                                {method.cardType ? `${method.title} - ${method.cardType}` : `${method.title}`}
+                                            <SelectItem key={account.id} value={account.title}>
+                                                {account.title}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -336,8 +362,43 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: form
                         </FormItem>
                     )}
                 />
+
+                <FormField
+                    control={form.control}
+                    name="method"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Método de pago</FormLabel>
+                            <FormControl>
+                                <Select
+                                    onValueChange={field.onChange}
+                                    value={field.value}
+                                    disabled={!selectedAccountId}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Seleccione un método de pago" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {filteredMethods.map((method: Method) => {
+                                            const displayName = method.cardType
+                                                ? `${method.title} - ${method.cardType}`
+                                                : method.title;
+                                            return (
+                                                <SelectItem key={method.id} value={displayName}>
+                                                    {displayName}
+                                                </SelectItem>
+                                            );
+                                        })}
+                                    </SelectContent>
+                                </Select>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
                 <Button type="submit">Guardar</Button>
             </form>
         </Form>
-    )
+    );
 }

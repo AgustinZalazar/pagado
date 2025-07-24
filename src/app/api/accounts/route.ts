@@ -1,3 +1,4 @@
+import { getUserSensitiveInfo } from "@/actions/getUserSensitiveInfo";
 import { auth } from "@/auth";
 import { google } from "googleapis";
 import { revalidateTag } from "next/cache";
@@ -15,6 +16,11 @@ export async function GET(request: Request) {
         const token = authHeader?.split(" ")[1];
         const expectedToken = process.env.API_SECRET_TOKEN;
 
+        const mail = !mailParam ? session?.user.email : mailParam
+
+        const user = await getUserSensitiveInfo(mail as string)
+        const { sheetId, accessToken } = user;
+
         if (!session) {
             if (!token || token !== expectedToken) {
                 return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -22,13 +28,13 @@ export async function GET(request: Request) {
         }
 
 
-        const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${!mailParam ? session?.user.email : mailParam}`, {
-            headers: {
-                'Authorization': `Bearer ${process.env.API_SECRET_TOKEN}`,
-            },
-        }).then((res) => res.json());
+        // const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${!mailParam ? session?.user.email : mailParam}`, {
+        //     headers: {
+        //         'Authorization': `Bearer ${process.env.API_SECRET_TOKEN}`,
+        //     },
+        // }).then((res) => res.json());
 
-        const { sheetId } = user;
+        // const { sheetId } = user;
 
         if (!sheetId) {
             return NextResponse.json(
@@ -38,7 +44,7 @@ export async function GET(request: Request) {
         }
 
         const auth = new google.auth.OAuth2();
-        auth.setCredentials({ access_token: user.accessToken });
+        auth.setCredentials({ access_token: accessToken });
 
         const sheets = google.sheets({ version: "v4", auth });
 
