@@ -180,3 +180,28 @@ export const useDeleteTransaction = () => {
         error: mutation.error,
     };
 };
+
+
+
+export const useGetExpensesByMonth = () => {
+    const { data, isLoading, error } = useQuery({
+        queryKey: ["transactionsByMonty"],
+        queryFn: async () => {
+            const response = await fetch(`${API_URL}api/transaction/summary/bymonth`);
+            if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+
+            const resp = await response.json();
+
+            // console.log({ resp: resp })
+
+            return resp;
+        },
+        staleTime: 1000 * 60 * 5, // 🟢 Cachea por 5 minutos antes de volver a hacer la solicitud
+    });
+
+    return {
+        summary: data || [],
+        isLoading,
+        error,
+    };
+};

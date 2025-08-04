@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-import { Calendar, Wifi, Tv, Zap, Car, Home, CreditCard, Clock, AlertCircle } from 'lucide-react';
+import { Calendar, Wifi, Tv, Zap, Car, Home, CreditCard, Clock, AlertCircle, Lock } from 'lucide-react';
 
 interface Payment {
     id: string;
@@ -131,7 +131,29 @@ const RecurringPayments: React.FC = () => {
     const dueCount = payments.filter(p => p.status === 'due').length;
 
     return (
-        <div className="bg-white rounded-xl shadow-lg p-6 h-fit">
+        <div className="bg-white rounded-xl shadow-lg p-6 h-fit relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/40 to-white/20 backdrop-blur-sm z-10 rounded-xl flex items-center justify-center">
+                <div className="text-center">
+                    <div className="bg-white/80 backdrop-blur-md rounded-2xl px-6 py-4 shadow-xl border border-white/20">
+                        <div className="flex items-center justify-center mb-2">
+                            <div className="bg-gradient-to-r from-black to-gray-600 p-3 rounded-full">
+                                <Lock className="w-6 h-6 text-white" />
+                            </div>
+                        </div>
+                        <h4 className="text-lg font-bold text-gray-800 mb-1">Próximamente</h4>
+                        <p className="text-sm text-gray-600">Esta función estará disponible pronto</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Ribbon */}
+            <div className="absolute -top-1 -right-1 z-20">
+                <div className="bg-gradient-to-r from-black to-gray-600 text-white px-3 py-1 rounded-bl-lg rounded-tr-xl text-xs font-bold shadow-lg">
+                    PRO
+                </div>
+            </div>
+
+
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h3 className="text-xl font-bold text-gray-800">Pagos Recurrentes</h3>
