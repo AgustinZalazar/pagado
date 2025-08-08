@@ -42,7 +42,7 @@ const PoliticaPrivacidad = () => {
 
                                 <div className="p-4 bg-gray-50 rounded-lg">
                                     <p className="text-gray-800">
-                                        <strong>Afiliado</strong> significa una entidad que controla, es controlada por o está bajo control común con una parte, donde "control" significa propiedad del 50% o más de las acciones, participación accionaria u otros valores con derecho a voto para la elección de directores u otra autoridad de gestión.
+                                        <strong>Afiliado</strong> significa una entidad que controla, es controlada por o está bajo control común con una parte, donde &ldquo;control&rdquo; significa propiedad del 50% o más de las acciones, participación accionaria u otros valores con derecho a voto para la elección de directores u otra autoridad de gestión.
                                     </p>
                                 </div>
 
