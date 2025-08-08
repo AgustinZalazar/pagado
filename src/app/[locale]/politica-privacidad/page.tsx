@@ -46,11 +46,9 @@ const PoliticaPrivacidad = () => {
                                     </p>
                                 </div>
 
-                                <div className="p-4 bg-gray-50 rounded-lg">
-                                    <p className="text-gray-800">
-                                        <strong>Empresa</strong> (referida como "la Empresa", "Nosotros", "Nos" o "Nuestro" en este Acuerdo) se refiere a Pagado.
-                                    </p>
-                                </div>
+                                <p className="text-gray-800">
+                                    <strong>Empresa</strong> (referida como &ldquo;la Empresa&rdquo;, &ldquo;Nosotros&rdquo;, &ldquo;Nos&rdquo; o &ldquo;Nuestro&rdquo; en este Acuerdo) se refiere a Pagado.
+                                </p>
 
                                 <div className="p-4 bg-gray-50 rounded-lg">
                                     <p className="text-gray-800">

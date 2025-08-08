@@ -140,7 +140,7 @@ const Page = () => {
                                 <section>
                                     <h3 className="text-xl font-semibold text-gray-800 mb-3">13. Exención de Responsabilidad</h3>
                                     <p className="text-gray-700 leading-relaxed">
-                                        El Servicio se brinda "tal cual" y sin garantías de ningún tipo. No somos responsables de decisiones financieras tomadas en base a los datos registrados en la aplicación.
+                                        El Servicio se brinda &ldquo;tal cual&rdquo;y sin garantías de ningún tipo. No somos responsables de decisiones financieras tomadas en base a los datos registrados en la aplicación.
                                     </p>
                                 </section>
 
