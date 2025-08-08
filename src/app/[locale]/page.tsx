@@ -4,10 +4,10 @@ import LandingPage from "@/components/landing/landing-page"
 
 export default function Page() {
   return (
-    <LanguageProvider>
-      <CurrencyProvider>
-        <LandingPage />
-      </CurrencyProvider>
-    </LanguageProvider>
+
+    <CurrencyProvider>
+      <LandingPage />
+    </CurrencyProvider>
+    // </LanguageProvider>
   )
 }
