@@ -5,9 +5,15 @@ import React from 'react'
 import { LanguageSelector } from './language-selector'
 import { MobileMenu } from './mobile-menu'
 import { useLanguage } from './language-context'
+import { usePathname } from 'next/navigation'
 
 const Header = () => {
     const { t } = useLanguage()
+    const pathname = usePathname();
+    const hideNavbar = pathname.includes('/dashboard');
+    if (hideNavbar) {
+        return null;
+    }
     return (
         <header className="px-4 lg:px-24 h-14 flex items-center border-b backdrop-blur-sm bg-white/80 sticky top-0 z-50 transition-all duration-300">
             <Link className="flex items-center justify-center group" href="/">
