@@ -10,7 +10,7 @@ import { usePathname } from 'next/navigation'
 const Header = () => {
     const { t } = useLanguage()
     const pathname = usePathname();
-    const hideNavbar = pathname.includes('/dashboard');
+    const hideNavbar = pathname.includes('/dashboard') || pathname.includes('/login');
     if (hideNavbar) {
         return null;
     }

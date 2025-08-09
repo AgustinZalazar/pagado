@@ -157,7 +157,7 @@ export const authConfig = async (): Promise<NextAuthConfig> => {
                 return session;
             },
             async signIn({ account, profile }) {
-                const allowedEmails = ["agusstiin.az@gmail.com", "admin@tuempresa.com"];
+                const allowedEmails = ["agusstiin.az@gmail.com"];
 
                 if (!profile?.email || !allowedEmails.includes(profile.email)) {
                     // 🔁 Redirige al login con mensaje de error
