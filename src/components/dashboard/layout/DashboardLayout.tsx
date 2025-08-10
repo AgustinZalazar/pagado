@@ -19,6 +19,7 @@ const DashboardLayout = ({ children }: Props) => {
 
     useEffect(() => {
         if (user && !isLoading) {
+            console.log(user)
             if (user.phone === "" || !user.phone) setShowPhoneModal(true)
         }
     }, [isLoading, user])
