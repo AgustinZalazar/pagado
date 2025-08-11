@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import Header from "@/components/landing/Header";
 import { LanguageProvider } from "@/components/landing/language-context";
+import Head from "next/head";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,6 +33,11 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
+      <head>
+        <meta name="keywords" content="Pagado!, Gestiona tu dinero, Gestiona tu dinero con Pagado!" />
+        <meta name="author" content="Pagado!" />
+        <meta name="google-site-verification" content="_PGD5VRry7jI_vSJwRSOnjIc7uuxFrIrYZqvwRVch2k" />
+      </head>
       <body className={inter.className}>
         <NextIntlClientProvider messages={messages}>
           <LanguageProvider>
