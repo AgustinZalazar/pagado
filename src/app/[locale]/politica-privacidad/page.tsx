@@ -169,22 +169,6 @@ const PoliticaPrivacidad = () => {
                                         <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
                                         <span className="text-gray-700">Google</span>
                                     </li>
-                                    <li className="flex items-start gap-2">
-                                        <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                                        <span className="text-gray-700">Facebook</span>
-                                    </li>
-                                    <li className="flex items-start gap-2">
-                                        <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                                        <span className="text-gray-700">Instagram</span>
-                                    </li>
-                                    <li className="flex items-start gap-2">
-                                        <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                                        <span className="text-gray-700">Twitter</span>
-                                    </li>
-                                    <li className="flex items-start gap-2">
-                                        <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                                        <span className="text-gray-700">LinkedIn</span>
-                                    </li>
                                 </ul>
                             </div>
 
