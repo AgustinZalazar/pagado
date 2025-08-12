@@ -11,6 +11,7 @@ const DeleteButton = ({ id, date }: Props) => {
     const [isDeleting, setIsDeleting] = useState(false);
 
     const handleDelete = async () => {
+        console.log(id, date)
         setIsDeleting(true);
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/transaction`, {

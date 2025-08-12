@@ -20,21 +20,24 @@ import {
 } from "@/components/ui/form"
 import { Loader2 } from 'lucide-react'
 import { CustomSelect } from '@/components/ui/custom-select'
+import { User } from '@/types/User'
+// import { userAgent } from 'next/server'
 
 
 interface ModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSubmit?: (data: z.infer<typeof phoneRegistrationSchema>) => void;
+    user: User;
 }
 
-const NewUser = ({ onSubmit }: { onSubmit?: (data: z.infer<typeof phoneRegistrationSchema>) => void }) => {
+const NewUser = ({ onSubmit, user }: { onSubmit?: (data: z.infer<typeof phoneRegistrationSchema>) => void, user: User }) => {
     const form = useForm<z.infer<typeof phoneRegistrationSchema>>({
         resolver: zodResolver(phoneRegistrationSchema),
         defaultValues: {
-            country: "",
-            currency: "",
-            phoneNumber: "",
+            country: user?.country || "",
+            currency: user?.currency || "",
+            phoneNumber: user?.phone || "",
         },
     })
 
@@ -46,9 +49,15 @@ const NewUser = ({ onSubmit }: { onSubmit?: (data: z.infer<typeof phoneRegistrat
 
     const handleSubmit = async (data: z.infer<typeof phoneRegistrationSchema>) => {
         try {
-            await registerPhone(data)
+            const countryCode = countryCurrencyMap.find(
+                (item) => item.country === form.watch("country")
+            )?.phoneCode;
+
+            const fullPhoneNumber = `+${countryCode}${data.phoneNumber}`;
+            const fulldata = { ...data, phoneNumber: fullPhoneNumber }
+            await registerPhone(fulldata)
             if (onSubmit) {
-                onSubmit(data)
+                onSubmit(fulldata)
             }
         } catch (error) {
             console.error("Failed to register phone:", error)
@@ -137,26 +146,31 @@ const NewUser = ({ onSubmit }: { onSubmit?: (data: z.infer<typeof phoneRegistrat
                                 <FormLabel>Número de Teléfono</FormLabel>
                                 <FormControl>
                                     <div className="flex gap-2">
+                                        {/* Código de área */}
                                         <div className="w-24">
                                             <Input
-                                                value={form.watch("country") ? `+${countryCurrencyMap.find(
-                                                    (item) => item.country === form.watch("country")
-                                                )?.phoneCode}` : ""}
+                                                value={
+                                                    form.watch("country")
+                                                        ? `+${countryCurrencyMap.find(
+                                                            (item) => item.country === form.watch("country")
+                                                        )?.phoneCode}`
+                                                        : ""
+                                                }
                                                 disabled
                                                 placeholder="Código"
                                             />
                                         </div>
+
+                                        {/* Número */}
                                         <Input
-                                            {...field}
                                             placeholder="Número de teléfono"
                                             className="flex-1"
                                             onChange={(e) => {
-                                                const countryCode = countryCurrencyMap.find(
-                                                    (item) => item.country === form.watch("country")
-                                                )?.phoneCode
-                                                field.onChange(`+${countryCode}${e.target.value}`)
+                                                // Solo números
+                                                const onlyNumbers = e.target.value.replace(/[^0-9]/g, '');
+                                                field.onChange(onlyNumbers);
                                             }}
-                                            value={field.value.replace(/^\+\d+/, '')}
+                                            value={field.value?.replace(/[^0-9]/g, '') || ''}
                                         />
                                     </div>
                                 </FormControl>
@@ -180,14 +194,14 @@ const NewUser = ({ onSubmit }: { onSubmit?: (data: z.infer<typeof phoneRegistrat
     )
 }
 
-const PhoneRegistrationModal = ({ open, onOpenChange, onSubmit }: ModalProps) => {
+const PhoneRegistrationModal = ({ open, onOpenChange, onSubmit, user }: ModalProps) => {
     return (
         <Dialog
             open={open}
             onOpenChange={onOpenChange}
         >
             <DialogContent className="sm:max-w-[425px]">
-                <NewUser onSubmit={onSubmit} />
+                <NewUser onSubmit={onSubmit} user={user} />
             </DialogContent>
         </Dialog>
     )

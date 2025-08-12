@@ -1,11 +1,10 @@
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { phoneRegistrationSchema } from "@/lib/validations/phoneRegistration"
-import { z } from "zod"
 
 export function usePhoneRegistration() {
     return useMutation({
-        mutationFn: async (data: z.infer<typeof phoneRegistrationSchema>) => {
+        mutationFn: async (data: { country: string; currency: string; phoneNumber: string; }) => {
+            console.log(data)
             const response = await fetch("/api/user/phone", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

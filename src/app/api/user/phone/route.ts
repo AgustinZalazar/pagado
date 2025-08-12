@@ -14,14 +14,15 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json()
-        const validatedData = phoneRegistrationSchema.parse(body)
+        console.log(body)
+        // const validatedData = phoneRegistrationSchema.parse(body)
 
         await db
             .update(users)
             .set({
-                phone: validatedData.phoneNumber,
-                country: validatedData.country,
-                currency: validatedData.currency,
+                phone: body.phoneNumber,
+                country: body.country,
+                currency: body.currency,
             })
             .where(eq(users.id, session.user.id))
 

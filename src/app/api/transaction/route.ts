@@ -192,7 +192,7 @@ export async function POST(request: Request) {
         // Insertar la transacción en la hoja
         await sheets.spreadsheets.values.append({
             spreadsheetId: sheetId,
-            range: `${month}!A1:G1`, // Ajusta el rango según tu estructura
+            range: `${month}!A1:I1`, // Ajusta el rango según tu estructura
             valueInputOption: "USER_ENTERED",
             requestBody: {
                 values: [
@@ -260,7 +260,7 @@ export async function PUT(request: Request) {
             );
         }
 
-        const range = `${month}!A:H`; // Asumiendo que los datos están entre las columnas A y H
+        const range = `${month}!A:I`; // Asumiendo que los datos están entre las columnas A y H
         const existingData = await sheets.spreadsheets.values.get({
             spreadsheetId: sheetId,
             range,
@@ -277,7 +277,7 @@ export async function PUT(request: Request) {
         }
 
         // Actualiza los datos en la hoja
-        const updateRange = `${month}!A${rowIndex + 1}:H${rowIndex + 1}`;
+        const updateRange = `${month}!A${rowIndex + 1}:I${rowIndex + 1}`;
         await sheets.spreadsheets.values.update({
             spreadsheetId: sheetId,
             range: updateRange,
@@ -340,7 +340,7 @@ export async function DELETE(request: Request) {
             );
         }
 
-        const range = `${month}!A:H`; // Asumiendo que los datos están entre las columnas A y H
+        const range = `${month}!A:I`; // Asumiendo que los datos están entre las columnas A y H
         const existingData = await sheets.spreadsheets.values.get({
             spreadsheetId: sheetId,
             range,
@@ -357,7 +357,7 @@ export async function DELETE(request: Request) {
         }
 
         // Elimina la fila configurando las celdas en blanco
-        const deleteRange = `${month}!A${rowIndex + 1}:H${rowIndex + 1}`;
+        const deleteRange = `${month}!A${rowIndex + 1}:I${rowIndex + 1}`;
         await sheets.spreadsheets.values.update({
             spreadsheetId: sheetId,
             range: deleteRange,

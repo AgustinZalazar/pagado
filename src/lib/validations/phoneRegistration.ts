@@ -7,5 +7,5 @@ export const phoneRegistrationSchema = z.object({
         .string()
         .min(6, "El número es demasiado corto")
         .max(15, "El número es demasiado largo")
-        .regex(/^\d+$/, "Solo dígitos permitidos")
+        .regex(/^\d{6,15}$/, "Debe tener entre 6 y 15 dígitos")
 }) 

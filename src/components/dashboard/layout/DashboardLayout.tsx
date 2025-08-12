@@ -20,7 +20,7 @@ const DashboardLayout = ({ children }: Props) => {
     useEffect(() => {
         if (user && !isLoading) {
             console.log(user)
-            if (user.phone === "" || !user.phone) setShowPhoneModal(true)
+            if (user.phone === "" || !user.phone || user.country === null || user.currency === null) setShowPhoneModal(true)
         }
     }, [isLoading, user])
 
@@ -31,6 +31,7 @@ const DashboardLayout = ({ children }: Props) => {
                 open={showPhoneModal}
                 onOpenChange={setShowPhoneModal}
                 onSubmit={handlePhoneSubmit}
+                user={user}
             />
             {children}
         </>
