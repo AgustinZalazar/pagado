@@ -31,9 +31,11 @@ import { LanguageSelector } from "./language-selector"
 import { MobileMenu } from "./mobile-menu"
 import { useLanguage } from "./language-context"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 
 export default function Component() {
     const { t } = useLanguage()
+    const router = useRouter()
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -115,6 +117,7 @@ export default function Component() {
                                     <Button
                                         size="lg"
                                         className="h-11 sm:h-12 px-6 sm:px-8 hover:scale-105 transition-all duration-200 hover:shadow-lg backdrop-blur-sm bg-blue-600/90 hover:bg-blue-600 text-sm sm:text-base"
+                                        onClick={() => router.push("/login")}
                                     >
                                         {t("hero.cta.primary")}
                                     </Button>
@@ -380,6 +383,7 @@ export default function Component() {
                                         size="lg"
                                         variant="secondary"
                                         className="h-11 sm:h-12 px-6 sm:px-8 hover:scale-105 transition-all duration-200 bg-white text-blue-600 hover:bg-gray-50 text-sm sm:text-base"
+                                        onClick={() => router.push("/login")}
                                     >
                                         <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                                         {t("cta.whatsapp")}
@@ -409,12 +413,12 @@ export default function Component() {
                     >
                         {t("footer.privacy")}
                     </Link>
-                    <Link
+                    {/* <Link
                         className="text-xs hover:underline underline-offset-4 hover:text-blue-600 transition-colors duration-200"
                         href="#contact"
                     >
                         {t("nav.contact")}
-                    </Link>
+                    </Link> */}
                 </nav>
             </footer>
         </div>

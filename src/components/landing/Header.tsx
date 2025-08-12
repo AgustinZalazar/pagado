@@ -42,12 +42,12 @@ const Header = () => {
                 >
                     {t("nav.pricing")}
                 </Link>
-                <Link
+                {/* <Link
                     className="text-sm font-medium hover:text-primary transition-colors duration-200 hover:scale-105"
                     href="#contact"
                 >
                     {t("nav.contact")}
-                </Link>
+                </Link> */}
                 {/* Language Selector in Desktop Navigation */}
                 <div className="ml-2">
                     <LanguageSelector />
