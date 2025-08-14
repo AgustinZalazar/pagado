@@ -194,7 +194,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full xl:w-[600px] space-y-6">
                 <FormField
                     control={form.control}
                     name="description"
@@ -214,7 +214,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
                         control={form.control}
                         name="amount"
                         render={({ field }) => (
-                            <FormItem className="flex-1" style={{ flexBasis: '70%' }}>
+                            <FormItem className="flex-1" style={{ flexBasis: '50%' }}>
                                 <FormLabel>Monto</FormLabel>
                                 <FormControl>
                                     <Input
@@ -234,7 +234,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
                         control={form.control}
                         name="currency"
                         render={({ field }) => (
-                            <FormItem className="flex-1" style={{ flexBasis: '30%' }}>
+                            <FormItem className="flex-1" style={{ flexBasis: '50%' }}>
                                 <FormLabel>Moneda</FormLabel>
                                 <FormControl>
                                     <CustomSelect
@@ -250,45 +250,46 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
                     />
                 </div>
 
-                <FormField
-                    control={form.control}
-                    name="type"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Tipo</FormLabel>
-                            <FormControl>
-                                <Select
-                                    onValueChange={field.onChange}
-                                    value={field.value}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Seleccione un tipo de transacción" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="income">Ingreso</SelectItem>
-                                        <SelectItem value="expense">Gasto</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                <div className="flex flex-col md:flex-row gap-4">
+                    <FormField
+                        control={form.control}
+                        name="type"
+                        render={({ field }) => (
+                            <FormItem className="flex-1" style={{ flexBasis: '50%' }}>
+                                <FormLabel>Tipo</FormLabel>
+                                <FormControl>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        value={field.value}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Seleccione un tipo de transacción" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem className="cursor-pointer hover:bg-gray-100" value="income">Ingreso</SelectItem>
+                                            <SelectItem className="cursor-pointer hover:bg-gray-100" value="expense">Gasto</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
 
-                <FormField
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Categoría</FormLabel>
-                            <FormControl>
-                                <SearchableColorfulSelect field={field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
+                    <FormField
+                        control={form.control}
+                        name="category"
+                        render={({ field }) => (
+                            <FormItem className="flex-1" style={{ flexBasis: '50%' }}>
+                                <FormLabel>Categoría</FormLabel>
+                                <FormControl>
+                                    <SearchableColorfulSelect field={field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
                 {/* Campo Date */}
                 <FormField
                     control={form.control}
@@ -332,71 +333,73 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
                     )}
                 />
 
-                <FormField
-                    control={form.control}
-                    name="account"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Cuenta</FormLabel>
-                            <FormControl>
-                                <Select
-                                    onValueChange={(value) => {
-                                        field.onChange(value);
-                                        handleAccountChange(value);
-                                    }}
-                                    value={field.value}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Seleccione una cuenta" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {accounts.map((account: Account) => (
-                                            <SelectItem key={account.id} value={account.title}>
-                                                {account.title}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
 
-                <FormField
-                    control={form.control}
-                    name="method"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Método de pago</FormLabel>
-                            <FormControl>
-                                <Select
-                                    onValueChange={field.onChange}
-                                    value={field.value}
-                                    disabled={!selectedAccountId}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Seleccione un método de pago" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {filteredMethods.map((method: Method) => {
-                                            const displayName = method.cardType
-                                                ? `${method.title} - ${method.cardType}`
-                                                : method.title;
-                                            return (
-                                                <SelectItem key={method.id} value={displayName}>
-                                                    {displayName}
+                <div className="flex flex-col md:flex-row gap-4">
+                    <FormField
+                        control={form.control}
+                        name="account"
+                        render={({ field }) => (
+                            <FormItem className="flex-1" style={{ flexBasis: '50%' }}>
+                                <FormLabel>Cuenta</FormLabel>
+                                <FormControl>
+                                    <Select
+                                        onValueChange={(value) => {
+                                            field.onChange(value);
+                                            handleAccountChange(value);
+                                        }}
+                                        value={field.value}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Seleccione una cuenta" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {accounts.map((account: Account) => (
+                                                <SelectItem className="cursor-pointer hover:bg-gray-100" key={account.id} value={account.title}>
+                                                    {account.title}
                                                 </SelectItem>
-                                            );
-                                        })}
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
 
+                    <FormField
+                        control={form.control}
+                        name="method"
+                        render={({ field }) => (
+                            <FormItem className="flex-1" style={{ flexBasis: '50%' }}>
+                                <FormLabel>Método de pago</FormLabel>
+                                <FormControl>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        value={field.value}
+                                        disabled={!selectedAccountId}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Seleccione un método de pago" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {filteredMethods.map((method: Method) => {
+                                                const displayName = method.cardType
+                                                    ? `${method.title} - ${method.cardType}`
+                                                    : method.title;
+                                                return (
+                                                    <SelectItem className="cursor-pointer hover:bg-gray-100" key={method.id} value={displayName}>
+                                                        {displayName}
+                                                    </SelectItem>
+                                                );
+                                            })}
+                                        </SelectContent>
+                                    </Select>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
                 <Button type="submit">Guardar</Button>
             </form>
         </Form>

@@ -13,27 +13,24 @@ import { renderFormattedAmount } from "@/helpers/formatAmount"
 
 
 const getColumns = (locale: string): ColumnDef<Transaction>[] => {
-
-
-
     return [
-        {
-            accessorKey: "id",
-            header: ({ column }) => {
-                return (
-                    <Button
-                        variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                    >
-                        Numero
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                )
-            },
-            cell: ({ row }) => {
-                return <p className="px-4">{row.getValue("id")}</p>
-            },
-        },
+        // {
+        //     accessorKey: "id",
+        //     header: ({ column }) => {
+        //         return (
+        //             <Button
+        //                 variant="ghost"
+        //                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        //             >
+        //                 Numero
+        //                 <ArrowUpDown className="ml-2 h-4 w-4" />
+        //             </Button>
+        //         )
+        //     },
+        //     cell: ({ row }) => {
+        //         return <p className="px-4">{row.getValue("id")}</p>
+        //     },
+        // },
         {
             accessorKey: "description",
             header: "Descripcion",

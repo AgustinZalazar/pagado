@@ -21,6 +21,7 @@ export function NewTransactionWindow() {
         <Dialog
             open={openDialog}
             onOpenChange={setOpenDialog}
+            modal
         >
             <DialogTrigger asChild>
                 <Button className={cn(
@@ -29,7 +30,7 @@ export function NewTransactionWindow() {
                     "dark:bg-[linear-gradient(110deg,#000103,45%,#303030,55%,#000103)] dark:text-neutral-400",
                 )}>{t('buttonAdd')}</Button>
             </DialogTrigger>
-            <DialogContent className="sm:w-[80%]">
+            <DialogContent className="max-w-[350px] rounded-md md:min-w-[650px]">
                 <DialogHeader>
                     <DialogTitle>Agregar transaccion</DialogTitle>
                     <DialogDescription>

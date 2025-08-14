@@ -158,11 +158,102 @@ const PoliticaPrivacidad = () => {
                                 También podemos recopilar información que Su navegador envía cada vez que visita nuestro Servicio o cuando accede al Servicio por o a través de un dispositivo móvil.
                             </p>
 
+                            <h4 className="text-lg font-medium text-gray-800 mt-6 mb-2">Acceso a datos de Google Drive</h4>
+                            <p className="text-gray-700 leading-relaxed">
+                                Nuestra aplicación utiliza la API de Google Drive únicamente con el alcance (scope) drive.file. Esto significa que podemos:
+                            </p>
+                            <ul className="space-y-2">
+                                <li className="flex items-start gap-2">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-gray-700">Crear nuevos archivos en tu Google Drive en tu nombre.</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-gray-700">Acceder y editar los archivos que hayas seleccionado explícitamente a través de Google Picker o que hayan sido creados por nuestra aplicación.</span>
+                                </li>
+                            </ul>
+                            <p className="text-gray-700 leading-relaxed">
+                                No podemos ni accedemos a ningún otro archivo en tu Google Drive sin tu consentimiento explícito.
+                            </p>
+
+                            <h4 className="text-lg font-medium text-gray-800 mt-6 mb-2">Datos de usuario almacenados en nuestros sistemas</h4>
+                            <p className="text-gray-700 leading-relaxed">
+                                Además de la información que permanece en Google Drive, nuestra aplicación recopila y almacena de forma segura en nuestros servidores los siguientes datos del usuario:
+                            </p>
+                            <ul className="space-y-2">
+                                <li className="flex items-start gap-2">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-gray-700">Nombre</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-gray-700">Correo electrónico</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-gray-700">Imagen de perfil</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-gray-700">Número de teléfono</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-gray-700">País</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-gray-700">Moneda</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-gray-700">ID de la hoja de cálculo de Google Drive (sheetId) vinculada a tu cuenta</span>
+                                </li>
+                            </ul>
+                            <p className="text-gray-700 leading-relaxed">
+                                Estos datos se utilizan exclusivamente para el funcionamiento y la personalización de la aplicación, y no se venden, alquilan ni comparten con terceros.
+                            </p>
+
+                            <h4 className="text-lg font-medium text-gray-800 mt-6 mb-2">Compartición y divulgación de datos</h4>
+                            <ul className="space-y-2">
+                                <li className="flex items-start gap-2">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-gray-700">No vendemos, alquilamos ni compartimos tus datos personales o de Google con terceros.</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-gray-700">Los datos de Google Drive permanecen únicamente en el archivo que hayas creado o seleccionado.</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-gray-700">No transferimos datos de Google Drive fuera de esa plataforma.</span>
+                                </li>
+                            </ul>
+
+                            <h4 className="text-lg font-medium text-gray-800 mt-6 mb-2">Retención y eliminación de datos</h4>
+                            <ul className="space-y-2">
+                                <li className="flex items-start gap-2">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-gray-700">Los datos almacenados en nuestros servidores se conservan mientras tu cuenta permanezca activa.</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-gray-700">Puedes solicitar la eliminación de tu cuenta y todos tus datos en cualquier momento enviando un correo a <a href='mailto:agusstiin.az@gmail.com'>agusstiin.az@gmail.com</a></span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-gray-700">Los datos de Google Drive se eliminan al borrar el archivo de tu Drive o revocar el acceso de nuestra aplicación desde la configuración de seguridad de tu cuenta de Google</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-gray-700">Una vez eliminados o revocados los accesos, no será posible recuperar la información.</span>
+                                </li>
+                            </ul>
+
                             <h4 className="text-lg font-medium text-gray-800 mt-6 mb-2">Información de Servicios de Redes Sociales de Terceros</h4>
                             <p className="text-gray-700 leading-relaxed">
                                 La Empresa le permite crear una cuenta e iniciar sesión para usar el Servicio a través de los siguientes Servicios de Redes Sociales de Terceros:
                             </p>
-
                             <div className="ml-6 mt-3">
                                 <ul className="space-y-2">
                                     <li className="flex items-start gap-2">
