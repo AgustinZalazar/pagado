@@ -67,6 +67,7 @@ export function formatExchangeData(data: any): FormattedRate[] {
 
 const CurrencyMarquee: React.FC = () => {
     const { exchange, isLoading, error } = useGetExchangeRate();
+    console.log({ exchange: exchange })
     const result = !isLoading ? formatExchangeData(exchange) : [];
     const [currencies, setCurrencies] = useState<CurrencyData[]>([]);
     const [isMobile, setIsMobile] = useState(false);

@@ -18,9 +18,9 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <div className="mt-4">
+                {/* <div className="mt-4">
                     <CurrencyMarquee />
-                </div>
+                </div> */}
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-6 gap-6 mt-6">
                     {/* Main Content - 4 columnas */}
