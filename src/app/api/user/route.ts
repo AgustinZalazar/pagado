@@ -8,7 +8,9 @@ export async function POST(req: Request) {
     try {
         const body = await req.json();
         const db = await getDb();
-        const newUser = db
+
+        console.log({ apiBody: body })
+        await db
             .insert(users)
             .values({
                 id: crypto.randomUUID(),
@@ -17,6 +19,7 @@ export async function POST(req: Request) {
                 email: body.email,
                 sheetId: body.sheetId,
             })
+            .execute();
         return NextResponse.json({ status: 201 });
     } catch (error) {
         console.error("Error creating user:", error);

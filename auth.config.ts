@@ -178,29 +178,11 @@ export const authConfig = async (): Promise<NextAuthConfig> => {
                     if (!userData || userData?.error === "User not found") {
                         // New user - create sheets and user account
                         const sheetsSetup = await validateAndSetupGoogleSheets(account.access_token, profile.email);
-
+                        console.log({ newUser: sheetsSetup })
                         if (!sheetsSetup.success) {
                             console.error('Failed to setup sheets:', sheetsSetup.error);
                             return false;
                         }
-
-                        // Create new user
-                        const newUserResponse = await fetch(`${process.env.NEXTAUTH_URL}api/user`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                name: profile.name,
-                                phone: "",
-                                email: profile.email,
-                                sheetId: sheetsSetup.sheetId,
-                            }),
-                        });
-
-                        if (!newUserResponse.ok) {
-                            console.error('Failed to create user');
-                            return false;
-                        }
-
                         return true;
                     }
 
@@ -213,6 +195,7 @@ export const authConfig = async (): Promise<NextAuthConfig> => {
                             return false;
                         }
 
+                        console.log({ oldUser: sheetsSetup })
                         // Update user with new sheet ID
                         const updateUserResponse = await fetch(`${process.env.NEXTAUTH_URL}api/user/${profile.email}`, {
                             method: "PATCH",
@@ -221,6 +204,8 @@ export const authConfig = async (): Promise<NextAuthConfig> => {
                                 sheetId: sheetsSetup.sheetId,
                             }),
                         });
+
+                        console.log({ apiResponse: updateUserResponse })
 
                         if (!updateUserResponse.ok) {
                             console.error('Failed to update user with new sheet ID');
@@ -280,8 +265,35 @@ export const authConfig = async (): Promise<NextAuthConfig> => {
                 }
             },
         },
+        events: {
+            async signIn({ user, account }) {
+                try {
+                    const db = await getDb();
+
+                    // Traemos al usuario de la DB para ver si tiene sheetId
+                    const dbUser = await db.select().from(users).where(eq(users.id, user.id!)).then(r => r[0]);
+
+                    if (!dbUser.sheetId) {
+                        // Crear sheet y actualizar al usuario
+                        const sheetsSetup = await validateAndSetupGoogleSheets(account!.access_token!, user.email as string);
+
+                        if (sheetsSetup.success) {
+                            await db
+                                .update(users)
+                                .set({ sheetId: sheetsSetup.sheetId })
+                                .where(eq(users.id, user.id!));
+                        }
+                    }
+
+                    // No retornamos nada
+                } catch (err) {
+                    console.error("Error updating user sheetId:", err);
+                    // No bloqueamos el login, tampoco retornamos
+                }
+            }
+        },
         pages: {
-            signIn: "login",
+            signIn: "/login",
         },
     };
 };

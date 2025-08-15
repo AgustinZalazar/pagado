@@ -59,6 +59,9 @@ export async function PATCH(
         const db = await getDb();
         const { sheetId } = await request.json();
 
+        console.log({ sheetIdAPI: sheetId })
+        console.log({ emailAPI: email })
+
         if (!sheetId) {
             return NextResponse.json({ error: "Sheet ID is required" }, { status: 400 });
         }
