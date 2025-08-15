@@ -79,13 +79,13 @@ export async function POST(req: Request) {
         for (const month of months) {
             const monthHeaders = await sheets.spreadsheets.values.get({
                 spreadsheetId: sheetId,
-                range: `${month}!A1:H1`
+                range: `${month}!A1:I1`
             });
 
             if (!monthHeaders.data.values?.[0]?.length) {
                 await sheets.spreadsheets.values.update({
                     spreadsheetId: sheetId,
-                    range: `${month}!A1:H1`,
+                    range: `${month}!A1:I1`,
                     valueInputOption: "RAW",
                     requestBody: {
                         values: [[
