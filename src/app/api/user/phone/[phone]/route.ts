@@ -1,6 +1,6 @@
 export const runtime = "nodejs";
 import { NextResponse } from "next/server";
-import { getDb } from "@/db";
+import { db } from "@/db";
 import { accounts, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/auth";
@@ -26,7 +26,6 @@ export async function GET(
 
     try {
         // Busca el usuario por email en la base de datos
-        const db = await getDb();
         const userResult = await db.select().from(users).where(eq(users.phone, phone)).limit(1);
         if (userResult.length === 0) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });

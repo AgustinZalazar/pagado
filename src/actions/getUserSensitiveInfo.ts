@@ -1,4 +1,4 @@
-import { getDb } from "@/db";
+import { db } from "@/db";
 import { accounts, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -6,7 +6,6 @@ import { eq } from "drizzle-orm";
 export async function getUserSensitiveInfo(email: string) {
     try {
         // Busca el usuario por email en la base de datos
-        const db = await getDb();
         const userResult = await db.select().from(users).where(eq(users.email, email)).limit(1);
         if (userResult.length === 0) {
             throw new Error("Usuario no encontrado");

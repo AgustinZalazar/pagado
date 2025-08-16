@@ -1,13 +1,11 @@
 export const runtime = "nodejs"; // Configura el runtime a Node.js
-
-import { getDb } from "@/db";
+import { db } from "@/db";
 import { users } from "@/db/schema";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const db = await getDb();
 
         console.log({ apiBody: body })
         await db

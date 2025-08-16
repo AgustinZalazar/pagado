@@ -1,5 +1,5 @@
 "use server"
-import { getDb } from "@/db";
+import { db } from "@/db";
 import { accounts } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -27,7 +27,6 @@ export async function refreshAccessToken(refreshToken: string, userId: string) {
         if (!response.ok) {
             throw new Error(refreshedTokens.error);
         }
-        const db = await getDb();
         // Actualiza la base de datos con los nuevos tokens
         await db
             .update(accounts)

@@ -2,7 +2,7 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import Google from "next-auth/providers/google";
 import type { NextAuthConfig } from "next-auth";
-import { getDb } from "@/db";
+import { db } from "@/db";
 import { users, accounts, sessions, verificationTokens } from "@/db/schema"
 import { refreshAccessToken } from "@/actions/updateUserToken";
 import { eq } from "drizzle-orm";
@@ -94,7 +94,6 @@ async function validateExistingSheet(accessToken: string, sheetId: string | unde
 }
 
 export const authConfig = async (): Promise<NextAuthConfig> => {
-    const db = await getDb();
 
     return {
         adapter: DrizzleAdapter(db, {
@@ -268,8 +267,6 @@ export const authConfig = async (): Promise<NextAuthConfig> => {
         events: {
             async signIn({ user, account }) {
                 try {
-                    const db = await getDb();
-
                     // Traemos al usuario de la DB para ver si tiene sheetId
                     const dbUser = await db.select().from(users).where(eq(users.id, user.id!)).then(r => r[0]);
 

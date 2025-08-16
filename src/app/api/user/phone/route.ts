@@ -1,14 +1,13 @@
 import { auth } from "@/auth"
 import { phoneRegistrationSchema } from "@/lib/validations/phoneRegistration"
 import { NextResponse } from "next/server"
-import { getDb } from "@/db";
+import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function POST(req: Request) {
     try {
         const session = await auth()
-        const db = await getDb();
         if (!session?.user) {
             return new NextResponse("Unauthorized", { status: 401 })
         }
