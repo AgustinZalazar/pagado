@@ -163,7 +163,7 @@ export const authConfig = async (): Promise<NextAuthConfig> => {
                 if (account?.provider !== "google" || !account?.access_token || !profile?.email) {
                     return false;
                 }
-                // console.log({ account: account })
+                console.log({ account: account })
                 try {
                     // Check if user exists
                     const userResponse = await fetch(`${process.env.NEXTAUTH_URL}api/user/${profile.email}`, {
