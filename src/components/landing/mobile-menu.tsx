@@ -1,14 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { Menu, X } from "lucide-react"
+import { LogIn, Menu, X } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useLanguage } from "./language-context"
+import { useRouter } from "next/navigation"
 
 export function MobileMenu() {
     const [isOpen, setIsOpen] = useState(false)
     const { t } = useLanguage()
+    const router = useRouter()
 
     return (
         <div className="md:hidden">
@@ -40,13 +42,22 @@ export function MobileMenu() {
                         >
                             {t("nav.pricing")}
                         </Link>
-                        <Link
+                        {/* <Link
                             className="text-sm font-medium hover:text-primary transition-colors duration-200"
                             href="#contact"
                             onClick={() => setIsOpen(false)}
                         >
                             {t("nav.contact")}
-                        </Link>
+                        </Link> */}
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="ml-2 hover:scale-105 transition-all duration-200 border-blue-200 hover:bg-blue-50 bg-transparent"
+                            onClick={() => router.push("/login")}
+                        >
+                            <LogIn className="w-4 h-4 mr-2" />
+                            {t("nav.login")}
+                        </Button>
                     </nav>
                 </div>
             )}

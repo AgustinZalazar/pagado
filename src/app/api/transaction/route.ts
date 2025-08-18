@@ -1,4 +1,5 @@
 import { getUserSensitiveInfo } from "@/actions/getUserSensitiveInfo";
+import { getUserByMail } from "@/app/data/user/get-user";
 import { auth } from "@/auth";
 import { getMonthNameByDate } from "@/helpers/getMonthName";
 import { google } from "googleapis";
@@ -21,7 +22,8 @@ export async function GET(request: Request) {
         const expectedToken = process.env.API_SECRET_TOKEN;
         const mail = !mailParam ? session?.user.email : mailParam
 
-        const user = await getUserSensitiveInfo(mail as string)
+        // const user = await getUserSensitiveInfo(mail as string)
+        const user = await getUserByMail(mail as string)
         const { sheetId, accessToken } = user;
 
         if (!session) {

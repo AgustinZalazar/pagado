@@ -63,7 +63,7 @@ export function AccountsList() {
 
     return (
         <div className="flex flex-wrap gap-4">
-            {accounts.lenght > 0 ?
+            {accounts.length > 0 ?
                 accounts.map((account: Account) => (
                     <div
                         key={account.id}

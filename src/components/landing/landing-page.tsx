@@ -32,6 +32,7 @@ import { MobileMenu } from "./mobile-menu"
 import { useLanguage } from "./language-context"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { DataStorageSection } from "./data-storage-section"
 
 export default function Component() {
     const { t } = useLanguage()
@@ -39,53 +40,6 @@ export default function Component() {
 
     return (
         <div className="flex flex-col min-h-screen">
-            {/* Header */}
-            {/* <header className="px-4 lg:px-24 h-14 flex items-center border-b backdrop-blur-sm bg-white/80 sticky top-0 z-50 transition-all duration-300">
-                <Link className="flex items-center justify-center group" href="/"> */}
-            {/* <Wallet className="h-5 w-5 sm:h-6 sm:w-6 text-primary group-hover:scale-110 transition-transform duration-200" />
-                    <span className="ml-2 text-base sm:text-lg font-bold">FinanceBot</span> */}
-            {/* <Image src="/logo_black.png" alt="Pagado" width={100} height={100} /> */}
-            {/* </Link> */}
-
-            {/* Desktop Navigation */}
-            {/* <nav className="ml-auto hidden md:flex gap-4 sm:gap-6 items-center">
-                    <Link
-                        className="text-sm font-medium hover:text-primary transition-colors duration-200 hover:scale-105"
-                        href="#features"
-                    >
-                        {t("nav.features")}
-                    </Link>
-                    <Link
-                        className="text-sm font-medium hover:text-primary transition-colors duration-200 hover:scale-105"
-                        href="#dashboard"
-                    >
-                        {t("nav.dashboard")}
-                    </Link>
-                    <Link
-                        className="text-sm font-medium hover:text-primary transition-colors duration-200 hover:scale-105"
-                        href="#pricing"
-                    >
-                        {t("nav.pricing")}
-                    </Link>
-                    <Link
-                        className="text-sm font-medium hover:text-primary transition-colors duration-200 hover:scale-105"
-                        href="#contact"
-                    >
-                        {t("nav.contact")}
-                    </Link>
-                    {/* Language Selector in Desktop Navigation */}
-            {/* <div className="ml-2">
-                        <LanguageSelector />
-                    </div>
-                </nav> */}
-
-            {/* Mobile Navigation */}
-            {/* <div className="ml-auto flex items-center space-x-2 md:hidden">
-                    <LanguageSelector />
-                    <MobileMenu />
-                </div>
-            </header> */}
-
             <main className="flex-1">
                 {/* Hero Section with Sophisticated Background */}
                 <section className="w-full py-8 sm:py-12 md:py-24 lg:py-32 xl:py-48 relative overflow-hidden">
@@ -273,6 +227,9 @@ export default function Component() {
                         </div>
                     </div>
                 </section>
+
+                {/* Data Storage Section */}
+                <DataStorageSection />
 
                 {/* Pricing Section */}
                 <section id="pricing" className="w-full py-8 sm:py-12 md:py-24 lg:py-32">

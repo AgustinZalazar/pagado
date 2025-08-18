@@ -5,11 +5,14 @@ import React from 'react'
 import { LanguageSelector } from './language-selector'
 import { MobileMenu } from './mobile-menu'
 import { useLanguage } from './language-context'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { Button } from '../ui/button'
+import { LogIn } from 'lucide-react'
 
 const Header = () => {
     const { t } = useLanguage()
     const pathname = usePathname();
+    const router = useRouter()
     const hideNavbar = pathname.includes('/dashboard') || pathname.includes('/login');
     if (hideNavbar) {
         return null;
@@ -52,6 +55,16 @@ const Header = () => {
                 <div className="ml-2">
                     <LanguageSelector />
                 </div>
+                {/* Login Button */}
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className="ml-2 hover:scale-105 transition-all duration-200 border-blue-200 hover:bg-blue-50 bg-transparent"
+                    onClick={() => router.push("/login")}
+                >
+                    <LogIn className="w-4 h-4 mr-2" />
+                    {t("nav.login")}
+                </Button>
             </nav>
 
             {/* Mobile Navigation */}

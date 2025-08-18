@@ -27,6 +27,7 @@ export const translations: Translations = {
     "nav.dashboard": { es: "Panel", en: "Dashboard" },
     "nav.pricing": { es: "Precios", en: "Pricing" },
     "nav.contact": { es: "Contacto", en: "Contact" },
+    "nav.login": { es: "Iniciar Sesión", en: "Login" },
 
     // Hero Section
     "hero.whatsapp.integration": { es: "Integración con WhatsApp", en: "WhatsApp Integration" },
@@ -100,6 +101,73 @@ export const translations: Translations = {
         es: "No necesitas descargar apps. Gestiona todo a través de WhatsApp con nuestro bot inteligente que entiende lenguaje natural.",
         en: "No need to download apps. Manage everything through WhatsApp with our intelligent bot that understands natural language.",
     },
+
+    // Data Storage Section - Updated to emphasize Google Sheets + Web Dashboard
+    "storage.badge": { es: "Almacenamiento Seguro", en: "Secure Storage" },
+    "storage.title": { es: "Tus Datos en tu Cuenta de Google", en: "Your Data in Your Google Account" },
+    "storage.subtitle": {
+        es: "Todos tus datos financieros se almacenan de forma segura en una hoja de cálculo de Google Sheets en tu propia cuenta. Accede y analiza esta información a través de nuestro panel web avanzado.",
+        en: "All your financial data is securely stored in a Google Sheets spreadsheet in your own account. Access and analyze this information through our advanced web dashboard.",
+    },
+    "storage.synced": { es: "Sincronizado", en: "Synced" },
+    "storage.syncing": { es: "Sincronizando", en: "Syncing" },
+    "storage.date": { es: "Fecha", en: "Date" },
+    "storage.description": { es: "Descripción", en: "Description" },
+    "storage.amount": { es: "Monto", en: "Amount" },
+    "storage.category": { es: "Categoría", en: "Category" },
+    "storage.web.analysis": { es: "Análisis del Panel Web", en: "Web Dashboard Analysis" },
+    "storage.analysis.description": {
+        es: "Los datos de tu Google Sheets se analizan automáticamente en nuestro panel web:",
+        en: "Your Google Sheets data is automatically analyzed in our web dashboard:",
+    },
+    "storage.chart.expenses": { es: "Gastos", en: "Expenses" },
+    "storage.chart.income": { es: "Ingresos", en: "Income" },
+    "storage.chart.this.month": { es: "Este mes", en: "This month" },
+    "storage.chart.growth": { es: "Crecimiento", en: "Growth" },
+    "storage.live.updates": { es: "Actualizaciones en vivo", en: "Live updates" },
+    "storage.last.update": { es: "Última actualización", en: "Last updated" },
+    "storage.features.title": { es: "Control Total de tus Datos", en: "Full Control of Your Data" },
+    "storage.features.subtitle": {
+        es: "Tu información financiera permanece en tu cuenta de Google, donde solo tú tienes acceso.",
+        en: "Your financial information stays in your Google account, where only you have access.",
+    },
+    "storage.feature.sheets.title": { es: "Google Sheets Nativo", en: "Native Google Sheets" },
+    "storage.feature.sheets.desc": {
+        es: "Todos los datos se almacenan en formato de hoja de cálculo estándar que puedes abrir y editar.",
+        en: "All data is stored in standard spreadsheet format that you can open and edit.",
+    },
+    "storage.feature.dashboard.title": { es: "Panel Web Interactivo", en: "Interactive Web Dashboard" },
+    "storage.feature.dashboard.desc": {
+        es: "Visualiza los datos de tu Google Sheets con gráficos interactivos y análisis avanzados.",
+        en: "Visualize your Google Sheets data with interactive charts and advanced analytics.",
+    },
+    "storage.feature.charts.title": { es: "Gráficos y Análisis", en: "Charts & Analytics" },
+    "storage.feature.charts.desc": {
+        es: "Transforma los datos de tu hoja de cálculo en gráficos interactivos y tendencias visuales.",
+        en: "Transform your spreadsheet data into interactive charts and visual trends.",
+    },
+    "storage.feature.analytics.title": { es: "IA y Predicciones", en: "AI & Predictions" },
+    "storage.feature.analytics.desc": {
+        es: "Obtén insights inteligentes de tus datos de Google Sheets con análisis impulsado por IA.",
+        en: "Get smart insights from your Google Sheets data with AI-powered analysis.",
+    },
+    "storage.feature.cloud.title": { es: "Sincronización en la Nube", en: "Cloud Sync" },
+    "storage.feature.cloud.desc": {
+        es: "Actualizaciones automáticas en tiempo real desde WhatsApp a tu hoja de cálculo.",
+        en: "Automatic real-time updates from WhatsApp to your spreadsheet.",
+    },
+    "storage.feature.privacy.title": { es: "Privacidad Garantizada", en: "Privacy Guaranteed" },
+    "storage.feature.privacy.desc": {
+        es: "Solo tú tienes acceso a tus datos. Nosotros no almacenamos ni vemos tu información financiera.",
+        en: "Only you have access to your data. We don't store or see your financial information.",
+    },
+    "storage.feature.export.title": { es: "Exportación Fácil", en: "Easy Export" },
+    "storage.feature.export.desc": {
+        es: "Descarga tus datos en Excel, PDF o cualquier formato que necesites desde Google Sheets.",
+        en: "Download your data in Excel, PDF, or any format you need from Google Sheets.",
+    },
+    "storage.cta.connect": { es: "Conectar Google Sheets", en: "Connect Google Sheets" },
+    "storage.cta.learn": { es: "Saber Más", en: "Learn More" },
 
     // WhatsApp Bot Section
     "bot.badge": { es: "Bot Impulsado por IA", en: "AI-Powered Bot" },
