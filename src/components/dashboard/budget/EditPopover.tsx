@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Category } from '@/types/category'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useDeleteCategory } from '@/hooks/useGetCategories';
+import { cn } from '@/lib/utils';
 
 interface Props {
     item: Category,
@@ -32,7 +33,14 @@ const EditPopover = ({ item, totalPercentage }: Props) => {
                         <Edit className="w-4 text-gray-600" /> Editar
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:w-[80%]">
+                <DialogContent className={cn(
+                    // Layout base
+                    "w-[95vw] max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl",
+                    // Ajustes responsive
+                    "mx-auto rounded-xl p-6",
+                    // Manejo de contenido grande
+                    "max-h-[90vh] overflow-y-auto"
+                )}>
                     <DialogHeader>
                         <DialogTitle>Editar categoria</DialogTitle>
                         <DialogDescription>

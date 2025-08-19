@@ -46,7 +46,12 @@ export function DialogMethod({ method, isEdit, idAccount }: Props) {
                     </Button>
                 }
             </DialogTrigger>
-            <DialogContent className="sm:w-[80%]">
+            <DialogContent className={cn(
+                // Layout base
+                "w-[95vw] max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl",
+                // Ajustes responsive
+                "mx-auto rounded-xl p-6",
+            )}>
                 <DialogHeader>
                     <DialogTitle>Agregar metodo de pago</DialogTitle>
                     <DialogDescription>

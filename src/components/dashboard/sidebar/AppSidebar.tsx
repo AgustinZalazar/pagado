@@ -120,13 +120,15 @@ const AppSidebar = ({ locale }: { locale: string }) => {
                                 <SidebarMenuButton asChild>
                                     {item.coming ? (
                                         // <div >
-                                        <TooltipProvider >
-                                            <Tooltip >
-                                                <TooltipTrigger className={`${open ? "px-5 py-2" : "p-2 h-8"} opacity-50 cursor-not-allowed flex items-center gap-2 relative`}>
+                                        <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger
+                                                    className={`${open ? "px-5 py-2" : "p-2 h-8"} opacity-50 cursor-not-allowed flex items-center gap-2 relative`}
+                                                >
                                                     <item.icon width={16} height={16} />
                                                     <span className={`text-base ${open ? "block" : "hidden"}`}>{item.title}</span>
                                                 </TooltipTrigger>
-                                                <TooltipContent>
+                                                <TooltipContent className="hidden md:block">
                                                     <p>Muy pronto!</p>
                                                 </TooltipContent>
                                             </Tooltip>

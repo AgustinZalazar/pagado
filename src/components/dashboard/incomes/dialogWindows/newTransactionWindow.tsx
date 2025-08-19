@@ -30,7 +30,14 @@ export function NewTransactionWindow() {
                     "dark:bg-[linear-gradient(110deg,#000103,45%,#303030,55%,#000103)] dark:text-neutral-400",
                 )}>{t('buttonAdd')}</Button>
             </DialogTrigger>
-            <DialogContent className="max-w-[350px] rounded-md md:min-w-[650px]">
+            <DialogContent className={cn(
+                // Layout base
+                "w-[95vw] max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl",
+                // Ajustes responsive
+                "mx-auto rounded-xl p-6",
+                // Manejo de contenido grande
+                "max-h-[90vh] overflow-y-auto"
+            )}>
                 <DialogHeader>
                     <DialogTitle>Agregar transaccion</DialogTitle>
                     <DialogDescription>

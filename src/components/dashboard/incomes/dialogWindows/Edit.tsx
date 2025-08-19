@@ -14,6 +14,7 @@ import React, { useState } from "react";
 import { FormTransaction } from "../formTransaction";
 import { Pencil } from "lucide-react";
 import { Transaction } from "@/types/transaction";
+import { cn } from "@/lib/utils";
 
 interface Props {
     transaction: Transaction
@@ -32,7 +33,14 @@ export function EditDialogWindow({ transaction }: Props) {
                     <Pencil className="w-4 text-gray-600" />
                 </button>
             </DialogTrigger>
-            <DialogContent className="sm:w-[80%]">
+            <DialogContent className={cn(
+                // Layout base
+                "w-[95vw] max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl",
+                // Ajustes responsive
+                "mx-auto rounded-xl p-6",
+                // Manejo de contenido grande
+                "max-h-[90vh] overflow-y-auto"
+            )}>
                 <DialogHeader>
                     <DialogTitle>Editar transaccion</DialogTitle>
                     <DialogDescription>
