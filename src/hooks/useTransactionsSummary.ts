@@ -160,7 +160,7 @@ export const useTransactionsSummary = (
         queryFn: async () => {
             const currentRes = await fetch(`${API_URL}api/transaction?month=${currentMonth}`);
             const previousRes = await fetch(`${API_URL}api/transaction?month=${previousMonth}`);
-
+            console.log("fetching transactions summary");
             if (!currentRes.ok || !previousRes.ok)
                 throw new Error("Error al cargar transacciones");
 
@@ -196,6 +196,9 @@ export const useTransactionsSummary = (
             };
         },
         staleTime: 1000 * 60 * 5,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
     });
 
     return {

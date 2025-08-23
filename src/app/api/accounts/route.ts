@@ -1,4 +1,5 @@
 import { getUserSensitiveInfo } from "@/actions/getUserSensitiveInfo";
+import { getUserByMail } from "@/app/data/user/get-user";
 import { auth } from "@/auth";
 import { google } from "googleapis";
 import { revalidateTag } from "next/cache";
@@ -18,7 +19,8 @@ export async function GET(request: Request) {
 
         const mail = !mailParam ? session?.user.email : mailParam
 
-        const user = await getUserSensitiveInfo(mail as string)
+        // const user = await getUserSensitiveInfo(mail as string)
+        const user = await getUserByMail(mail as string)
         const { sheetId, accessToken } = user;
 
         if (!session) {

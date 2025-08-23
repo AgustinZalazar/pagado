@@ -6,9 +6,6 @@ import getColumns from "../DataTableComponents/columns";
 import { Transaction } from "@/types/transaction";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Input } from "@/components/ui/input";
-import { FilterSheetWindow } from "./filtersSheetWindow";
-import { NewTransactionWindow } from "./dialogWindows/newTransactionWindow";
 
 interface Props {
     data: Transaction[]

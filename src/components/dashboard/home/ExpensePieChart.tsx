@@ -1,19 +1,11 @@
 "use client"
 import React, { useState } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { Car, Home, Zap, Gift, ShoppingCart, Coffee, MoreHorizontal } from 'lucide-react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { BookX } from 'lucide-react';
 import { useTotalByCategory } from '@/hooks/useTotalByCategory';
 import { getIconComponent } from '@/data/icons';
-
-const expenseData = [
-    { name: 'Auto', value: 45000, color: '#3b82f6', icon: Car },
-    { name: 'Servicios', value: 32000, color: '#10b981', icon: Zap },
-    { name: 'Hogar', value: 28000, color: '#f59e0b', icon: Home },
-    { name: 'Regalos', value: 15000, color: '#ef4444', icon: Gift },
-    { name: 'Compras', value: 22000, color: '#8b5cf6', icon: ShoppingCart },
-    { name: 'Entretenimiento', value: 18000, color: '#06b6d4', icon: Coffee },
-    { name: 'Otros', value: 12000, color: '#6b7280', icon: MoreHorizontal },
-];
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 const ExpensePieChart: React.FC = () => {
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -21,23 +13,19 @@ const ExpensePieChart: React.FC = () => {
     const currentDate = date.split("T")[0];
     const { totalByCategory, isLoading } = useTotalByCategory(currentDate)
     const total = totalByCategory.reduce((sum, item) => sum + item.value, 0);
+    const router = useRouter();
 
-    const onPieEnter = (_: any, index: number) => {
-        setActiveIndex(index);
-    };
-
-    const onPieLeave = () => {
-        setActiveIndex(null);
-    };
+    const onPieEnter = (_: any, index: number) => setActiveIndex(index);
+    const onPieLeave = () => setActiveIndex(null);
 
     const CustomTooltip = ({ active, payload }: any) => {
         if (active && payload && payload.length) {
             const data = payload[0];
             const percentage = ((data.value / total) * 100).toFixed(1);
             return (
-                <div className="bg-white p-3 rounded-lg shadow-lg border">
-                    <p className="font-semibold text-gray-800">{data.name}</p>
-                    <p className="text-sm text-gray-600">
+                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+                    <p className="font-semibold text-gray-800 dark:text-gray-100">{data.name}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                         ${data.value.toLocaleString('es-AR')} ({percentage}%)
                     </p>
                 </div>
@@ -47,11 +35,31 @@ const ExpensePieChart: React.FC = () => {
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 relative">
+            {!isLoading &&
+                totalByCategory.length === 0 &&
+                <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/40 to-white/20 dark:from-gray-800/60 dark:via-gray-800/40 dark:to-gray-800/20 backdrop-blur-sm z-10 rounded-xl flex items-center justify-center">
+                    <div className="text-center">
+                        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl px-6 py-4 shadow-xl border border-white/20 dark:border-gray-700">
+                            <div className="flex items-center justify-center mb-2">
+                                <div className="bg-gradient-to-r from-black to-gray-600 dark:from-gray-700 dark:to-gray-500 p-3 rounded-full">
+                                    <BookX className="w-6 h-6 text-white" />
+                                </div>
+                            </div>
+                            <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">No hay gastos por categoría cargados</h4>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Por favor cargue un gasto para ver la información aquí.</p>
+                            <Button variant="link" className='mt-4 font-bold dark:text-blue-400' onClick={() => { router.push('/incomes') }}>
+                                Agregar Gasto
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            }
+
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h3 className="text-xl font-bold text-gray-800">Gastos por Categoría</h3>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Gastos por Categoría</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         Total: ${total.toLocaleString('es-AR')}
                     </p>
                 </div>
@@ -78,10 +86,10 @@ const ExpensePieChart: React.FC = () => {
                                         <Cell
                                             key={`cell-${index}`}
                                             fill={entry.color}
-                                            stroke={activeIndex === index ? '#fff' : 'none'}
+                                            stroke={activeIndex === index ? '#1f2937' : 'none'} // dark: bg-gray-800
                                             strokeWidth={activeIndex === index ? 3 : 0}
                                             style={{
-                                                filter: activeIndex === index ? 'brightness(1.1)' : 'none',
+                                                filter: activeIndex === index ? 'brightness(1.15)' : 'none',
                                                 transform: activeIndex === index ? 'scale(1.05)' : 'scale(1)',
                                                 transformOrigin: 'center',
                                                 transition: 'all 0.2s ease-in-out'
@@ -89,11 +97,13 @@ const ExpensePieChart: React.FC = () => {
                                         />
                                     ))}
                                 </Pie>
-                                <Tooltip content={<CustomTooltip />} />
+                                <Tooltip
+                                    content={<CustomTooltip />}
+                                    wrapperStyle={{ outline: 'none' }}
+                                />
                             </PieChart>
                         </ResponsiveContainer>
-                    )
-                    }
+                    )}
                 </div>
 
                 {/* Legend with Icons */}
@@ -108,7 +118,10 @@ const ExpensePieChart: React.FC = () => {
                                 return (
                                     <div
                                         key={item.name}
-                                        className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 cursor-pointer ${isActive ? 'bg-gray-50 shadow-md' : 'hover:bg-gray-50'
+                                        className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 cursor-pointer 
+                                    ${isActive
+                                                ? 'bg-gray-100 dark:bg-gray-800 shadow-md'
+                                                : 'hover:bg-gray-50 dark:hover:bg-gray-700'
                                             }`}
                                         onMouseEnter={() => setActiveIndex(index)}
                                         onMouseLeave={() => setActiveIndex(null)}
@@ -123,13 +136,13 @@ const ExpensePieChart: React.FC = () => {
                                                     style={{ color: item.color }}
                                                 />
                                             </div>
-                                            <span className="font-medium text-gray-700">{item.name}</span>
+                                            <span className="font-medium text-gray-700 dark:text-gray-200">{item.name}</span>
                                         </div>
                                         <div className="text-right">
-                                            <div className="font-semibold text-gray-800">
+                                            <div className="font-semibold text-gray-800 dark:text-gray-100">
                                                 ${item.value.toLocaleString('es-AR')}
                                             </div>
-                                            <div className="text-sm text-gray-500">
+                                            <div className="text-sm text-gray-500 dark:text-gray-400">
                                                 {percentage}%
                                             </div>
                                         </div>
@@ -137,8 +150,7 @@ const ExpensePieChart: React.FC = () => {
                                 );
                             })}
                         </>
-                    )
-                    }
+                    )}
                 </div>
             </div>
         </div>

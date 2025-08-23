@@ -40,9 +40,9 @@ const getColumns = (locale: string): ColumnDef<Transaction>[] => {
             header: locale === "es" ? "Tipo" : "Type",
             cell: ({ row }) => {
                 if (row.getValue("type") === "expense") {
-                    return <p className="rounded-lg bg-[#f9cbca] text-red-400 px-2 py-1 text-center w-fit capitalize">{locale === "es" ? "Gasto" : "Expense"}</p>
+                    return <p className="rounded-lg bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 px-2 py-1 text-center w-fit capitalize">{locale === "es" ? "Gasto" : "Expense"}</p>
                 } else {
-                    return <p className="rounded-lg bg-[#bce9d4e3] text-[#00b743] px-2 py-1 text-center w-fit capitalize">{locale === "es" ? "Ingreso" : "Income"}</p>
+                    return <p className="rounded-lg bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 px-2 py-1 text-center w-fit capitalize">{locale === "es" ? "Ingreso" : "Income"}</p>
                 }
             },
         },

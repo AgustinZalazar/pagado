@@ -110,13 +110,16 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                 </div>
                 <NewTransactionWindow />
             </div>
-            <div className="rounded-md border mb-4 overflow-scroll md:overflow-visible max-w-[380px] md:max-w-full">
-                <Table>
+            <div className="rounded-md border mb-4 overflow-scroll md:overflow-visible max-w-[380px] md:max-w-full border-gray-200 dark:border-gray-700">
+                <Table className="min-w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200">
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
+                            <TableRow key={headerGroup.id} className="bg-gray-50 dark:bg-gray-800">
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id}>
+                                    <TableHead
+                                        key={header.id}
+                                        className="border-b border-gray-200 dark:border-gray-700"
+                                    >
                                         {flexRender(header.column.columnDef.header, header.getContext())}
                                     </TableHead>
                                 ))}
@@ -126,9 +129,12 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id}>
+                                <TableRow
+                                    key={row.id}
+                                    className="border-b border-gray-100 dark:border-gray-700 last:border-0 py-4"
+                                >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
+                                        <TableCell key={cell.id} className="px-4 py-2 sm:px-6 sm:py-3">
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
@@ -136,7 +142,10 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={columns.length} className="text-center">
+                                <TableCell
+                                    colSpan={columns.length}
+                                    className="text-center text-gray-500 dark:text-gray-400 py-4"
+                                >
                                     No results.
                                 </TableCell>
                             </TableRow>
@@ -144,6 +153,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                     </TableBody>
                 </Table>
             </div>
+
             {filteredData.length > 5 &&
                 <PaginationTable
                     totalPages={Math.ceil(filteredData.length / itemsPerPage)}

@@ -61,7 +61,7 @@ export default async function RootLayout({
                                             <div className="w-full flex justify-between items-center gap-2 px-4">
                                                 <SidebarTrigger className="-ml-1" />
                                                 <div className="ml-auto">
-                                                    {/* <DarkmodeToggle /> */}
+                                                    <DarkmodeToggle />
                                                 </div>
                                             </div>
                                         </header>

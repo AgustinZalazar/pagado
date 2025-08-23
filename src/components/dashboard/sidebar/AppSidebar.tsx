@@ -183,7 +183,7 @@ const AppSidebar = ({ locale }: { locale: string }) => {
                     </DropdownMenu>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                    <p className={`text-xs text-gray-400 text-center ${open ? "block" : "hidden"}`}>Version Beta 0.0.1</p>
+                    <p className={`text-xs text-gray-400 text-center ${open ? "block" : "hidden"}`}>Version Beta 0.0.2</p>
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarFooter>

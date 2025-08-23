@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { Suspense } from 'react';
 import { SummaryCards } from '@/components/dashboard/incomes/summaryCards'
 import { DataTableContainer } from '@/components/dashboard/incomes/DataTableContainer';
 import { useTranslations } from 'next-intl';
@@ -36,18 +36,22 @@ const Incomes = () => {
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <h1 className="text-3xl font-bold">{t('title')}</h1>
-            <SummaryCards
-                totalIncome={totalIncome}
-                totalExpenses={totalExpenses}
-                totalCategory={totalCategory!}
-                totalCat={totalCat}
-                totalMethod={totalMethod!}
-                totalMetCurrentMonth={totalMetCurrentMonth}
-                totalLastIncome={totalLastIncome}
-                totalLastExpense={totalLastExpenses}
-                otherCurrencies={otherCurrencies}
-            />
-            <DataTableContainer data={transactions} isLoading={isLoading} />
+            <Suspense fallback={<div className="text-center"></div>}>
+                <>
+                    <SummaryCards
+                        totalIncome={totalIncome}
+                        totalExpenses={totalExpenses}
+                        totalCategory={totalCategory!}
+                        totalCat={totalCat}
+                        totalMethod={totalMethod!}
+                        totalMetCurrentMonth={totalMetCurrentMonth}
+                        totalLastIncome={totalLastIncome}
+                        totalLastExpense={totalLastExpenses}
+                        otherCurrencies={otherCurrencies}
+                    />
+                    <DataTableContainer data={transactions} isLoading={isLoading} />
+                </>
+            </Suspense>
         </div>
     )
 }

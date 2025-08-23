@@ -1,8 +1,8 @@
 "use client"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { getTotalExpenses } from "@/actions/getTotalExpenses";
-import { getTotalIncomes } from "@/actions/getTotalIncomes";
+import { getTotalExpenses } from "@/src/actions/getTotalExpenses";
+import { getTotalIncomes } from "@/src/actions/getTotalIncomes";
 import { Transaction } from "@/types/transaction";
 import { Dispatch, SetStateAction } from "react";
 
@@ -185,18 +185,21 @@ export const useDeleteTransaction = () => {
 
 export const useGetExpensesByMonth = () => {
     const { data, isLoading, error } = useQuery({
-        queryKey: ["transactionsByMonty"],
+        queryKey: ["transactionsByMonth"],
         queryFn: async () => {
             const response = await fetch(`${API_URL}api/transaction/summary/bymonth`);
             if (!response.ok) throw new Error(`Error: ${response.statusText}`);
 
             const resp = await response.json();
-
+            console.log("fetching transactions by month");
             // console.log({ resp: resp })
 
             return resp;
         },
         staleTime: 1000 * 60 * 5, // 🟢 Cachea por 5 minutos antes de volver a hacer la solicitud
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
     });
 
     return {

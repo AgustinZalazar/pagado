@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import EditPopover from './EditPopover';
 import { getIconComponent } from '@/data/icons';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 const CardSkeleton = () => {
     return (
@@ -63,11 +64,24 @@ const CardsContainer = ({ categories, type, isLoading }: Props) => {
                     return (
                         <Card
                             key={item.id}
-                            className="overflow-hidden relative w-full"
+                            className={cn(
+                                "overflow-hidden relative w-full rounded-xl shadow-md transition-colors",
+                                // Fondo adaptado al tema
+                                "bg-white border border-neutral-200",
+                                "dark:bg-neutral-900 dark:border-neutral-700"
+                            )}
                         >
                             <CardContent className="p-6">
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="p-2 rounded-md bg-primary/10">
+                                    <div
+                                        className={cn(
+                                            "p-2 rounded-md",
+                                            // En light el ícono se resalta sobre gris claro
+                                            "bg-neutral-100",
+                                            // En dark lo mismo pero invertido
+                                            "dark:bg-neutral-800"
+                                        )}
+                                    >
                                         {item.icon ? (
                                             <IconComponent
                                                 style={{ color: item.color }}
@@ -88,10 +102,20 @@ const CardsContainer = ({ categories, type, isLoading }: Props) => {
                                     </div>
                                 </div>
                                 <div className="space-y-1">
-                                    <h3 className="text-2xl font-bold tracking-tight">
+                                    <h3
+                                        className={cn(
+                                            "text-2xl font-bold tracking-tight",
+                                            "text-neutral-800 dark:text-neutral-100"
+                                        )}
+                                    >
                                         {item.nombre}
                                     </h3>
-                                    <p className="text-sm text-muted-foreground">
+                                    <p
+                                        className={cn(
+                                            "text-sm",
+                                            "text-neutral-500 dark:text-neutral-400"
+                                        )}
+                                    >
                                         {item.porcentaje}%
                                     </p>
                                 </div>
@@ -99,7 +123,11 @@ const CardsContainer = ({ categories, type, isLoading }: Props) => {
                             <CardFooter className="p-0">
                                 <Progress
                                     value={item.porcentaje}
-                                    className="h-1 w-full rounded-none"
+                                    className={cn(
+                                        "h-1 w-full rounded-none",
+                                        // Progress bar visible en ambos modos
+                                        "bg-neutral-100 dark:bg-neutral-800"
+                                    )}
                                 />
                             </CardFooter>
                         </Card>
@@ -111,6 +139,7 @@ const CardsContainer = ({ categories, type, isLoading }: Props) => {
                 </h2>
             )}
         </div>
+
     )
 }
 

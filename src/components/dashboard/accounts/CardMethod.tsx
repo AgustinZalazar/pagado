@@ -30,30 +30,51 @@ interface Props {
 const CardMethod = ({ method }: Props) => {
     const { deleteMethod } = useDeleteMethod()
 
-    return <Card key={method.id} className="overflow-hidden">
+    return <Card
+        key={method.id}
+        className="overflow-hidden border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900"
+    >
         <CardContent className="p-0">
             <div className="flex items-center gap-4 p-3">
-                <div className={`rounded-full p-2 ${getCardTypeBg(method.cardType)}`}>
+                {/* Ícono tarjeta */}
+                <div
+                    className={`rounded-full p-2 ${getCardTypeBg(method.cardType)}`}
+                >
                     <CreditCard className="h-5 w-5" />
                 </div>
 
+                {/* Info */}
                 <div className="flex-1">
                     <div className="flex items-center gap-2">
-                        <span className="font-medium text-gray-600">{method.title}</span>
+                        <span className="font-medium text-gray-600 dark:text-gray-200">
+                            {method.title}
+                        </span>
                     </div>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-gray-400 dark:text-gray-400">
                         {method.cardType}
                     </p>
                 </div>
-                <div>
-                    <DialogMethod isEdit method={method} idAccount={method.idAccount as string} />
-                    <Button variant="ghost" size="sm" className="rounded-full" onClick={() => deleteMethod(method.id)}>
+
+                {/* Acciones */}
+                <div className="flex items-center gap-1">
+                    <DialogMethod
+                        isEdit
+                        method={method}
+                        idAccount={method.idAccount as string}
+                    />
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="rounded-full text-gray-600 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
+                        onClick={() => deleteMethod(method.id)}
+                    >
                         <Trash2 className="h-4 w-4" />
                     </Button>
                 </div>
             </div>
         </CardContent>
     </Card>
+
 }
 
 export default CardMethod

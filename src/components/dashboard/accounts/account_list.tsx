@@ -63,13 +63,18 @@ export function AccountsList() {
 
     return (
         <div className="flex flex-wrap gap-4">
-            {accounts.length > 0 ?
+            {accounts.length > 0 ? (
                 accounts.map((account: Account) => (
                     <div
                         key={account.id}
-                        className="rounded-xl overflow-hidden shadow-lg border border-gray-100 w-[395px] flex-shrink-0"
-                        style={{ height: expandedAccounts.includes(+account.id) ? "fit-content" : "fit-content" }}
+                        className="rounded-xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-700 w-[395px] flex-shrink-0"
+                        style={{
+                            height: expandedAccounts.includes(+account.id)
+                                ? "fit-content"
+                                : "fit-content",
+                        }}
                     >
+                        {/* Header */}
                         <div className={`bg-gradient-to-r ${account.color} p-6 text-white`}>
                             <div className="flex justify-between items-center">
                                 <div className="flex items-center gap-3">
@@ -78,44 +83,45 @@ export function AccountsList() {
                                     </div>
                                     <div>
                                         <h3 className="text-xl font-bold">{account.title}</h3>
-                                        <p className="text-white/80 text-sm">
-                                            • {account.type}
-                                        </p>
+                                        <p className="text-white/80 text-sm">• {account.type}</p>
                                     </div>
                                 </div>
-                                {/* <div className="text-right">
-                            <p className="text-white/80 text-xs uppercase tracking-wider">Available Balance</p>
-                            <p className="text-2xl font-bold flex items-center justify-end">
-                                <DollarSign className="h-5 w-5" />
-                                {account.balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                            </p>
-                            </div> */}
                             </div>
                         </div>
 
-                        <div className="bg-white">
+                        {/* Content */}
+                        <div className="bg-white dark:bg-gray-900">
                             <button
                                 onClick={() => toggleAccountExpansion(+account.id)}
-                                className="flex items-center justify-between w-full p-4 hover:bg-gray-50 transition-colors"
+                                className="flex items-center justify-between w-full p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                             >
-                                <div className="flex items-center gap-2 font-medium text-gray-700">
+                                <div className="flex items-center gap-2 font-medium text-gray-700 dark:text-gray-200">
                                     <Wallet className="h-5 w-5" />
                                     <span>Metodos de pago</span>
-                                    <Badge variant="outline" className="ml-2 bg-gray-100">
-                                        {methods.filter((method: Method) => method.idAccount === account.id).length}
+                                    <Badge
+                                        variant="outline"
+                                        className="ml-2 bg-gray-100 dark:bg-gray-800 dark:text-gray-300"
+                                    >
+                                        {
+                                            methods.filter(
+                                                (method: Method) => method.idAccount === account.id
+                                            ).length
+                                        }
                                     </Badge>
                                 </div>
-                                <ChevronsUpDown className="h-4 w-4 text-gray-500" />
+                                <ChevronsUpDown className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                             </button>
 
                             {expandedAccounts.includes(+account.id) && (
                                 <div className="px-4 pb-4">
-                                    <Separator className="my-2" />
+                                    <Separator className="my-2 dark:bg-gray-700" />
 
                                     <div className="space-y-3 mt-3">
-                                        {methods.filter((method: Method) => method.idAccount === account.id).map((method: Method) => (
-                                            <CardMethod key={method.id} method={method} />
-                                        ))}
+                                        {methods
+                                            .filter((method: Method) => method.idAccount === account.id)
+                                            .map((method: Method) => (
+                                                <CardMethod key={method.id} method={method} />
+                                            ))}
 
                                         <DialogMethod idAccount={account.id} />
                                     </div>
@@ -124,9 +130,12 @@ export function AccountsList() {
                         </div>
                     </div>
                 ))
-                :
-                <h2 className="text-xl font-bold m-4 text-center"> Por favor ingrese una cuenta y un metodo de pago</h2>
-            }
+            ) : (
+                <h2 className="text-xl font-bold m-4 text-center text-gray-700 dark:text-gray-300">
+                    Por favor ingrese una cuenta y un metodo de pago
+                </h2>
+            )}
         </div>
+
     )
 }
