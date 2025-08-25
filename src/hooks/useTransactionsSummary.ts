@@ -181,6 +181,20 @@ export const useTransactionsSummary = (
                 previousTransactions.filter((t: Transaction) => t.currency === defaultCurrency)
             );
 
+            console.log({
+                transactions: currentTransactions,
+                totalIncome: currentTotals.default.income,
+                totalExpenses: currentTotals.default.expenses,
+                totalLastIncome: previousTotals.default.income,
+                totalLastExpenses: previousTotals.default.expenses,
+                categorySummary,
+                methodSummary,
+                otherCurrencies: {
+                    current: currentTotals.others,
+                    previous: previousTotals.others
+                }
+            })
+
             return {
                 transactions: currentTransactions,
                 totalIncome: currentTotals.default.income,
