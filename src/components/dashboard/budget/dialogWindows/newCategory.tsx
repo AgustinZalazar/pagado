@@ -10,10 +10,10 @@ import {
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { FormCategory } from "../FormCategories";
-import ShineButton from "../../buttons/ShineButton";
+import { ShineButton } from "../../buttons/ShineButton";
 
 export function NewCategoryWindow() {
-    const t = useTranslations('Dashboard.Incomes');
+    const t = useTranslations('Dashboard.Budget');
     const [openCategoryDialog, setOpenCategoryDialog] = useState(false)
     return (
         <Dialog
@@ -21,20 +21,17 @@ export function NewCategoryWindow() {
             onOpenChange={setOpenCategoryDialog}
         >
             <DialogTrigger asChild>
-                <ShineButton text="Agregar categoría" />
+                <ShineButton text={t("addButton")} />
             </DialogTrigger>
             <DialogContent className={cn(
-                // Layout base
                 "w-[95vw] max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl",
-                // Ajustes responsive
                 "mx-auto rounded-xl p-6",
-                // Manejo de contenido grande
                 "max-h-[90vh] overflow-y-auto"
             )}>
                 <DialogHeader>
-                    <DialogTitle>Agregar categoria</DialogTitle>
+                    <DialogTitle>{t("titleDialog")}</DialogTitle>
                     <DialogDescription>
-                        Crea una nueva categoria
+                        {t("descriptionDialog")}
                     </DialogDescription>
                 </DialogHeader>
                 <FormCategory setOpenPopover={setOpenCategoryDialog} />

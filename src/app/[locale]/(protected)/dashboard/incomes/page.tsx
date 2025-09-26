@@ -36,22 +36,22 @@ const Incomes = () => {
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <h1 className="text-3xl font-bold">{t('title')}</h1>
-            <Suspense fallback={<div className="text-center"></div>}>
-                <>
-                    <SummaryCards
-                        totalIncome={totalIncome}
-                        totalExpenses={totalExpenses}
-                        totalCategory={totalCategory!}
-                        totalCat={totalCat}
-                        totalMethod={totalMethod!}
-                        totalMetCurrentMonth={totalMetCurrentMonth}
-                        totalLastIncome={totalLastIncome}
-                        totalLastExpense={totalLastExpenses}
-                        otherCurrencies={otherCurrencies}
-                    />
-                    <DataTableContainer data={transactions} isLoading={isLoading} />
-                </>
-            </Suspense>
+            {/* <Suspense fallback={<div className="text-center"></div>}> */}
+            <>
+                <SummaryCards
+                    totalIncome={totalIncome}
+                    totalExpenses={totalExpenses}
+                    totalCategory={totalCategory!}
+                    totalCat={totalCat}
+                    totalMethod={totalMethod!}
+                    totalMetCurrentMonth={totalMetCurrentMonth}
+                    totalLastIncome={totalLastIncome}
+                    totalLastExpense={totalLastExpenses}
+                    otherCurrencies={otherCurrencies}
+                />
+                <DataTableContainer data={transactions} isLoading={isLoading} />
+            </>
+            {/* </Suspense> */}
         </div>
     )
 }

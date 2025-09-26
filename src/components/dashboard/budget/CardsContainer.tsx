@@ -68,17 +68,17 @@ const CardsContainer = ({ categories, type, isLoading }: Props) => {
                                 "overflow-hidden relative w-full rounded-xl shadow-md transition-colors",
                                 // Fondo adaptado al tema
                                 "bg-white border border-neutral-200",
-                                "dark:bg-neutral-900 dark:border-neutral-700"
+                                "dark:bg-gray-900 dark:border-gray-700"
                             )}
                         >
                             <CardContent className="p-6">
                                 <div className="flex items-center justify-between mb-4">
                                     <div
                                         className={cn(
-                                            "p-2 rounded-md",
-                                            // En light el ícono se resalta sobre gris claro
+                                            "p-2 rounded-md transition-colors",
+                                            // Light
                                             "bg-neutral-100",
-                                            // En dark lo mismo pero invertido
+                                            // Dark
                                             "dark:bg-neutral-800"
                                         )}
                                     >
@@ -101,10 +101,11 @@ const CardsContainer = ({ categories, type, isLoading }: Props) => {
                                         />
                                     </div>
                                 </div>
+
                                 <div className="space-y-1">
                                     <h3
                                         className={cn(
-                                            "text-2xl font-bold tracking-tight",
+                                            "text-2xl font-bold tracking-tight transition-colors",
                                             "text-neutral-800 dark:text-neutral-100"
                                         )}
                                     >
@@ -112,7 +113,7 @@ const CardsContainer = ({ categories, type, isLoading }: Props) => {
                                     </h3>
                                     <p
                                         className={cn(
-                                            "text-sm",
+                                            "text-sm transition-colors",
                                             "text-neutral-500 dark:text-neutral-400"
                                         )}
                                     >
@@ -120,12 +121,13 @@ const CardsContainer = ({ categories, type, isLoading }: Props) => {
                                     </p>
                                 </div>
                             </CardContent>
+
                             <CardFooter className="p-0">
                                 <Progress
                                     value={item.porcentaje}
                                     className={cn(
                                         "h-1 w-full rounded-none",
-                                        // Progress bar visible en ambos modos
+                                        // Track del progress bar
                                         "bg-neutral-100 dark:bg-neutral-800"
                                     )}
                                 />
@@ -134,7 +136,12 @@ const CardsContainer = ({ categories, type, isLoading }: Props) => {
                     );
                 })
             ) : (
-                <h2 className="text-xl font-bold m-4 text-center">
+                <h2
+                    className={cn(
+                        "text-xl font-bold m-4 text-center transition-colors",
+                        "text-neutral-800 dark:text-neutral-100"
+                    )}
+                >
                     Por favor ingrese una categoría
                 </h2>
             )}

@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { BarChartSkeleton } from '../BarChartSkeleton';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 
 const monthMap: Record<string, string> = {
     "Enero": "Ene",
@@ -42,6 +43,7 @@ const IncomeChart: React.FC = () => {
     const [currentData, setCurrentData] = useState<IncomeItem[]>([]);
     const { summary, isLoading } = useGetExpensesByMonth();
     const router = useRouter();
+    const t = useTranslations('Dashboard.Home.IncomeChart');
 
     useEffect(() => {
         const dataMonth = monthOrder.map((month) => ({
@@ -70,10 +72,10 @@ const IncomeChart: React.FC = () => {
                                         <BookX className="w-6 h-6 text-white" />
                                     </div>
                                 </div>
-                                <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">No hay ingresos cargados</h4>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">Por favor cargue un ingreso para ver la información aquí.</p>
+                                <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">{t('emptyDataTitle')}</h4>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">{t('emptyDataDescription')}</p>
                                 <Button variant="link" className="mt-4 font-bold dark:text-green-400" onClick={() => router.push('/incomes')}>
-                                    Agregar Ingreso
+                                    {t('button')}
                                 </Button>
                             </div>
                         </div>
@@ -81,7 +83,7 @@ const IncomeChart: React.FC = () => {
                 )}
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100">Ingresos {periodLabel}</h3>
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100">{t('title')}</h3>
                     <div className="flex items-center space-x-2 mt-1">
                         {isLoading ? (
                             <Skeleton className="h-7 sm:h-8 w-32 rounded-md" />
@@ -134,6 +136,8 @@ const ExpenseChart: React.FC = () => {
     const [currentData, setCurrentData] = useState<ExpenseItem[]>([]);
     const { summary, isLoading } = useGetExpensesByMonth();
     const router = useRouter();
+    const t = useTranslations('Dashboard.Home.ExpenseChart');
+    const lang = useLocale()
 
     useEffect(() => {
         const dataMonth = monthOrder.map((month) => ({
@@ -148,7 +152,7 @@ const ExpenseChart: React.FC = () => {
     }, [isLoading, period]);
 
     const totalExpense = currentData.reduce((sum, item) => sum + item.expense, 0);
-    const periodLabel = period === 'weekly' ? 'Semanal' : 'Mensual';
+    const periodLabel = period === 'weekly' ? t('weekly') : t('monthly');
 
     return (
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-shadow duration-300 relative">
@@ -162,10 +166,10 @@ const ExpenseChart: React.FC = () => {
                                         <BookX className="w-6 h-6 text-white" />
                                     </div>
                                 </div>
-                                <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">No hay gastos cargados</h4>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">Por favor cargue un gasto para ver la información aquí.</p>
+                                <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">{t('emptyDataTitle')}</h4>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">{t('emptyDataDescription')}</p>
                                 <Button variant="link" className="mt-4 font-bold dark:text-red-400" onClick={() => router.push('/incomes')}>
-                                    Agregar Gasto
+                                    {t('button')}
                                 </Button>
                             </div>
                         </div>
@@ -173,7 +177,7 @@ const ExpenseChart: React.FC = () => {
                 )}
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100">Gasto {periodLabel}</h3>
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100">{lang === "es" ? `${t('title')} ${periodLabel}` : `${periodLabel} ${t('title')}`} </h3>
                     <div className="flex items-center space-x-2 mt-1">
                         {isLoading ? (
                             <Skeleton className="h-7 sm:h-8 w-32 rounded-md" />
@@ -201,7 +205,7 @@ const ExpenseChart: React.FC = () => {
                                 }}
                                 className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-lg ${period === 'weekly' ? 'text-red-600 dark:text-red-400 font-medium' : 'text-gray-700 dark:text-gray-200'}`}
                             >
-                                Semanal
+                                {t('weekly')}
                             </button>
                             <button
                                 onClick={() => {
@@ -210,7 +214,7 @@ const ExpenseChart: React.FC = () => {
                                 }}
                                 className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 rounded-b-lg ${period === 'monthly' ? 'text-red-600 dark:text-red-400 font-medium' : 'text-gray-700 dark:text-gray-200'}`}
                             >
-                                Mensual
+                                {t('monthly')}
                             </button>
                         </div>
                     )}

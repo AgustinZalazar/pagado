@@ -1,6 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import { Calendar, Wifi, Tv, Zap, Car, Home, CreditCard, Clock, AlertCircle, Lock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface Payment {
     id: string;
@@ -87,6 +88,7 @@ const RecurringPayments: React.FC = () => {
         }
     ]);
 
+    const t = useTranslations('Dashboard.Home.SummaryCards.ComingSoon');
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'overdue':
@@ -141,8 +143,8 @@ const RecurringPayments: React.FC = () => {
                                 <Lock className="w-6 h-6 text-white" />
                             </div>
                         </div>
-                        <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">Próximamente</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Esta función estará disponible pronto</p>
+                        <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">{t('title')}</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{t('description')}</p>
                     </div>
                 </div>
             </div>

@@ -3,12 +3,68 @@
         "title": "test"
     },
     "Dashboard": {
+        "Sidebar": {
+            "home": "Inicio",
+            "incomes": "Transacciones",
+            "budget": "Presupuesto",
+            "accounts": "Cuentas",
+            "settings": "Configuración",
+            "recurrents": "Pagos recurrentes",
+            "investments": "Inversiones",
+            "savings": "Ahorros",
+            "debt": "Deudas",
+            "sharing": "Compartir ingresos",
+            "logout": "Cerrar sesión",
+            "soon": "Próximamente"
+        },
+        "Home": {
+            "title": "Tablero financiero",
+            "description": "Aquí podrás ver un resumen de tus finanzas.",
+            "IncomeChart": {
+                "title": "Ingresos Mensuales",
+                "emptyDataTitle": "No hay ingresos cargados",
+                "emptyDataDescription": "Por favor cargue un ingreso para ver la información aquí.",
+                "button": "Agregar ingreso"
+            },
+            "ExpenseChart": {
+                "title": "Gastos",
+                "emptyDataTitle": "No hay gastos cargados",
+                "emptyDataDescription": "Por favor cargue un gasto para ver la información aquí.",
+                "button": "Agregar gasto",
+                "weekly": "Semanales",
+                "monthly": "Mensuales"
+            },
+            "SummaryCards": {
+                "ComingSoon": {
+                    "title": "Próximamente",
+                    "description": "Esta función estará disponible pronto"
+                },
+                "savings": "Ahorros Totales",
+                "debt": "Deudas Totales"
+            },
+            "ExpensePieChart": {
+                "noDataTitle": "No hay gastos por categoría cargados",
+                "noDataDescription": "Por favor cargue un gasto para ver la información aquí.",
+                "button": "Agregar gasto",
+                "title": "Gastos por Categoría"
+            },
+            "CategoryPercent": {
+                "noDataTitle": "No hay gastos por categoría cargados",
+                "noDataDescription": "Por favor cargue un gasto para ver la información aquí.",
+                "button": "Agregar gasto",
+                "title": "Gastos por Categoría",
+                "highest": "Mayor gasto",
+                "actives": "Categorías",
+                "actives2": "activas"
+            }
+        },
         "Incomes": {
             "title": "Tablero de transacciones",
             "card1": "Ingresos totales",
             "card2": "Gastos totales",
             "card3": "Categoria",
             "card4": "Metodo de pago",
+            "lastMonth": "Mes pasado",
             "inputSearch": "Buscar por descripcion",
             "filterButton": "Filtros",
             "filterType": "Filtrar por tipo",
@@ -25,7 +81,24 @@
             "header7": "Metodo de pago"
         },
         "Budget": {
-            "title": "Tablero de presupuesto"
+            "title": "Tablero de presupuesto",
+            "addButton": "Agregar categoria",
+            "titleDialog": "Agregar categoria",
+            "descriptionDialog": "Crea una nueva categoria",
+            "editButton": "Editar",
+            "titleEditDialog": "Editar categoria",
+            "descriptionEditDialog": "Edita tu categoria",
+            "deleteButton": "Eliminar",
+            "NoCategoriesDescription": "Agrega categorias para comenzar a gestionar tu presupuesto"
+        },
+        "Accounts": {
+            "title": "Cuentas y metodos de pago",
+            "buttonAdd": "Agregar cuenta",
+            "titleDialog": "Agregar cuenta",
+            "descriptionDialog": "Crea una cuenta nueva",
+            "paymentMethods": "Metodos de pago",
+            "noDataDescription": "Por favor ingrese una cuenta y un metodo de pago para ver la información aquí.",
+            "buttonAddPayment": "Agregar metodo de pago"
         }
     }
 }

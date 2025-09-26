@@ -24,7 +24,7 @@ interface Props {
 
 
 export function DialogMethod({ method, isEdit, idAccount }: Props) {
-    // const t = useTranslations('Dashboard.Incomes');
+    const t = useTranslations('Dashboard.Accounts');
     const [openMethodDialog, setOpenMethodDialog] = useState(false)
     return (
         <Dialog
@@ -42,7 +42,7 @@ export function DialogMethod({ method, isEdit, idAccount }: Props) {
                         className="w-full mt-2 border-dashed flex items-center justify-center gap-2"
                     >
                         <Plus className="h-4 w-4" />
-                        Agregar metodo de pago
+                        {t("buttonAddPayment")}
                     </Button>
                 }
             </DialogTrigger>

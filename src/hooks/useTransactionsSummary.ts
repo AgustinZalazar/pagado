@@ -156,12 +156,11 @@ export const useTransactionsSummary = (
     defaultCurrency: string
 ): TransactionsSummary => {
     const { data, isLoading, error } = useQuery({
-        queryKey: ["transactionsSummary", currentMonth, previousMonth, defaultCurrency],
+        queryKey: ["transactionsSummary"],
         queryFn: async () => {
             const currentRes = await fetch(`${API_URL}api/transaction?month=${currentMonth}`);
             const previousRes = await fetch(`${API_URL}api/transaction?month=${previousMonth}`);
-            console.log("fetching transactions summary");
-            console.log({ currentRes, previousRes })
+
             if (!currentRes.ok || !previousRes.ok)
                 throw new Error("Error al cargar transacciones");
 
@@ -181,21 +180,20 @@ export const useTransactionsSummary = (
                 currentTransactions.filter((t: Transaction) => t.currency === defaultCurrency),
                 previousTransactions.filter((t: Transaction) => t.currency === defaultCurrency)
             );
-            console.log("API URL", `${API_URL}api/transaction?month=${currentMonth}`);
-            console.log("currentTransactions", currentTransactions);
-            console.log({
-                transactions: currentTransactions,
-                totalIncome: currentTotals.default.income,
-                totalExpenses: currentTotals.default.expenses,
-                totalLastIncome: previousTotals.default.income,
-                totalLastExpenses: previousTotals.default.expenses,
-                categorySummary,
-                methodSummary,
-                otherCurrencies: {
-                    current: currentTotals.others,
-                    previous: previousTotals.others
-                }
-            })
+            console.log("transactions summary hook called");
+            // console.log({
+            //     transactions: currentTransactions,
+            //     totalIncome: currentTotals.default.income,
+            //     totalExpenses: currentTotals.default.expenses,
+            //     totalLastIncome: previousTotals.default.income,
+            //     totalLastExpenses: previousTotals.default.expenses,
+            //     categorySummary,
+            //     methodSummary,
+            //     otherCurrencies: {
+            //         current: currentTotals.others,
+            //         previous: previousTotals.others
+            //     }
+            // })
 
             return {
                 transactions: currentTransactions,

@@ -7,6 +7,7 @@ import { Category } from '@/types/category'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useDeleteCategory } from '@/hooks/useGetCategories';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface Props {
     item: Category,
@@ -16,6 +17,7 @@ interface Props {
 const EditPopover = ({ item, totalPercentage }: Props) => {
     const [openEditCatDialog, setOpenEditCatDialog] = useState(false)
     const { deleteCategory } = useDeleteCategory()
+    const t = useTranslations('Dashboard.Budget');
 
     return <Popover>
         <PopoverTrigger asChild>
@@ -30,7 +32,7 @@ const EditPopover = ({ item, totalPercentage }: Props) => {
             >
                 <DialogTrigger>
                     <Button variant="outline" className="px-2 py-1 rounded-sm flex gap-2 w-full">
-                        <Edit className="w-4 text-gray-600" /> Editar
+                        <Edit className="w-4 text-gray-600" /> {t('editButton')}
                     </Button>
                 </DialogTrigger>
                 <DialogContent className={cn(
@@ -42,16 +44,16 @@ const EditPopover = ({ item, totalPercentage }: Props) => {
                     "max-h-[90vh] overflow-y-auto"
                 )}>
                     <DialogHeader>
-                        <DialogTitle>Editar categoria</DialogTitle>
+                        <DialogTitle>{t("titleEditDialog")}</DialogTitle>
                         <DialogDescription>
-                            Modifica la categoria
+                            {t("descriptionEditDialog")}
                         </DialogDescription>
                     </DialogHeader>
                     <FormCategory category={item} totalPercentage={totalPercentage} setOpenPopover={setOpenEditCatDialog} />
                 </DialogContent>
             </Dialog>
             <Button variant="outline" className='mt-2' onClick={() => deleteCategory(item.id)}>
-                <Trash />   Delete
+                <Trash /> {t('deleteButton')}
             </Button>
         </PopoverContent>
     </Popover>

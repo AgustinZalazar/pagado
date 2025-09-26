@@ -16,7 +16,6 @@ export const useTotalByCategory = (month: string) => {
     const { data, isLoading, error } = useQuery({
         queryKey: ["totalByCategory", month], // Cachea la consulta por mes
         queryFn: async () => {
-            console.log(month)
             const transactionRes = await fetch(`${API_URL}api/transaction?month=${month}`);
             if (!transactionRes.ok) throw new Error(`Error: ${transactionRes.statusText}`);
             const { formattedTransactions } = await transactionRes.json();

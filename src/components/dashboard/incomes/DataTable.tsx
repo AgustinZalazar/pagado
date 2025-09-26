@@ -9,6 +9,7 @@ import { FilterSheetWindow } from "./filtersSheetWindow";
 import { Input } from "../../ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getMonthName } from "@/helpers/getMonthName";
+import { useTranslations } from "next-intl";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -17,6 +18,7 @@ interface DataTableProps<TData, TValue> {
 
 export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
     const router = useRouter();
+    const t = useTranslations('Dashboard.Incomes');
     const searchParams = useSearchParams();
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [currentPage, setCurrentPage] = useState(1);
@@ -101,7 +103,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             <div className="w-full flex flex-col md:flex-row justify-between gap-4 mb-4">
                 <div className="flex gap-3">
                     <Input
-                        placeholder="Buscar por descripcion"
+                        placeholder={t("inputSearch")}
                         value={searchParams.get("description") || ""}
                         onChange={(event) => updateQueryParams("description", event.target.value)}
                         className="max-w-sm"

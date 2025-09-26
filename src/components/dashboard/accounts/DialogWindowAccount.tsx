@@ -13,10 +13,10 @@ import {
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import FormAccount from "./FormAccount";
-import ShineButton from "../buttons/ShineButton";
+import { ShineButton } from "../buttons/ShineButton";
 
 export function DialogWindowAccount() {
-    const t = useTranslations('Dashboard.Incomes');
+    const t = useTranslations('Dashboard.Accounts');
     const [openAccountDialog, setOpenAccountDialog] = useState(false)
     return (
         <Dialog
@@ -24,7 +24,7 @@ export function DialogWindowAccount() {
             onOpenChange={setOpenAccountDialog}
         >
             <DialogTrigger asChild>
-                <ShineButton text="Agregar cuenta" />
+                <ShineButton text={t("buttonAdd")} />
             </DialogTrigger>
             <DialogContent className={cn(
                 // Layout base
@@ -35,9 +35,9 @@ export function DialogWindowAccount() {
                 "max-h-[90vh] overflow-y-auto"
             )}>
                 <DialogHeader>
-                    <DialogTitle>Agregar cuenta</DialogTitle>
+                    <DialogTitle>{t("title")}</DialogTitle>
                     <DialogDescription>
-                        Crea una cuenta nueva
+                        {t("descriptionDialog")}
                     </DialogDescription>
                 </DialogHeader>
                 <FormAccount setOpenPopover={setOpenAccountDialog} />

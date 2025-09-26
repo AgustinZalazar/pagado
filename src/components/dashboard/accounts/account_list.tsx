@@ -10,6 +10,7 @@ import { useGetAccounts } from "@/hooks/useAccount"
 import { Account, Method } from "@/types/Accounts"
 import { useGetMethods } from "@/hooks/useMethod"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useTranslations } from "next-intl"
 
 const AccountCardSkeleton = () => {
     return (
@@ -43,6 +44,7 @@ export function AccountsList() {
     const [expandedAccounts, setExpandedAccounts] = useState<number[]>([])
     const { accounts, isLoading } = useGetAccounts();
     const { methods, isLoading: isLoadingMethods } = useGetMethods();
+    const t = useTranslations('Dashboard.Accounts');
 
     // console.log(methods)
     const toggleAccountExpansion = (accountId: number) => {
@@ -97,7 +99,7 @@ export function AccountsList() {
                             >
                                 <div className="flex items-center gap-2 font-medium text-gray-700 dark:text-gray-200">
                                     <Wallet className="h-5 w-5" />
-                                    <span>Metodos de pago</span>
+                                    <span>{t("paymentMethods")}</span>
                                     <Badge
                                         variant="outline"
                                         className="ml-2 bg-gray-100 dark:bg-gray-800 dark:text-gray-300"
@@ -132,7 +134,7 @@ export function AccountsList() {
                 ))
             ) : (
                 <h2 className="text-xl font-bold m-4 text-center text-gray-700 dark:text-gray-300">
-                    Por favor ingrese una cuenta y un metodo de pago
+                    {t("noDataDescription")}
                 </h2>
             )}
         </div>

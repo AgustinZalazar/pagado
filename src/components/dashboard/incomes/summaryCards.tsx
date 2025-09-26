@@ -26,7 +26,7 @@ type SummaryCardsProps = {
 
 export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory, totalMethod, totalCat, totalMetCurrentMonth, totalLastExpense, totalLastIncome, otherCurrencies }: SummaryCardsProps) {
     const t = useTranslations('Dashboard.Incomes');
-    const locale = useLocale()
+    // const locale = useLocale()
     const incomePercentage = changePercentage(totalIncome, totalLastIncome);
     const expensePercentage = changePercentage(totalExpenses, totalLastExpense);
     const nonZeroIncomeCurrencies = Object.entries(otherCurrencies.current)
@@ -35,7 +35,6 @@ export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory
     const nonZeroExpensesCurrencies = Object.entries(otherCurrencies.current)
         .filter(([, totals]) => totals.expenses !== 0);
 
-    console.log(totalCategory)
     return (
         <div className="flex flex-col md:flex-row gap-4">
             {/* CARD 1 - Ingresos */}
@@ -65,7 +64,7 @@ export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory
                         )}
                     </div>
                     <div>
-                        <p className="text-xs text-muted-foreground">Mes Pasado</p>
+                        <p className="text-xs text-muted-foreground">{t("lastMonth")}</p>
                         <NumberFlow
                             className="text-black dark:text-white text-sm font-semibold"
                             value={+totalLastIncome}
@@ -103,7 +102,7 @@ export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory
                         )}
                     </div>
                     <div>
-                        <p className="text-xs text-muted-foreground">Mes Pasado</p>
+                        <p className="text-xs text-muted-foreground">{t("lastMonth")}</p>
                         <NumberFlow
                             className="text-black dark:text-white text-sm font-semibold"
                             value={+totalLastExpense}
@@ -149,7 +148,7 @@ export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory
                     </div>
 
                     <div>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">Mes Pasado</p>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400">{t("lastMonth")}</p>
                         <div className="flex items-center gap-2">
                             {totalCategory && (
                                 <>
@@ -200,7 +199,7 @@ export function SummaryCards({ totalIncome = 0, totalExpenses = 0, totalCategory
                             ))}
                     </div>
                     <div>
-                        <p className="text-xs text-muted-foreground">Mes Pasado</p>
+                        <p className="text-xs text-muted-foreground">{t("lastMonth")}</p>
                         <div className="flex items-center gap-2">
                             {totalMethod &&
                                 <>

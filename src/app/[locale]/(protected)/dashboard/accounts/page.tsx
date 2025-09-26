@@ -1,11 +1,13 @@
 import { AccountsList } from '@/components/dashboard/accounts/account_list'
 import { DialogWindowAccount } from '@/components/dashboard/accounts/DialogWindowAccount'
+import { useTranslations } from 'next-intl';
 import React, { Suspense } from 'react'
 
 const Accounts = () => {
+    const t = useTranslations('Dashboard.Accounts');
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <h1 className="text-3xl font-bold mb-4">Cuentas y metodos de pago</h1>
+            <h1 className="text-3xl font-bold mb-4">{t('title')}</h1>
             <DialogWindowAccount />
             <Suspense fallback={
                 <div className="flex justify-center items-center h-full">

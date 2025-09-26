@@ -6,6 +6,7 @@ import { useTotalByCategory } from '@/hooks/useTotalByCategory';
 import { getIconComponent } from '@/data/icons';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 const ExpensePieChart: React.FC = () => {
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -14,6 +15,7 @@ const ExpensePieChart: React.FC = () => {
     const { totalByCategory, isLoading } = useTotalByCategory(currentDate)
     const total = totalByCategory.reduce((sum, item) => sum + item.value, 0);
     const router = useRouter();
+    const t = useTranslations('Dashboard.Home.ExpensePieChart');
 
     const onPieEnter = (_: any, index: number) => setActiveIndex(index);
     const onPieLeave = () => setActiveIndex(null);
@@ -46,10 +48,10 @@ const ExpensePieChart: React.FC = () => {
                                     <BookX className="w-6 h-6 text-white" />
                                 </div>
                             </div>
-                            <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">No hay gastos por categoría cargados</h4>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">Por favor cargue un gasto para ver la información aquí.</p>
+                            <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">{t('noDataTitle')}</h4>
+                            <p className="text-sm text-gray-600 dark:text-gray-400"> {t('noDataDescription')}</p>
                             <Button variant="link" className='mt-4 font-bold dark:text-blue-400' onClick={() => { router.push('/incomes') }}>
-                                Agregar Gasto
+                                {t('button')}
                             </Button>
                         </div>
                     </div>
@@ -58,7 +60,7 @@ const ExpensePieChart: React.FC = () => {
 
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Gastos por Categoría</h3>
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">{t('title')}</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         Total: ${total.toLocaleString('es-AR')}
                     </p>

@@ -7,7 +7,7 @@ import {
     SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
-    SidebarGroupLabel,
+    // SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
@@ -20,103 +20,52 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { signOut } from 'next-auth/react'
 import { useSession } from "next-auth/react"
 import Link from 'next/link'
-import ButtonShineBorder from './buttonShineBorder'
-import Image from 'next/image'
+// import ButtonShineBorder from './buttonShineBorder'
+// import Image from 'next/image'
 import { useTheme } from 'next-themes'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import Logo from '@/components/Logo'
+// import { cn } from '@/lib/utils'
+import { useTranslations } from 'next-intl'
 
 const items = [
-    {
-        title: "Inicio",
-        url: "/dashboard",
-        icon: Home,
-        coming: false
-    },
-    {
-        title: "Cuentas",
-        url: "/dashboard/accounts",
-        icon: Landmark,
-        coming: false
-    },
-    {
-        title: "Presupuestos",
-        url: "/dashboard/budget",
-        icon: PieChart,
-        coming: false
-    },
-    {
-        title: "Ingresos y Gastos",
-        url: "/dashboard/incomes",
-        icon: NotebookPen,
-        coming: false
-    },
-    {
-        title: "Gastos fijos",
-        url: "/dashboard/monthlyExpenses",
-        icon: CalendarRange,
-        coming: true
-    },
-    {
-        title: "Inversiones",
-        url: "/dashboard/investments",
-        icon: TrendingUp,
-        coming: true
-    },
-    {
-        title: "Ahorros",
-        url: "/dashboard/",
-        icon: PiggyBank,
-        coming: true
-    },
-    {
-        title: "Deudas",
-        url: "/dashboard/",
-        icon: Landmark,
-        coming: true
-    },
-    {
-        title: "Gastos compartidos",
-        url: "/dashboard/",
-        icon: UsersRound,
-        coming: true
-    },
-    {
-        title: "Settings",
-        url: "/dashboard/settings",
-        icon: Settings,
-        coming: true
-    },
-]
+    { key: "home", url: "/dashboard", icon: Home, coming: false },
+    { key: "accounts", url: "/dashboard/accounts", icon: Landmark, coming: false },
+    { key: "budget", url: "/dashboard/budget", icon: PieChart, coming: false },
+    { key: "incomes", url: "/dashboard/incomes", icon: NotebookPen, coming: false },
+    { key: "recurrents", url: "/dashboard/monthlyExpenses", icon: CalendarRange, coming: true },
+    { key: "investments", url: "/dashboard/investments", icon: TrendingUp, coming: true },
+    { key: "savings", url: "/dashboard/", icon: PiggyBank, coming: true },
+    { key: "debt", url: "/dashboard/", icon: Landmark, coming: true },
+    { key: "sharing", url: "/dashboard/", icon: UsersRound, coming: true },
+    { key: "settings", url: "/dashboard/settings", icon: Settings, coming: true },
+];
 
 const AppSidebar = ({ locale }: { locale: string }) => {
     const { data: session } = useSession()
     const { theme } = useTheme()
+    const t = useTranslations('Dashboard.Sidebar');
     const {
         open,
         openMobile,
         setOpenMobile,
         isMobile,
     } = useSidebar()
-    // console.log({ s: session })
 
     const handleSidebarMobile = () => {
         if (isMobile && openMobile) setOpenMobile(false);
     }
     return <Sidebar collapsible="icon">
         <SidebarHeader className='border-b border-gray-200'>
-            {open ?
-                <Image className='ml-6 my-4' src={theme === "dark" ? "/logo_white.png" : "/logo_black.png"} alt='logo' width={110} height={30} />
-                :
-                <Image className='ml-1 my-4' src={theme === "dark" ? "/mini_logo_white.png" : "/mini_logo_black.png"} alt='logo' width={110} height={30} />
-            }
+            <Logo open={open} />
         </SidebarHeader>
         <SidebarContent>
             <SidebarGroup>
                 <SidebarGroupContent>
                     <SidebarMenu>
                         {items.map((item) => (
-                            <SidebarMenuItem key={item.title} className='py-2'>
+                            <SidebarMenuItem key={item.key} className='py-2'>
                                 <SidebarMenuButton asChild>
                                     {item.coming ? (
                                         // <div >
@@ -126,10 +75,10 @@ const AppSidebar = ({ locale }: { locale: string }) => {
                                                     className={`${open ? "px-5 py-2" : "p-2 h-8"} opacity-50 cursor-not-allowed flex items-center gap-2 relative`}
                                                 >
                                                     <item.icon width={16} height={16} />
-                                                    <span className={`text-base ${open ? "block" : "hidden"}`}>{item.title}</span>
+                                                    <span className={`text-base ${open ? "block" : "hidden"}`}>{t(item.key)}</span>
                                                 </TooltipTrigger>
                                                 <TooltipContent className="hidden md:block">
-                                                    <p>Muy pronto!</p>
+                                                    <p>{t("soon")}</p>
                                                 </TooltipContent>
                                             </Tooltip>
                                         </TooltipProvider>
@@ -137,7 +86,7 @@ const AppSidebar = ({ locale }: { locale: string }) => {
                                     ) : (
                                         <Link className="p-5 flex items-center gap-2" href={`/${locale}${item.url}`} onClick={() => handleSidebarMobile()}>
                                             <item.icon />
-                                            <span className="text-base">{item.title}</span>
+                                            <span className="text-base">{t(item.key)}</span>
                                         </Link>
                                     )}
                                 </SidebarMenuButton>
@@ -177,7 +126,7 @@ const AppSidebar = ({ locale }: { locale: string }) => {
                                 <span className='w-full text-center'>Mejorar el plan</span>
                             </DropdownMenuItem> */}
                             <DropdownMenuItem>
-                                <button className='w-full' onClick={() => signOut()}>Cerrar Sesion</button>
+                                <button className='w-full' onClick={() => signOut()}>{t("logout")}</button>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

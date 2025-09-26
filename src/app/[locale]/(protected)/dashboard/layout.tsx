@@ -14,6 +14,7 @@ import { auth } from "@/auth";
 import { MonthProvider } from "@/context/monthContext";
 import QueryProvider from "@/lib/QueryProvider";
 import DashboardLayout from '@/components/dashboard/layout/DashboardLayout'
+import { LanguageToggle } from "@/components/dashboard/languageToggle";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -60,8 +61,9 @@ export default async function RootLayout({
                                         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
                                             <div className="w-full flex justify-between items-center gap-2 px-4">
                                                 <SidebarTrigger className="-ml-1" />
-                                                <div className="ml-auto">
+                                                <div className="ml-auto flex items-center gap-2">
                                                     <DarkmodeToggle />
+                                                    <LanguageToggle />
                                                 </div>
                                             </div>
                                         </header>

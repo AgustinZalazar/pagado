@@ -33,7 +33,7 @@ const getColumns = (locale: string): ColumnDef<Transaction>[] => {
         // },
         {
             accessorKey: "description",
-            header: "Descripcion",
+            header: locale === "es" ? "Descripcion" : "Description",
         },
         {
             accessorKey: "type",
@@ -48,7 +48,7 @@ const getColumns = (locale: string): ColumnDef<Transaction>[] => {
         },
         {
             accessorKey: "category",
-            header: "Categoria",
+            header: locale === "es" ? "Categoria" : "Category",
         },
         {
             accessorKey: "amount",
@@ -59,7 +59,7 @@ const getColumns = (locale: string): ColumnDef<Transaction>[] => {
                         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         className="ml-auto"
                     >
-                        Monto
+                        {locale === "es" ? "Monto" : "Amount"}
                         <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
                 )
@@ -77,7 +77,7 @@ const getColumns = (locale: string): ColumnDef<Transaction>[] => {
         },
         {
             accessorKey: "date",
-            header: "Fecha",
+            header: locale === "es" ? "Fecha" : "Date",
             cell: ({ row }) => {
                 const date = new Date(row.getValue("date"));
                 return (
@@ -89,11 +89,11 @@ const getColumns = (locale: string): ColumnDef<Transaction>[] => {
         },
         {
             accessorKey: "account",
-            header: "Cuenta",
+            header: locale === "es" ? "Cuenta" : "Account",
         },
         {
             accessorKey: "method",
-            header: "Metodo de pago",
+            header: locale === "es" ? "Metodo de pago" : "Payment method",
         },
         {
             id: "actions",

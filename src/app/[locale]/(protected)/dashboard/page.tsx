@@ -4,18 +4,19 @@ import ExpensePieChart from "@/components/dashboard/home/ExpensePieChart";
 import { ExpenseChart, IncomeChart } from "@/components/dashboard/home/IncomeExpenseChart";
 import RecurringPayments from "@/components/dashboard/home/RecurringPayments";
 import SummaryCard from "@/components/dashboard/home/SummaryCard";
-import { Target, TrendingUp, Wallet } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Suspense } from "react";
 
 export default function Dashboard() {
+    const t = useTranslations('Dashboard.Home');
     return (
         <div className="min-h-screen w-full px-4 md:px-6 xl:px-8">
             <div className="max-w-screen-2xl mx-auto w-full">
                 <div className="flex flex-col gap-4 pt-4">
                     <div>
-                        <h1 className="text-2xl sm:text-3xl font-bold mb-1">Tablero financiero</h1>
+                        <h1 className="text-2xl sm:text-3xl font-bold mb-1">{t('title')}</h1>
                         <p className="text-muted-foreground text-sm">
-                            Aquí podrás ver un resumen de tus finanzas.
+                            {t('description')}
                         </p>
                     </div>
                 </div>

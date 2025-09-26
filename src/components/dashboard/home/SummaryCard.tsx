@@ -1,5 +1,6 @@
 import React from 'react';
 import { PiggyBank, CreditCard, TrendingUp, TrendingDown, Lock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface SummaryCardProps {
     type: 'savings' | 'debt';
@@ -11,17 +12,18 @@ interface SummaryCardProps {
 const SummaryCard: React.FC<SummaryCardProps> = ({ type, amount, change, changePercent }) => {
     const isSavings = type === 'savings';
     const isPositiveChange = change >= 0;
+    const t = useTranslations('Dashboard.Home.SummaryCards');
 
     const cardConfig = {
         savings: {
-            title: 'Ahorros Totales',
+            title: t('savings'),
             icon: PiggyBank,
             bgGradient: 'from-green-500 to-emerald-600',
             textColor: 'text-green-600 dark:text-green-400',
             bgColor: 'bg-green-50 dark:bg-green-950/30',
         },
         debt: {
-            title: 'Deudas Totales',
+            title: t('debt'),
             icon: CreditCard,
             bgGradient: 'from-red-500 to-rose-600',
             textColor: 'text-red-600 dark:text-red-400',
@@ -49,9 +51,9 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ type, amount, change, changeP
                                 <Lock className="w-6 h-6 text-white" />
                             </div>
                         </div>
-                        <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">Próximamente</h4>
+                        <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">{t('ComingSoon.title')}</h4>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Esta función estará disponible pronto
+                            {t('ComingSoon.description')}
                         </p>
                     </div>
                 </div>

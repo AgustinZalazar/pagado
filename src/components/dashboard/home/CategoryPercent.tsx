@@ -1,5 +1,6 @@
 import React from 'react';
 import { Car, Home, Zap, Gift, ShoppingCart, Coffee, MoreHorizontal, PieChart } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface CategoryData {
     name: string;
@@ -19,6 +20,7 @@ const CategoryBreakdown: React.FC = () => {
         { name: 'Regalos', amount: 15000, color: '#ef4444', icon: Gift, percentage: 8.7 },
         { name: 'Otros', amount: 12000, color: '#6b7280', icon: MoreHorizontal, percentage: 7.0 },
     ];
+    const t = useTranslations('Dashboard.Home.CategoryPercent');
 
     const totalAmount = categoryData.reduce((sum, item) => sum + item.amount, 0);
 
@@ -32,7 +34,7 @@ const CategoryBreakdown: React.FC = () => {
                     </div>
                     <div>
                         <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100">
-                            Gastos por Categoría
+                            {t('title')}
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
                             Total: ${totalAmount.toLocaleString('es-AR')}
@@ -101,7 +103,7 @@ const CategoryBreakdown: React.FC = () => {
                 <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
                     <div className="grid grid-cols-2 gap-4 text-center">
                         <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                            <div className="text-sm text-gray-600 dark:text-gray-400">Mayor Gasto</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">{t('highest')}</div>
                             <div className="text-base font-bold text-gray-800 dark:text-gray-100">
                                 {categoryData[0].name}
                             </div>
@@ -110,12 +112,12 @@ const CategoryBreakdown: React.FC = () => {
                             </div>
                         </div>
                         <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                            <div className="text-sm text-gray-600 dark:text-gray-400">Categorías</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">{t('actives')}</div>
                             <div className="text-base font-bold text-gray-800 dark:text-gray-100">
                                 {categoryData.length}
                             </div>
                             <div className="text-sm text-gray-500 dark:text-gray-400">
-                                activas
+                                {t('actives2')}
                             </div>
                         </div>
                     </div>
