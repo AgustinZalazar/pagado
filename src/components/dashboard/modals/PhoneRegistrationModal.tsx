@@ -152,7 +152,7 @@ const NewUser = ({ onSubmit, user }: { onSubmit?: (data: z.infer<typeof phoneReg
                                             <Input
                                                 value={
                                                     form.watch("country")
-                                                        ? `+${countryCurrencyMap.find(
+                                                        ? `${countryCurrencyMap.find(
                                                             (item) => item.country === form.watch("country")
                                                         )?.phoneCode}`
                                                         : ""

@@ -15,10 +15,11 @@ import { Input } from '@/components/ui/input'
 import { Account } from '@/types/Accounts'
 import { colors_account } from '@/data/colors'
 import { useCreateAccount } from '@/hooks/useAccount'
+import { useTranslations } from "next-intl"
 
-const FormSchema = z.object({
+const createFormSchema = (t: any) => z.object({
     title: z.string().min(2, {
-        message: "El titulo debe contener al menos 2 caracteres",
+        message: t('errors.titleMin'),
     }),
     type: z.string(),
     color: z.string(),
@@ -30,7 +31,10 @@ interface Props {
 }
 
 const FormAccount = ({ account, setOpenPopover }: Props) => {
+    const t = useTranslations('Dashboard.Forms.Account');
     const { createAccount } = useCreateAccount(setOpenPopover)
+
+    const FormSchema = createFormSchema(t);
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -56,9 +60,9 @@ const FormAccount = ({ account, setOpenPopover }: Props) => {
                 name="title"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Titulo</FormLabel>
+                        <FormLabel>{t('title')}</FormLabel>
                         <FormControl>
-                            <Input placeholder="Tarjeta de credito" {...field} />
+                            <Input placeholder={t('titlePlaceholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -70,9 +74,9 @@ const FormAccount = ({ account, setOpenPopover }: Props) => {
                 name="type"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Tipo de cuenta</FormLabel>
+                        <FormLabel>{t('type')}</FormLabel>
                         <FormControl>
-                            <Input placeholder="Banco / Billetera Virtual" {...field} />
+                            <Input placeholder={t('typePlaceholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -84,7 +88,7 @@ const FormAccount = ({ account, setOpenPopover }: Props) => {
                 name="color"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Selecciona un color</FormLabel>
+                        <FormLabel>{t('color')}</FormLabel>
                         <FormControl>
                             <div className="flex flex-col gap-2 mt-2" id="color-selection">
                                 {colors_account.map((color) => (
@@ -107,7 +111,7 @@ const FormAccount = ({ account, setOpenPopover }: Props) => {
                     </FormItem>
                 )}
             />
-            <Button type="submit">Guardar</Button>
+            <Button type="submit">{t('save')}</Button>
         </form>
     </Form>
 }

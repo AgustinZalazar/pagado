@@ -21,7 +21,7 @@ interface Props {
 }
 
 export function EditDialogWindow({ transaction }: Props) {
-    // const t = useTranslations('Dashboard.Incomes');
+    const t = useTranslations('Dashboard.Incomes');
     const [openEditDialog, setOpenEditDialog] = useState(false)
     return (
         <Dialog
@@ -42,9 +42,9 @@ export function EditDialogWindow({ transaction }: Props) {
                 "max-h-[90vh] overflow-y-auto"
             )}>
                 <DialogHeader>
-                    <DialogTitle>Editar transaccion</DialogTitle>
+                    <DialogTitle>{t('dialogEditTitle')}</DialogTitle>
                     <DialogDescription>
-                        Edita la transaccion seleccionada
+                        {t('dialogEditDescription')}
                     </DialogDescription>
                 </DialogHeader>
                 <FormTransaction openDialog={openEditDialog} setOpenDialog={setOpenEditDialog} transaction={transaction} />

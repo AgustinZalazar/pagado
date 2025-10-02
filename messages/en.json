@@ -72,6 +72,10 @@
             "filterCategory": "Filter by category",
             "filterDate": "Filter by date",
             "buttonAdd": "Add transaction",
+            "dialogTitle": "Add transaction",
+            "dialogDescription": "Create a new transaction",
+            "dialogEditTitle": "Edit transaction",
+            "dialogEditDescription": "Edit the selected transaction",
             "header1": "Number",
             "header2": "Description",
             "header3": "Type",
@@ -98,7 +102,78 @@
             "descriptionDialog": "Create a new account",
             "paymentMethods": "Payment Methods",
             "noDataDescription": "Please enter an account and a payment method to see the information here.",
-            "buttonAddPayment": "Add payment method"
+            "buttonAddPayment": "Add payment method",
+            "titleDialogMethod": "Add payment method",
+            "descriptionDialogMethod": "Create a new payment method"
+        },
+        "Forms": {
+            "Transaction": {
+                "description": "Description",
+                "descriptionPlaceholder": "Rent",
+                "amount": "Amount",
+                "amountPlaceholder": "1,234.56",
+                "currency": "Currency",
+                "currencyPlaceholder": "Currency",
+                "type": "Type",
+                "typePlaceholder": "Select a transaction type",
+                "typeIncome": "Income",
+                "typeExpense": "Expense",
+                "category": "Category",
+                "date": "Date",
+                "datePlaceholder": "Pick a date",
+                "account": "Account",
+                "accountPlaceholder": "Select an account",
+                "method": "Payment method",
+                "methodPlaceholder": "Select a payment method",
+                "save": "Save",
+                "errors": {
+                    "descriptionMin": "Description must contain at least 2 characters",
+                    "amountPositive": "Amount must be greater than 0",
+                    "currencyRequired": "Select a currency",
+                    "typeRequired": "Please select a type",
+                    "categoryRequired": "Select a category",
+                    "dateRequired": "Select a date",
+                    "accountRequired": "Select an account",
+                    "methodRequired": "Select a payment method"
+                }
+            },
+            "Category": {
+                "name": "Name",
+                "namePlaceholder": "Services",
+                "percentage": "Percentage",
+                "percentagePlaceholder": "20%",
+                "color": "Select a color",
+                "icon": "Select an icon",
+                "save": "Save",
+                "errors": {
+                    "nameMin": "Name must contain at least 2 characters",
+                    "percentageMin": "Percentage must be at least 0",
+                    "percentageMax": "Percentage cannot be greater than 100",
+                    "percentageExceeded": "Error, The sum of percentages cannot be greater than 100%."
+                }
+            },
+            "Account": {
+                "title": "Title",
+                "titlePlaceholder": "Credit card",
+                "type": "Account type",
+                "typePlaceholder": "Bank / Virtual Wallet",
+                "color": "Select a color",
+                "save": "Save",
+                "errors": {
+                    "titleMin": "Title must contain at least 2 characters"
+                }
+            },
+            "Method": {
+                "title": "Title",
+                "titlePlaceholder": "Credit card",
+                "titleRequired": "Title *",
+                "cardType": "Card type",
+                "cardTypePlaceholder": "Visa | Mastercard",
+                "save": "Save",
+                "errors": {
+                    "titleMin": "Title must contain at least 2 characters"
+                }
+            }
         }
     }
 }

@@ -39,9 +39,9 @@ export function NewTransactionWindow() {
                 "max-h-[90vh] overflow-y-auto"
             )}>
                 <DialogHeader>
-                    <DialogTitle>Agregar transaccion</DialogTitle>
+                    <DialogTitle>{t('dialogTitle')}</DialogTitle>
                     <DialogDescription>
-                        Crea una nueva transaccion
+                        {t('dialogDescription')}
                     </DialogDescription>
                 </DialogHeader>
                 <FormTransaction openDialog={openDialog} setOpenDialog={setOpenDialog} />

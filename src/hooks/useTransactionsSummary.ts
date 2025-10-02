@@ -156,7 +156,8 @@ export const useTransactionsSummary = (
     defaultCurrency: string
 ): TransactionsSummary => {
     const { data, isLoading, error } = useQuery({
-        queryKey: ["transactionsSummary"],
+        queryKey: ["transactionsSummary", currentMonth, previousMonth, defaultCurrency],
+        enabled: !!currentMonth && !!previousMonth && !!defaultCurrency,
         queryFn: async () => {
             const currentRes = await fetch(`${API_URL}api/transaction?month=${currentMonth}`);
             const previousRes = await fetch(`${API_URL}api/transaction?month=${previousMonth}`);
@@ -181,19 +182,22 @@ export const useTransactionsSummary = (
                 previousTransactions.filter((t: Transaction) => t.currency === defaultCurrency)
             );
             console.log("transactions summary hook called");
-            // console.log({
-            //     transactions: currentTransactions,
-            //     totalIncome: currentTotals.default.income,
-            //     totalExpenses: currentTotals.default.expenses,
-            //     totalLastIncome: previousTotals.default.income,
-            //     totalLastExpenses: previousTotals.default.expenses,
-            //     categorySummary,
-            //     methodSummary,
-            //     otherCurrencies: {
-            //         current: currentTotals.others,
-            //         previous: previousTotals.others
-            //     }
-            // })
+            console.log({
+                currentMonth,
+                previousMonth,
+                defaultCurrency,
+                transactions: currentTransactions,
+                totalIncome: currentTotals.default.income,
+                totalExpenses: currentTotals.default.expenses,
+                totalLastIncome: previousTotals.default.income,
+                totalLastExpenses: previousTotals.default.expenses,
+                categorySummary,
+                methodSummary,
+                otherCurrencies: {
+                    current: currentTotals.others,
+                    previous: previousTotals.others
+                }
+            })
 
             return {
                 transactions: currentTransactions,

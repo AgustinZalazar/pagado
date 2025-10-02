@@ -15,10 +15,11 @@ import {
 import { Input } from '@/components/ui/input'
 import { Method } from '@/types/Accounts'
 import { useCreateMethod, useEditMethod } from '@/hooks/useMethod'
+import { useTranslations } from "next-intl"
 
-const FormSchema = z.object({
+const createFormSchema = (t: any) => z.object({
     title: z.string().min(2, {
-        message: "El titulo debe contener al menos 2 caracteres",
+        message: t('errors.titleMin'),
     }),
     cardType: z.string().optional(),
 })
@@ -30,8 +31,11 @@ interface Props {
 }
 
 const FormMethod = ({ method, idAccount, setOpenPopover }: Props) => {
+    const t = useTranslations('Dashboard.Forms.Method');
     const { createMethod } = useCreateMethod(setOpenPopover)
     const { editMethod } = useEditMethod(setOpenPopover)
+
+    const FormSchema = createFormSchema(t);
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -67,9 +71,9 @@ const FormMethod = ({ method, idAccount, setOpenPopover }: Props) => {
                     name="title"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Titulo *</FormLabel>
+                            <FormLabel>{t('titleRequired')}</FormLabel>
                             <FormControl>
-                                <Input placeholder="Tarjeta de crédito" {...field} />
+                                <Input placeholder={t('titlePlaceholder')} {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -83,9 +87,9 @@ const FormMethod = ({ method, idAccount, setOpenPopover }: Props) => {
                         name="cardType"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Tipo de tarjeta</FormLabel>
+                                <FormLabel>{t('cardType')}</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Visa | Mastercard" {...field} />
+                                    <Input placeholder={t('cardTypePlaceholder')} {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -93,7 +97,7 @@ const FormMethod = ({ method, idAccount, setOpenPopover }: Props) => {
                     />
                 )}
 
-                <Button type="submit">Guardar</Button>
+                <Button type="submit">{t('save')}</Button>
             </form>
         </Form>
     )

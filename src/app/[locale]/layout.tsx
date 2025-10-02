@@ -14,6 +14,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Pagado App",
   description: "manage your money with Pagado App",
+  manifest: '/favicon/site.webmanifest',
   icons: {
     icon: [
       { url: '/favicon/favicon.ico' },
@@ -24,6 +25,12 @@ export const metadata: Metadata = {
       { url: '/favicon/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Pagado',
+  },
+  themeColor: '#16a34a',
 };
 
 export default async function RootLayout({

@@ -53,9 +53,9 @@ export function DialogMethod({ method, isEdit, idAccount }: Props) {
                 "mx-auto rounded-xl p-6",
             )}>
                 <DialogHeader>
-                    <DialogTitle>Agregar metodo de pago</DialogTitle>
+                    <DialogTitle>{t('titleDialogMethod')}</DialogTitle>
                     <DialogDescription>
-                        Crea un nuevo metodo de pago
+                        {t('descriptionDialogMethod')}
                     </DialogDescription>
                 </DialogHeader>
                 <FormMethod method={method} idAccount={idAccount} setOpenPopover={setOpenMethodDialog} />

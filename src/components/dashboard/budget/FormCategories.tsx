@@ -17,19 +17,19 @@ import { useCreateCategory, useEditCategory } from "@/hooks/useGetCategories"
 import { colors } from "@/data/colors"
 import { icons } from "@/data/icons"
 import { Dispatch, SetStateAction } from "react"
-import { toast } from "sonner";
+import { toast } from "sonner"
+import { useTranslations } from "next-intl";
 
-const FormSchema = z.object({
+const createFormSchema = (t: any) => z.object({
     nombre: z.string().min(2, {
-        message: "El nombre debe contener al menos 2 caracteres",
+        message: t('errors.nameMin'),
     }),
-    // porcentaje: z.string().transform((v) => Number(v) || 0),
     porcentaje: z
         .preprocess(
-            (val) => Number(val), // 🔹 Convierte el valor a número antes de validarlo
+            (val) => Number(val),
             z.number()
-                .min(0, { message: "El porcentaje debe ser al menos 0" })
-                .max(100, { message: "El porcentaje no puede ser mayor a 100" })
+                .min(0, { message: t('errors.percentageMin') })
+                .max(100, { message: t('errors.percentageMax') })
         ),
     color: z.string(),
     icon: z.string()
@@ -42,8 +42,11 @@ interface formProps {
 }
 
 export function FormCategory({ category, totalPercentage, setOpenPopover }: formProps) {
+    const t = useTranslations('Dashboard.Forms.Category');
     const { editCategory } = useEditCategory(setOpenPopover)
     const { createCategory } = useCreateCategory(setOpenPopover)
+
+    const FormSchema = createFormSchema(t);
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -55,12 +58,11 @@ export function FormCategory({ category, totalPercentage, setOpenPopover }: form
         },
     })
     async function onSubmit(data: z.infer<typeof FormSchema>) {
-        // console.log(data, category)
         if (category && totalPercentage! <= 100 && totalPercentage! + data.porcentaje <= 100) {
             const allData = { id: category.id, ...data }
             const updateCategory = editCategory(allData)
         } else if (totalPercentage == 100 && totalPercentage + data.porcentaje >= 100) {
-            toast.error("Error, La sumatoria de los porcentajes no puede ser mayor al 100%.");
+            toast.error(t('errors.percentageExceeded'));
         }
         else if (!category) {
             const newCategory = createCategory({ id: "", ...data })
@@ -75,9 +77,9 @@ export function FormCategory({ category, totalPercentage, setOpenPopover }: form
                     name="nombre"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Nombre</FormLabel>
+                            <FormLabel>{t('name')}</FormLabel>
                             <FormControl>
-                                <Input placeholder="Servicios" {...field} />
+                                <Input placeholder={t('namePlaceholder')} {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -89,13 +91,13 @@ export function FormCategory({ category, totalPercentage, setOpenPopover }: form
                     name="porcentaje"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Porcentaje</FormLabel>
+                            <FormLabel>{t('percentage')}</FormLabel>
                             <FormControl>
                                 <Input
                                     type="number"
                                     min={0}
                                     max={100}
-                                    placeholder="20%"
+                                    placeholder={t('percentagePlaceholder')}
                                     {...field}
                                 />
                             </FormControl>
@@ -109,7 +111,7 @@ export function FormCategory({ category, totalPercentage, setOpenPopover }: form
                     name="color"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Selecciona un color</FormLabel>
+                            <FormLabel>{t('color')}</FormLabel>
                             <FormControl>
                                 <div className="grid grid-cols-10 gap-2 mt-2" id="color-selection">
                                     {colors.map((color) => (
@@ -145,7 +147,7 @@ export function FormCategory({ category, totalPercentage, setOpenPopover }: form
                     name="icon"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Selecciona un icono</FormLabel>
+                            <FormLabel>{t('icon')}</FormLabel>
                             <FormControl>
                                 <div className="grid grid-cols-10 gap-2 mt-2" id="color-selection">
                                     {icons.map((icon) => (
@@ -174,7 +176,7 @@ export function FormCategory({ category, totalPercentage, setOpenPopover }: form
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Guardar</Button>
+                <Button type="submit">{t('save')}</Button>
             </form>
         </Form>
     )

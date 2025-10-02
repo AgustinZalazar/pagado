@@ -33,6 +33,7 @@ import { useGetMethods } from "@/hooks/useMethod"
 import { Account, Method } from "@/types/Accounts"
 import { CustomSelect } from "@/components/ui/custom-select"
 import { countryCurrencyMap } from "@/data/currency"
+import { useTranslations } from "next-intl"
 
 // Función para formatear el input de moneda
 function formatCurrencyInput(value: string): string {
@@ -67,21 +68,22 @@ function numberToDisplay(num: number): string {
     return formatCurrencyInput(num.toString().replace('.', ','));
 }
 
-const FormSchema = z.object({
+// Schema creator function to use translations
+const createFormSchema = (t: any) => z.object({
     description: z.string().min(2, {
-        message: "La descripcion debe contener al menos 2 caracteres",
+        message: t('errors.descriptionMin'),
     }),
     amount: z.number().positive({
-        message: "El monto debe ser mayor que 0"
+        message: t('errors.amountPositive')
     }),
-    currency: z.string().min(1, { message: "Seleccione una moneda" }),
+    currency: z.string().min(1, { message: t('errors.currencyRequired') }),
     type: z.enum(["income", "expense"], {
-        errorMap: () => ({ message: "Seleccione un tipo por favor" })
+        errorMap: () => ({ message: t('errors.typeRequired') })
     }),
-    category: z.string().min(1, { message: "Seleccione una categoría" }),
-    date: z.date({ required_error: "Seleccione una fecha" }),
-    account: z.string().min(1, { message: "Seleccione una cuenta" }),
-    method: z.string().min(1, { message: "Seleccione un método de pago" }),
+    category: z.string().min(1, { message: t('errors.categoryRequired') }),
+    date: z.date({ required_error: t('errors.dateRequired') }),
+    account: z.string().min(1, { message: t('errors.accountRequired') }),
+    method: z.string().min(1, { message: t('errors.methodRequired') }),
 });
 
 interface FormProps {
@@ -91,6 +93,7 @@ interface FormProps {
 }
 
 export function FormTransaction({ openDialog, setOpenDialog, transaction }: FormProps) {
+    const t = useTranslations('Dashboard.Forms.Transaction');
     const { createTransaction } = useCreateTransaction(setOpenDialog);
     const { editTransaction } = useEditTransaction(setOpenDialog);
     const { accounts } = useGetAccounts();
@@ -119,6 +122,8 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
         if (!selectedAccountId) return [];
         return methods.filter((method: Method) => method.idAccount === selectedAccountId);
     }, [selectedAccountId, methods]);
+
+    const FormSchema = useMemo(() => createFormSchema(t), [t]);
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -200,9 +205,9 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
                     name="description"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Descripción</FormLabel>
+                            <FormLabel>{t('description')}</FormLabel>
                             <FormControl>
-                                <Input placeholder="Alquiler" {...field} />
+                                <Input placeholder={t('descriptionPlaceholder')} {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -215,12 +220,12 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
                         name="amount"
                         render={({ field }) => (
                             <FormItem className="flex-1" style={{ flexBasis: '50%' }}>
-                                <FormLabel>Monto</FormLabel>
+                                <FormLabel>{t('amount')}</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="text"
                                         inputMode="decimal"
-                                        placeholder="1.234,56"
+                                        placeholder={t('amountPlaceholder')}
                                         value={displayAmount}
                                         onChange={(e) => handleAmountChange(e.target.value)}
                                     />
@@ -235,13 +240,13 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
                         name="currency"
                         render={({ field }) => (
                             <FormItem className="flex-1" style={{ flexBasis: '50%' }}>
-                                <FormLabel>Moneda</FormLabel>
+                                <FormLabel>{t('currency')}</FormLabel>
                                 <FormControl>
                                     <CustomSelect
                                         value={field.value}
                                         onValueChange={field.onChange}
                                         options={currencyOptions}
-                                        placeholder="Moneda"
+                                        placeholder={t('currencyPlaceholder')}
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -256,18 +261,18 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
                         name="type"
                         render={({ field }) => (
                             <FormItem className="flex-1" style={{ flexBasis: '50%' }}>
-                                <FormLabel>Tipo</FormLabel>
+                                <FormLabel>{t('type')}</FormLabel>
                                 <FormControl>
                                     <Select
                                         onValueChange={field.onChange}
                                         value={field.value}
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Seleccione un tipo de transacción" />
+                                            <SelectValue placeholder={t('typePlaceholder')} />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem className="cursor-pointer hover:bg-gray-100" value="income">Ingreso</SelectItem>
-                                            <SelectItem className="cursor-pointer hover:bg-gray-100" value="expense">Gasto</SelectItem>
+                                            <SelectItem className="cursor-pointer hover:bg-gray-100" value="income">{t('typeIncome')}</SelectItem>
+                                            <SelectItem className="cursor-pointer hover:bg-gray-100" value="expense">{t('typeExpense')}</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </FormControl>
@@ -281,7 +286,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
                         name="category"
                         render={({ field }) => (
                             <FormItem className="flex-1" style={{ flexBasis: '50%' }}>
-                                <FormLabel>Categoría</FormLabel>
+                                <FormLabel>{t('category')}</FormLabel>
                                 <FormControl>
                                     <SearchableColorfulSelect field={field} />
                                 </FormControl>
@@ -296,7 +301,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
                     name="date"
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
-                            <FormLabel>Fecha</FormLabel>
+                            <FormLabel>{t('date')}</FormLabel>
                             <Popover modal>
                                 <PopoverTrigger asChild>
                                     <FormControl>
@@ -310,7 +315,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
                                             {field.value ? (
                                                 format(field.value, "PPP")
                                             ) : (
-                                                <span>Elegi una fecha</span>
+                                                <span>{t('datePlaceholder')}</span>
                                             )}
                                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                         </Button>
@@ -340,7 +345,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
                         name="account"
                         render={({ field }) => (
                             <FormItem className="flex-1" style={{ flexBasis: '50%' }}>
-                                <FormLabel>Cuenta</FormLabel>
+                                <FormLabel>{t('account')}</FormLabel>
                                 <FormControl>
                                     <Select
                                         onValueChange={(value) => {
@@ -350,7 +355,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
                                         value={field.value}
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Seleccione una cuenta" />
+                                            <SelectValue placeholder={t('accountPlaceholder')} />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {accounts.map((account: Account) => (
@@ -371,7 +376,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
                         name="method"
                         render={({ field }) => (
                             <FormItem className="flex-1" style={{ flexBasis: '50%' }}>
-                                <FormLabel>Método de pago</FormLabel>
+                                <FormLabel>{t('method')}</FormLabel>
                                 <FormControl>
                                     <Select
                                         onValueChange={field.onChange}
@@ -379,7 +384,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
                                         disabled={!selectedAccountId}
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Seleccione un método de pago" />
+                                            <SelectValue placeholder={t('methodPlaceholder')} />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {filteredMethods.map((method: Method) => {
@@ -400,7 +405,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
                         )}
                     />
                 </div>
-                <Button type="submit">Guardar</Button>
+                <Button type="submit">{t('save')}</Button>
             </form>
         </Form>
     );

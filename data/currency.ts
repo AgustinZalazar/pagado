@@ -20,7 +20,7 @@ export const countryCurrencyMap: CountryCurrency[] = [
     { country: "Noruega", currency: "Corona noruega", code: "NOK", phoneCode: "47", iso: "NO" },
     { country: "Corea del Sur", currency: "Won surcoreano", code: "KRW", phoneCode: "82", iso: "KR" },
     { country: "Turquía", currency: "Lira turca", code: "TRY", phoneCode: "90", iso: "TR" },
-    { country: "Argentina", currency: "Peso argentino", code: "ARS", phoneCode: "54", iso: "AR" },
+    { country: "Argentina", currency: "Peso argentino", code: "ARS", phoneCode: "549", iso: "AR" },
     { country: "Tailandia", currency: "Baht tailandés", code: "THB", phoneCode: "66", iso: "TH" },
     { country: "Indonesia", currency: "Rupia indonesia", code: "IDR", phoneCode: "62", iso: "ID" },
     { country: "Malasia", currency: "Ringgit malayo", code: "MYR", phoneCode: "60", iso: "MY" },

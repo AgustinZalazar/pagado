@@ -72,6 +72,10 @@
             "filterCategory": "Filtrar por categoria",
             "filterDate": "Filtrar por fecha",
             "buttonAdd": "Agregar transaccion",
+            "dialogTitle": "Agregar transaccion",
+            "dialogDescription": "Crea una nueva transaccion",
+            "dialogEditTitle": "Editar transaccion",
+            "dialogEditDescription": "Edita la transaccion seleccionada",
             "header1": "Numero",
             "header2": "Descripcion",
             "header3": "Tipo",
@@ -98,7 +102,78 @@
             "descriptionDialog": "Crea una cuenta nueva",
             "paymentMethods": "Metodos de pago",
             "noDataDescription": "Por favor ingrese una cuenta y un metodo de pago para ver la información aquí.",
-            "buttonAddPayment": "Agregar metodo de pago"
+            "buttonAddPayment": "Agregar metodo de pago",
+            "titleDialogMethod": "Agregar metodo de pago",
+            "descriptionDialogMethod": "Crea un nuevo metodo de pago"
+        },
+        "Forms": {
+            "Transaction": {
+                "description": "Descripción",
+                "descriptionPlaceholder": "Alquiler",
+                "amount": "Monto",
+                "amountPlaceholder": "1.234,56",
+                "currency": "Moneda",
+                "currencyPlaceholder": "Moneda",
+                "type": "Tipo",
+                "typePlaceholder": "Seleccione un tipo de transacción",
+                "typeIncome": "Ingreso",
+                "typeExpense": "Gasto",
+                "category": "Categoría",
+                "date": "Fecha",
+                "datePlaceholder": "Elegi una fecha",
+                "account": "Cuenta",
+                "accountPlaceholder": "Seleccione una cuenta",
+                "method": "Método de pago",
+                "methodPlaceholder": "Seleccione un método de pago",
+                "save": "Guardar",
+                "errors": {
+                    "descriptionMin": "La descripcion debe contener al menos 2 caracteres",
+                    "amountPositive": "El monto debe ser mayor que 0",
+                    "currencyRequired": "Seleccione una moneda",
+                    "typeRequired": "Seleccione un tipo por favor",
+                    "categoryRequired": "Seleccione una categoría",
+                    "dateRequired": "Seleccione una fecha",
+                    "accountRequired": "Seleccione una cuenta",
+                    "methodRequired": "Seleccione un método de pago"
+                }
+            },
+            "Category": {
+                "name": "Nombre",
+                "namePlaceholder": "Servicios",
+                "percentage": "Porcentaje",
+                "percentagePlaceholder": "20%",
+                "color": "Selecciona un color",
+                "icon": "Selecciona un icono",
+                "save": "Guardar",
+                "errors": {
+                    "nameMin": "El nombre debe contener al menos 2 caracteres",
+                    "percentageMin": "El porcentaje debe ser al menos 0",
+                    "percentageMax": "El porcentaje no puede ser mayor a 100",
+                    "percentageExceeded": "Error, La sumatoria de los porcentajes no puede ser mayor al 100%."
+                }
+            },
+            "Account": {
+                "title": "Titulo",
+                "titlePlaceholder": "Tarjeta de credito",
+                "type": "Tipo de cuenta",
+                "typePlaceholder": "Banco / Billetera Virtual",
+                "color": "Selecciona un color",
+                "save": "Guardar",
+                "errors": {
+                    "titleMin": "El titulo debe contener al menos 2 caracteres"
+                }
+            },
+            "Method": {
+                "title": "Titulo",
+                "titlePlaceholder": "Tarjeta de crédito",
+                "titleRequired": "Titulo *",
+                "cardType": "Tipo de tarjeta",
+                "cardTypePlaceholder": "Visa | Mastercard",
+                "save": "Guardar",
+                "errors": {
+                    "titleMin": "El titulo debe contener al menos 2 caracteres"
+                }
+            }
         }
     }
 }

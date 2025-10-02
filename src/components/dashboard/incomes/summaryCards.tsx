@@ -6,11 +6,11 @@ import { OtherCurrencies } from "@/types/Currency"
 import { SummaryMethod } from "@/types/PaymentMethod"
 import NumberFlow from "@number-flow/react"
 import { CircleDollarSign, TrendingDown, TrendingUp } from 'lucide-react'
-import { useLocale, useTranslations } from "next-intl"
-import { getLocale } from "next-intl/server"
-import HoverCardsTemplate from "../hoverCards"
-import { renderFormattedAmount } from "@/helpers/formatAmount"
-import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
+// import { getLocale } from "next-intl/server"
+// import HoverCardsTemplate from "../hoverCards"
+// import { renderFormattedAmount } from "@/helpers/formatAmount"
+// import { cn } from "@/lib/utils"
 
 type SummaryCardsProps = {
     totalIncome: number
