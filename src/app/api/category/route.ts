@@ -1,14 +1,13 @@
-import { getUserSensitiveInfo } from "@/actions/getUserSensitiveInfo";
 import { getUserByMail } from "@/app/data/user/get-user";
 import { auth } from "@/auth";
 import { google } from "googleapis";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
+import { getValidGoogleAuth } from "@/lib/google-auth-middleware";
 
 export async function GET(request: Request) {
     const session = await auth();
     try {
-        // const accessToken = session?.accessToken;
         const url = new URL(request.url);
         const mailParam = url.searchParams.get("mail");
 
@@ -20,9 +19,8 @@ export async function GET(request: Request) {
 
         const mail = !mailParam ? session?.user.email : mailParam
 
-        // const user = await getUserSensitiveInfo(mail as string)
         const user = await getUserByMail(mail as string)
-        const { sheetId, accessToken } = user;
+        const { sheetId, id: userId } = user;
 
         if (!session) {
             if (!token || token !== expectedToken) {
@@ -30,20 +28,15 @@ export async function GET(request: Request) {
             }
         }
 
-        // const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${!mailParam ? session?.user.email : mailParam}`, {
-        //     headers: {
-        //         'Authorization': `Bearer ${process.env.API_SECRET_TOKEN}`,
-        //     },
-        // }).then((res) => res.json());
-
-        // const { sheetId } = user;
-
         if (!sheetId) {
             return NextResponse.json(
                 { error: "Faltan parámetros: accessToken o sheetId" },
                 { status: 400 }
             );
         }
+
+        // Get valid access token (refreshes if expired)
+        const accessToken = await getValidGoogleAuth(userId);
 
         const auth = new google.auth.OAuth2();
         auth.setCredentials({ access_token: accessToken });
@@ -81,10 +74,22 @@ export async function GET(request: Request) {
                 return obj;
             }, {})
         );
-        // console.log({ ftc: formattedCategories })
         return NextResponse.json({ formattedCategories }, { status: 200 });
-    } catch (error) {
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+    } catch (error: any) {
+        console.error('Error in GET /api/category:', error);
+
+        // Better error handling for token issues
+        if (error.message?.includes('Token expired') || error.message?.includes('Account not found')) {
+            return NextResponse.json(
+                { error: error.message, code: 'AUTH_ERROR' },
+                { status: 401 }
+            );
+        }
+
+        return NextResponse.json(
+            { error: 'Internal Server Error', details: error.message },
+            { status: 500 }
+        );
     }
 }
 

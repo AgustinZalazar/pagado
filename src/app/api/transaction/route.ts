@@ -1,16 +1,15 @@
-import { getUserSensitiveInfo } from "@/actions/getUserSensitiveInfo";
 import { getUserByMail } from "@/app/data/user/get-user";
 import { auth } from "@/auth";
 import { getMonthNameByDate } from "@/helpers/getMonthName";
 import { google } from "googleapis";
 import { NextResponse } from "next/server";
+import { getValidGoogleAuth } from "@/lib/google-auth-middleware";
 
 
 
 export async function GET(request: Request) {
     const session = await auth();
     try {
-        // const accessToken = session?.accessToken;
         const url = new URL(request.url);
         const monthParam = url.searchParams.get("month");
         const mailParam = url.searchParams.get("mail");
@@ -22,9 +21,8 @@ export async function GET(request: Request) {
         const expectedToken = process.env.API_SECRET_TOKEN;
         const mail = !mailParam ? session?.user.email : mailParam
 
-        // const user = await getUserSensitiveInfo(mail as string)
         const user = await getUserByMail(mail as string)
-        const { sheetId, accessToken } = user;
+        const { sheetId, id: userId } = user;
 
         if (!session) {
             if (!token || token !== expectedToken) {
@@ -45,6 +43,10 @@ export async function GET(request: Request) {
                 { status: 400 }
             );
         }
+
+        // Get valid access token (refreshes if expired)
+        const accessToken = await getValidGoogleAuth(userId);
+
         const auth = new google.auth.OAuth2();
         auth.setCredentials({ access_token: accessToken });
 
@@ -96,8 +98,20 @@ export async function GET(request: Request) {
         );
         return NextResponse.json({ formattedTransactions }, { status: 200 });
     } catch (error: any) {
-        // console.error("Error al obtener las transacciones:", error.message || error);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+        console.error('Error in GET /api/transaction:', error);
+
+        // Better error handling for token issues
+        if (error.message?.includes('Token expired') || error.message?.includes('Account not found')) {
+            return NextResponse.json(
+                { error: error.message, code: 'AUTH_ERROR' },
+                { status: 401 }
+            );
+        }
+
+        return NextResponse.json(
+            { error: 'Internal Server Error', details: error.message },
+            { status: 500 }
+        );
     }
 }
 

@@ -3,11 +3,11 @@ import { auth } from "@/auth";
 import { google } from "googleapis";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
+import { getValidGoogleAuth } from "@/lib/google-auth-middleware";
 
 export async function GET(request: Request) {
     const session = await auth();
     try {
-        // const accessToken = session?.accessToken;
         const url = new URL(request.url);
         const mailParam = url.searchParams.get("mail");
 
@@ -20,23 +20,13 @@ export async function GET(request: Request) {
         const mail = !mailParam ? session?.user.email : mailParam
 
         const user = await getUserSensitiveInfo(mail as string)
-        const { sheetId, accessToken } = user;
-
-        console.log({ sheetId, accessToken })
+        const { sheetId, id: userId } = user;
 
         if (!session) {
             if (!token || token !== expectedToken) {
                 return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
             }
         }
-
-        // const user = await fetch(`${process.env.NEXTAUTH_URL}api/user/${!mailParam ? session?.user.email : mailParam}`, {
-        //     headers: {
-        //         'Authorization': `Bearer ${process.env.API_SECRET_TOKEN}`,
-        //     },
-        // }).then((res) => res.json());
-
-        // const { sheetId } = user;
 
         if (!sheetId) {
             return NextResponse.json(
@@ -45,11 +35,12 @@ export async function GET(request: Request) {
             );
         }
 
+        // Get valid access token (refreshes if expired)
+        const accessToken = await getValidGoogleAuth(userId);
+
         const auth = new google.auth.OAuth2();
         auth.setCredentials({ access_token: accessToken });
 
-
-        console.log({ auth: auth })
         const sheets = google.sheets({ version: "v4", auth });
 
         const sheet = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
@@ -57,10 +48,7 @@ export async function GET(request: Request) {
             (s) => s.properties?.title === "Config"
         );
 
-        console.log({ sheet: sheet })
-
         if (!sheetConfig) {
-            console.log("error 41")
             return NextResponse.json(
                 { error: `No se encontró la hoja Config` },
                 { status: 404 }
@@ -83,8 +71,21 @@ export async function GET(request: Request) {
             }, {})
         );
         return NextResponse.json({ formattedMethods }, { status: 200 });
-    } catch (error) {
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+    } catch (error: any) {
+        console.error('Error in GET /api/methods:', error);
+
+        // Better error handling for token issues
+        if (error.message?.includes('Token expired') || error.message?.includes('Account not found')) {
+            return NextResponse.json(
+                { error: error.message, code: 'AUTH_ERROR' },
+                { status: 401 }
+            );
+        }
+
+        return NextResponse.json(
+            { error: 'Internal Server Error', details: error.message },
+            { status: 500 }
+        );
     }
 }
 
