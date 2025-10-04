@@ -22,6 +22,8 @@ export async function GET(request: Request) {
         const user = await getUserSensitiveInfo(mail as string)
         const { sheetId, accessToken } = user;
 
+        console.log({ sheetId, accessToken })
+
         if (!session) {
             if (!token || token !== expectedToken) {
                 return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -46,12 +48,17 @@ export async function GET(request: Request) {
         const auth = new google.auth.OAuth2();
         auth.setCredentials({ access_token: accessToken });
 
+
+        console.log({ auth: auth })
         const sheets = google.sheets({ version: "v4", auth });
 
         const sheet = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
         const sheetConfig = sheet.data.sheets?.find(
             (s) => s.properties?.title === "Config"
         );
+
+        console.log({ sheet: sheet })
+
         if (!sheetConfig) {
             console.log("error 41")
             return NextResponse.json(

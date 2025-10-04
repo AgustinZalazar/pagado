@@ -1,6 +1,10 @@
-import React from 'react';
-import { Car, Home, Zap, Gift, ShoppingCart, Coffee, MoreHorizontal, PieChart } from 'lucide-react';
+"use client"
+import React, { useMemo } from 'react';
+import { PieChart, Home as HomeIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useTotalByCategory } from '@/hooks/useTotalByCategory';
+import { useMonth } from '@/context/monthContext';
+import { getIconComponent } from '@/data/icons';
 
 interface CategoryData {
     name: string;
@@ -11,18 +15,58 @@ interface CategoryData {
 }
 
 const CategoryBreakdown: React.FC = () => {
-    const categoryData: CategoryData[] = [
-        { name: 'Auto', amount: 45000, color: '#3b82f6', icon: Car, percentage: 26.2 },
-        { name: 'Servicios', amount: 32000, color: '#10b981', icon: Zap, percentage: 18.6 },
-        { name: 'Hogar', amount: 28000, color: '#f59e0b', icon: Home, percentage: 16.3 },
-        { name: 'Compras', amount: 22000, color: '#8b5cf6', icon: ShoppingCart, percentage: 12.8 },
-        { name: 'Entretenimiento', amount: 18000, color: '#06b6d4', icon: Coffee, percentage: 10.5 },
-        { name: 'Regalos', amount: 15000, color: '#ef4444', icon: Gift, percentage: 8.7 },
-        { name: 'Otros', amount: 12000, color: '#6b7280', icon: MoreHorizontal, percentage: 7.0 },
-    ];
     const t = useTranslations('Dashboard.Home.CategoryPercent');
+    const { selectedMonth } = useMonth();
+    const { totalByCategory, isLoading } = useTotalByCategory(selectedMonth);
 
-    const totalAmount = categoryData.reduce((sum, item) => sum + item.amount, 0);
+    // Calcular el total y preparar los datos
+    const { categoryData, totalAmount } = useMemo(() => {
+        const total = totalByCategory.reduce((sum, item) => sum + item.value, 0);
+
+        const data: CategoryData[] = totalByCategory
+            .map(item => ({
+                name: item.name,
+                amount: item.value,
+                color: item.color,
+                icon: item.icon ? getIconComponent(item.icon) : HomeIcon,
+                percentage: total > 0 ? parseFloat(((item.value / total) * 100).toFixed(1)) : 0
+            }))
+            .sort((a, b) => b.amount - a.amount); // Ordenar de mayor a menor
+
+        return { categoryData: data, totalAmount: total };
+    }, [totalByCategory]);
+
+    // Mostrar loading state
+    if (isLoading) {
+        return (
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden h-fit">
+                <div className="p-6 flex justify-center items-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100"></div>
+                </div>
+            </div>
+        );
+    }
+
+    // Si no hay datos
+    if (categoryData.length === 0) {
+        return (
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden h-fit">
+                <div className="p-6">
+                    <div className="flex items-center space-x-3 mb-4">
+                        <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                            <PieChart className="w-5 h-5 text-gray-800 dark:text-gray-100" />
+                        </div>
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100">
+                            {t('title')}
+                        </h3>
+                    </div>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm text-center py-8">
+                        No hay gastos registrados para este mes
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden h-fit">
@@ -105,10 +149,10 @@ const CategoryBreakdown: React.FC = () => {
                         <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <div className="text-sm text-gray-600 dark:text-gray-400">{t('highest')}</div>
                             <div className="text-base font-bold text-gray-800 dark:text-gray-100">
-                                {categoryData[0].name}
+                                {categoryData[0]?.name || '-'}
                             </div>
                             <div className="text-sm text-gray-500 dark:text-gray-400">
-                                {categoryData[0].percentage}%
+                                {categoryData[0]?.percentage || 0}%
                             </div>
                         </div>
                         <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">

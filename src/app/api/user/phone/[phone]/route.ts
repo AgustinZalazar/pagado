@@ -4,6 +4,9 @@ import { db } from "@/db";
 import { accounts, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/auth";
+import { m } from "motion/react";
+
+const API_URL = process.env.NEXT_PUBLIC_NEXTAUTH_URL;
 
 export async function GET(
     request: Request,
@@ -33,15 +36,40 @@ export async function GET(
         const user = userResult[0];
 
         // 2. Buscar el accessToken en la tabla accounts usando user.id
-        const accountResult = await db
-            .select()
-            .from(accounts)
-            .where(eq(accounts.userId, user.id))
-            .limit(1);
+        // const accountResult = await db
+        //     .select()
+        //     .from(accounts)
+        //     .where(eq(accounts.userId, user.id))
+        //     .limit(1);
 
-        const accessToken = accountResult[0]?.access_token ?? null;
+        // const accessToken = accountResult[0]?.access_token ?? null;
 
-        return NextResponse.json({ ...user, accessToken });
+        // const categoriesRes = await fetch(`${API_URL}api/category?mail=${user.email}`, {
+        //     headers: {
+        //         Authorization: `Bearer ${process.env.API_SECRET_TOKEN}`
+        //     },
+        // });
+        // const categories = await categoriesRes.json();
+
+        // const accounts = await fetch(`${API_URL}api/accounts?mail=${user.email}`, {
+        //     headers: {
+        //         Authorization: `Bearer ${process.env.API_SECRET_TOKEN}`
+        //     },
+        // });
+        // console.log(accounts)
+        // const accountsData = await accounts.json();
+
+        // const methods = await fetch(`${API_URL}api/methods?mail=${user.email}`, {
+        //     headers: {
+        //         Authorization: `Bearer ${process.env.API_SECRET_TOKEN}`
+        //     },
+        // });
+
+        // console.log(methods)
+        // const methodsData = await methods.json();
+
+
+        return NextResponse.json({ ...user });
     } catch (error) {
         console.error("Error fetching user:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
