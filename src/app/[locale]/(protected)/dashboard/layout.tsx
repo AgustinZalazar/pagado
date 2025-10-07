@@ -15,6 +15,7 @@ import { MonthProvider } from "@/context/monthContext";
 import QueryProvider from "@/lib/QueryProvider";
 import DashboardLayout from '@/components/dashboard/layout/DashboardLayout'
 import { LanguageToggle } from "@/components/dashboard/languageToggle";
+import { WhatsAppButton } from "@/components/dashboard/WhatsAppButton";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -62,6 +63,7 @@ export default async function RootLayout({
                                             <div className="w-full flex justify-between items-center gap-2 px-4">
                                                 <SidebarTrigger className="-ml-1" />
                                                 <div className="ml-auto flex items-center gap-2">
+                                                    <WhatsAppButton />
                                                     <DarkmodeToggle />
                                                     <LanguageToggle />
                                                 </div>
