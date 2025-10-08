@@ -129,7 +129,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
         resolver: zodResolver(FormSchema),
         defaultValues: {
             description: transaction?.description || "",
-            amount: transaction?.amount || 0,
+            amount: transaction?.amount ? parseFloat(transaction.amount.toString()) : 0,
             currency: transaction?.currency || "",
             type: transaction?.type as "income" | "expense" || undefined,
             category: transaction?.category || "",
@@ -142,8 +142,13 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
     // Efecto para inicializar el formulario cuando hay una transacción
     useEffect(() => {
         if (transaction) {
+            const numericAmount = parseFloat(transaction.amount.toString());
+
             // Establecer el display amount
-            setDisplayAmount(numberToDisplay(transaction.amount));
+            setDisplayAmount(numberToDisplay(numericAmount));
+
+            // Actualizar el valor en el formulario
+            form.setValue("amount", numericAmount);
 
             // Encontrar y establecer la cuenta seleccionada
             const account = accounts.find((acc: Account) => acc.title === transaction.account);
@@ -155,7 +160,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
             setDisplayAmount("");
             setSelectedAccountId("");
         }
-    }, [transaction, accounts]);
+    }, [transaction, accounts, form]);
 
     // Función para manejar el cambio de cuenta
     const handleAccountChange = (accountTitle: string) => {

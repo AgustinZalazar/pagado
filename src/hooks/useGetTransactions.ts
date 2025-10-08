@@ -71,6 +71,7 @@ export const useCreateTransaction = (setOpenPopover: Dispatch<SetStateAction<boo
         },
         onSettled: (context) => {
             queryClient.invalidateQueries({ queryKey: ['transactions'] })
+            queryClient.invalidateQueries({ queryKey: ['transactionsSummary'] })
             setOpenPopover(false)
         },
     });
@@ -120,6 +121,7 @@ export const useEditTransaction = (setOpenPopover: Dispatch<SetStateAction<boole
         },
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ['transactions'] })
+            queryClient.invalidateQueries({ queryKey: ['transactionsSummary'] })
             setOpenPopover(false)
         },
     });
@@ -169,6 +171,7 @@ export const useDeleteTransaction = () => {
         },
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ["transactions"] });
+            queryClient.invalidateQueries({ queryKey: ["transactionsSummary"] });
         },
     });
 

@@ -1,21 +1,18 @@
 import { AccountsList } from '@/components/dashboard/accounts/account_list'
 import { DialogWindowAccount } from '@/components/dashboard/accounts/DialogWindowAccount'
 import { useTranslations } from 'next-intl';
-import React, { Suspense } from 'react'
+import { unstable_noStore as noStore } from 'next/cache';
 
+// Server Component - no "use client"
 const Accounts = () => {
+    noStore(); // Prevent caching for dynamic data
     const t = useTranslations('Dashboard.Accounts');
+
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <h1 className="text-3xl font-bold mb-4">{t('title')}</h1>
             <DialogWindowAccount />
-            <Suspense fallback={
-                <div className="flex justify-center items-center h-full">
-                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900"></div>
-                </div>
-            }>
-                <AccountsList />
-            </Suspense>
+            <AccountsList />
         </div>
     )
 }

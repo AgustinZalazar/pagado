@@ -168,39 +168,46 @@ export const useTransactionsSummary = (
             const { formattedTransactions: currentTransactions } = await currentRes.json();
             const { formattedTransactions: previousTransactions } = await previousRes.json();
 
+            // Filter out invalid transactions with null values
+            const validCurrentTransactions = currentTransactions.filter((t: Transaction) => t.id !== null && t.type !== null);
+            const validPreviousTransactions = previousTransactions.filter((t: Transaction) => t.id !== null && t.type !== null);
+
+            // console.log({ currentRes: validCurrentTransactions, previousRes: validPreviousTransactions })
+
             // 🎯 Calcula totales solo para moneda por defecto
-            const currentTotals = calculateTotalsByCurrency(currentTransactions, defaultCurrency);
-            const previousTotals = calculateTotalsByCurrency(previousTransactions, defaultCurrency);
+            const currentTotals = calculateTotalsByCurrency(validCurrentTransactions, defaultCurrency);
+            const previousTotals = calculateTotalsByCurrency(validPreviousTransactions, defaultCurrency);
 
             const categorySummary = calculateCategorySummary(
-                currentTransactions.filter((t: Transaction) => t.currency === defaultCurrency),
-                previousTransactions.filter((t: Transaction) => t.currency === defaultCurrency)
+                validCurrentTransactions.filter((t: Transaction) => t.currency === defaultCurrency),
+                validPreviousTransactions.filter((t: Transaction) => t.currency === defaultCurrency)
             );
 
             const methodSummary = calculateMethodSummary(
-                currentTransactions.filter((t: Transaction) => t.currency === defaultCurrency),
-                previousTransactions.filter((t: Transaction) => t.currency === defaultCurrency)
+                validCurrentTransactions.filter((t: Transaction) => t.currency === defaultCurrency),
+                validPreviousTransactions.filter((t: Transaction) => t.currency === defaultCurrency)
             );
-            console.log("transactions summary hook called");
-            console.log({
-                currentMonth,
-                previousMonth,
-                defaultCurrency,
-                transactions: currentTransactions,
-                totalIncome: currentTotals.default.income,
-                totalExpenses: currentTotals.default.expenses,
-                totalLastIncome: previousTotals.default.income,
-                totalLastExpenses: previousTotals.default.expenses,
-                categorySummary,
-                methodSummary,
-                otherCurrencies: {
-                    current: currentTotals.others,
-                    previous: previousTotals.others
-                }
-            })
+            // console.log({ defaultCurrency, currentTotals, previousTotals, categorySummary, methodSummary })
+            // console.log("transactions summary hook called");
+            // console.log({
+            //     currentMonth,
+            //     previousMonth,
+            //     defaultCurrency,
+            //     transactions: validCurrentTransactions,
+            //     totalIncome: currentTotals.default.income,
+            //     totalExpenses: currentTotals.default.expenses,
+            //     totalLastIncome: previousTotals.default.income,
+            //     totalLastExpenses: previousTotals.default.expenses,
+            //     categorySummary,
+            //     methodSummary,
+            //     otherCurrencies: {
+            //         current: currentTotals.others,
+            //         previous: previousTotals.others
+            //     }
+            // })
 
             return {
-                transactions: currentTransactions,
+                transactions: validCurrentTransactions,
                 totalIncome: currentTotals.default.income,
                 totalExpenses: currentTotals.default.expenses,
                 totalLastIncome: previousTotals.default.income,
@@ -214,7 +221,7 @@ export const useTransactionsSummary = (
             };
         },
         staleTime: 1000 * 60 * 5,
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
     });
