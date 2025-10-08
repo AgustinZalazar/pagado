@@ -34,6 +34,8 @@ import { Account, Method } from "@/types/Accounts"
 import { CustomSelect } from "@/components/ui/custom-select"
 import { countryCurrencyMap } from "@/data/currency"
 import { useTranslations } from "next-intl"
+import { useSession } from "next-auth/react"
+import { useGetUserInfo } from "@/hooks/useUser"
 
 // Función para formatear el input de moneda
 function formatCurrencyInput(value: string): string {
@@ -98,6 +100,8 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
     const { editTransaction } = useEditTransaction(setOpenDialog);
     const { accounts } = useGetAccounts();
     const { methods } = useGetMethods();
+    const { data: session } = useSession();
+    const { user } = useGetUserInfo(session?.user.email as string);
 
     // Estados locales
     const [selectedAccountId, setSelectedAccountId] = useState<string>("");
@@ -130,7 +134,7 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
         defaultValues: {
             description: transaction?.description || "",
             amount: transaction?.amount ? parseFloat(transaction.amount.toString()) : 0,
-            currency: transaction?.currency || "",
+            currency: transaction?.currency || user?.currency || "",
             type: transaction?.type as "income" | "expense" || undefined,
             category: transaction?.category || "",
             account: transaction?.account || "",
@@ -161,6 +165,13 @@ export function FormTransaction({ openDialog, setOpenDialog, transaction }: Form
             setSelectedAccountId("");
         }
     }, [transaction, accounts, form]);
+
+    // Efecto para establecer la moneda del usuario por defecto
+    useEffect(() => {
+        if (!transaction && user?.currency && !form.getValues("currency")) {
+            form.setValue("currency", user.currency);
+        }
+    }, [user, transaction, form]);
 
     // Función para manejar el cambio de cuenta
     const handleAccountChange = (accountTitle: string) => {
