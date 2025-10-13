@@ -74,7 +74,7 @@ const IncomeChart: React.FC = () => {
                                 </div>
                                 <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">{t('emptyDataTitle')}</h4>
                                 <p className="text-sm text-gray-600 dark:text-gray-400">{t('emptyDataDescription')}</p>
-                                <Button variant="link" className="mt-4 font-bold dark:text-green-400" onClick={() => router.push('/incomes')}>
+                                <Button variant="link" className="mt-4 font-bold dark:text-green-400" onClick={() => router.push('/dashboard/incomes')}>
                                     {t('button')}
                                 </Button>
                             </div>
@@ -168,7 +168,7 @@ const ExpenseChart: React.FC = () => {
                                 </div>
                                 <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">{t('emptyDataTitle')}</h4>
                                 <p className="text-sm text-gray-600 dark:text-gray-400">{t('emptyDataDescription')}</p>
-                                <Button variant="link" className="mt-4 font-bold dark:text-red-400" onClick={() => router.push('/incomes')}>
+                                <Button variant="link" className="mt-4 font-bold dark:text-red-400" onClick={() => router.push('/dashboard/incomes')}>
                                     {t('button')}
                                 </Button>
                             </div>

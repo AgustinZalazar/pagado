@@ -50,7 +50,7 @@ const ExpensePieChart: React.FC = () => {
                             </div>
                             <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">{t('noDataTitle')}</h4>
                             <p className="text-sm text-gray-600 dark:text-gray-400"> {t('noDataDescription')}</p>
-                            <Button variant="link" className='mt-4 font-bold dark:text-blue-400' onClick={() => { router.push('/incomes') }}>
+                            <Button variant="link" className='mt-4 font-bold dark:text-blue-400' onClick={() => { router.push('/dashboard/incomes') }}>
                                 {t('button')}
                             </Button>
                         </div>
