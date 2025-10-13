@@ -245,7 +245,8 @@ export default function Component() {
                             </div>
                         </AnimatedSection>
 
-                        <div className="grid gap-6 lg:grid-cols-2 lg:gap-8 max-w-4xl mx-auto">
+                        {/* <div className="grid gap-6 lg:grid-cols-2 lg:gap-8 max-w-4xl mx-auto"> */}
+                        <div className="grid gap-6 justify-center lg:gap-8 max-w-4xl mx-auto">
                             <AnimatedSection delay={200}>
                                 <Card className="relative hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-blue-100">
                                     <CardHeader className="p-4 sm:p-6">
@@ -273,6 +274,7 @@ export default function Component() {
                                         <Button
                                             className="w-full bg-transparent hover:scale-105 transition-all duration-200 border-blue-200 hover:bg-blue-50 text-sm sm:text-base"
                                             variant="outline"
+                                            onClick={() => router.push("/login")}
                                         >
                                             {t("pricing.free.cta")}
                                         </Button>
@@ -280,7 +282,7 @@ export default function Component() {
                                 </Card>
                             </AnimatedSection>
 
-                            <AnimatedSection delay={400}>
+                            {/* <AnimatedSection delay={400}>
                                 <Card className="relative border-blue-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 hover:border-blue-600">
                                     <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                                         <Badge className="bg-blue-600 text-white animate-pulse">{t("pricing.popular")}</Badge>
@@ -316,7 +318,7 @@ export default function Component() {
                                         </Button>
                                     </CardContent>
                                 </Card>
-                            </AnimatedSection>
+                            </AnimatedSection> */}
                         </div>
                     </div>
                 </section>

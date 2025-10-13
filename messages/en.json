@@ -17,6 +17,10 @@
             "logout": "Log out",
             "soon": "Soon"
         },
+        "WhatsApp": {
+            "buttonText": "WhatsApp Bot",
+            "defaultMessage": "Hi! I want to talk to the Pagado assistant 💰"
+        },
         "Home": {
             "title": "Financial Dashboard",
             "description": "Here you can see a summary of your finances.",

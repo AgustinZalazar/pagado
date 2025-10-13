@@ -90,12 +90,14 @@ export async function GET(request: Request) {
         // Procesar los datos para excluir el encabezado (si existe)
         const [header, ...transactions] = rows;
         // console.log({ ts: transactions })
-        const formattedTransactions = transactions.map((row) =>
-            header.reduce((obj, key, index) => {
-                obj[key] = row[index] || null; // Usa null si no hay un valor en esa celda
-                return obj;
-            }, {})
-        );
+        const formattedTransactions = transactions
+            .filter((row) => row && row.length > 0 && row[0]) // Filtrar filas vacías o sin id
+            .map((row) =>
+                header.reduce((obj, key, index) => {
+                    obj[key] = row[index] || null; // Usa null si no hay un valor en esa celda
+                    return obj;
+                }, {})
+            );
         return NextResponse.json({ formattedTransactions }, { status: 200 });
     } catch (error: any) {
         console.error('Error in GET /api/transaction:', error);
@@ -200,10 +202,15 @@ export async function POST(request: Request) {
             range,
         });
 
-        // Determinar el próximo ID
+        // Determinar el próximo ID buscando el máximo ID existente
         const rows = existingData.data.values || [];
-        const lastId = rows.length > 1 ? parseInt(rows[rows.length - 1][0]) : 0; // Ignorar encabezado
-        const newId = isNaN(lastId) ? 1 : lastId + 1;
+        const ids = rows
+            .slice(1) // Ignorar encabezado
+            .map(row => parseInt(row[0]))
+            .filter(id => !isNaN(id)); // Filtrar valores no numéricos
+
+        const maxId = ids.length > 0 ? Math.max(...ids) : 0;
+        const newId = maxId + 1;
 
         // Insertar la transacción en la hoja
         await sheets.spreadsheets.values.append({
@@ -372,14 +379,22 @@ export async function DELETE(request: Request) {
             );
         }
 
-        // Elimina la fila configurando las celdas en blanco
-        const deleteRange = `${month}!A${rowIndex + 1}:I${rowIndex + 1}`;
-        await sheets.spreadsheets.values.update({
+        // Elimina la fila usando batchUpdate
+        await sheets.spreadsheets.batchUpdate({
             spreadsheetId: sheetId,
-            range: deleteRange,
-            valueInputOption: "USER_ENTERED",
             requestBody: {
-                values: [["", "", "", "", "", "", "", "", ""]],
+                requests: [
+                    {
+                        deleteDimension: {
+                            range: {
+                                sheetId: sheetIdForMonth,
+                                dimension: "ROWS",
+                                startIndex: rowIndex,
+                                endIndex: rowIndex + 1,
+                            },
+                        },
+                    },
+                ],
             },
         });
         return NextResponse.json({ message: "Transacción eliminada exitosamente" });

@@ -6,7 +6,6 @@ import { cache } from "react";
 
 export const getUserByMail = cache(async (email: string) => {
     try {
-        console.log("test cache user")
         // Busca el usuario por email en la base de datos
         const userResult = await db.select().from(users).where(eq(users.email, email)).limit(1);
         if (userResult.length === 0) {

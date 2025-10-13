@@ -17,6 +17,10 @@
             "logout": "Cerrar sesión",
             "soon": "Próximamente"
         },
+        "WhatsApp": {
+            "buttonText": "Bot de WhatsApp",
+            "defaultMessage": "Hola! Quiero hablar con el asistente de Pagado 💰"
+        },
         "Home": {
             "title": "Tablero financiero",
             "description": "Aquí podrás ver un resumen de tus finanzas.",

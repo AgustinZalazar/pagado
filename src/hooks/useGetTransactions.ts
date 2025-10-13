@@ -71,6 +71,7 @@ export const useCreateTransaction = (setOpenPopover: Dispatch<SetStateAction<boo
         },
         onSettled: (context) => {
             queryClient.invalidateQueries({ queryKey: ['transactions'] })
+            queryClient.invalidateQueries({ queryKey: ['transactionsSummary'] })
             setOpenPopover(false)
         },
     });
@@ -120,6 +121,7 @@ export const useEditTransaction = (setOpenPopover: Dispatch<SetStateAction<boole
         },
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ['transactions'] })
+            queryClient.invalidateQueries({ queryKey: ['transactionsSummary'] })
             setOpenPopover(false)
         },
     });
@@ -137,11 +139,11 @@ export const useEditTransaction = (setOpenPopover: Dispatch<SetStateAction<boole
 export const useDeleteTransaction = () => {
     const queryClient = useQueryClient()
     const mutation = useMutation({
-        mutationFn: async (transactionId: string) => {
+        mutationFn: async (data: { id: string; date: string }) => {
             const response = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}api/transaction`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(transactionId),
+                body: JSON.stringify(data),
             });
 
             if (!response.ok) {
@@ -169,6 +171,7 @@ export const useDeleteTransaction = () => {
         },
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ["transactions"] });
+            queryClient.invalidateQueries({ queryKey: ["transactionsSummary"] });
         },
     });
 
