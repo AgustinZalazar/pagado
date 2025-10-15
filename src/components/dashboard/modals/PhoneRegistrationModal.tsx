@@ -54,7 +54,7 @@ const NewUser = ({ onSubmit, user }: { onSubmit?: (data: z.infer<typeof phoneReg
                 (item) => item.country === form.watch("country")
             )?.phoneCode;
 
-            const fullPhoneNumber = `+${countryCode}${data.phoneNumber}`;
+            const fullPhoneNumber = `${countryCode}${data.phoneNumber}`;
             const fulldata = { ...data, phoneNumber: fullPhoneNumber }
             await registerPhone(fulldata)
             if (onSubmit) {
