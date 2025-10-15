@@ -529,7 +529,7 @@ function getStripePriceId(planId: string): string {
 
 ```typescript
 // src/lib/mercadopago/checkout.ts
-import { MercadoPagoConfig, Preference } from 'mercadopago';
+import { MercadoPagoConfig, PreApproval } from 'mercadopago';
 
 const client = new MercadoPagoConfig({
     accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!
@@ -543,54 +543,42 @@ interface CreateCheckoutParams {
 }
 
 export async function createMercadoPagoCheckout(params: CreateCheckoutParams) {
-    const { userId, userEmail, userName, planId } = params;
+    const { userId, userEmail, planId } = params;
 
-    const preference = new Preference(client);
+    const preApproval = new PreApproval(client);
 
     const planPrices = {
-        pro: { amount: 5.00, title: 'Plan Pro' },
-        premium: { amount: 10.00, title: 'Plan Premium' },
+        pro: { amount: 5.00, title: 'Plan Pro Mensual' },
+        premium: { amount: 10.00, title: 'Plan Premium Mensual' },
     };
 
     const plan = planPrices[planId as keyof typeof planPrices];
 
-    const response = await preference.create({
+    const response = await preApproval.create({
         body: {
-            items: [
-                {
-                    id: planId,
-                    title: plan.title,
-                    quantity: 1,
-                    currency_id: 'USD',
-                    unit_price: plan.amount,
-                },
-            ],
-            payer: {
-                email: userEmail,
-                name: userName,
+            reason: plan.title,
+            auto_recurring: {
+                frequency: 1,
+                frequency_type: 'months',
+                transaction_amount: plan.amount,
+                currency_id: 'USD',
             },
             back_urls: {
                 success: `${process.env.NEXTAUTH_URL}/dashboard/subscription/success`,
                 failure: `${process.env.NEXTAUTH_URL}/dashboard/subscription/canceled`,
-                pending: `${process.env.NEXTAUTH_URL}/dashboard/subscription/pending`,
             },
-            auto_return: 'approved',
+            payer_email: userEmail,
+            status: 'pending',
+            external_reference: userId,
             metadata: {
                 user_id: userId,
                 plan_id: planId,
                 provider: 'mercadopago',
             },
-            // Para suscripciones recurrentes, usar:
-            // auto_recurring: {
-            //     frequency: 1,
-            //     frequency_type: 'months',
-            //     transaction_amount: plan.amount,
-            //     currency_id: 'USD',
-            // },
         },
     });
 
-    return response;
+    return response; // response.init_point contiene la URL de redirección
 }
 ```
 
@@ -799,28 +787,55 @@ export async function POST(request: Request) {
     try {
         const body = await request.json();
 
-        // Verificar tipo de notificación
-        if (body.type === 'payment') {
-            const paymentId = body.data.id;
+        console.log('MercadoPago webhook received:', body);
 
-            // Obtener información del pago desde Mercado Pago API
-            const paymentInfo = await fetchMercadoPagoPayment(paymentId);
+        // Manejar notificaciones de suscripciones (PreApproval)
+        if (body.type === 'subscription_preapproval' || body.action === 'subscription_preapproval') {
+            const preapprovalId = body.data.id;
 
-            if (paymentInfo.status === 'approved') {
-                await handleMercadoPagoPaymentApproved(paymentInfo);
-            } else if (paymentInfo.status === 'rejected') {
-                await handleMercadoPagoPaymentRejected(paymentInfo);
+            // Obtener información de la suscripción desde Mercado Pago API
+            const subscriptionInfo = await fetchMercadoPagoSubscription(preapprovalId);
+
+            if (subscriptionInfo.status === 'authorized') {
+                await handleSubscriptionAuthorized(subscriptionInfo);
+            } else if (subscriptionInfo.status === 'cancelled') {
+                await handleSubscriptionCancelled(subscriptionInfo);
+            } else if (subscriptionInfo.status === 'paused') {
+                await handleSubscriptionPaused(subscriptionInfo);
             }
         }
 
+        // Manejar pagos individuales de la suscripción
+        if (body.type === 'payment') {
+            const paymentId = body.data.id;
+            const paymentInfo = await fetchMercadoPagoPayment(paymentId);
+
+            if (paymentInfo.status === 'approved') {
+                await handlePaymentApproved(paymentInfo);
+            } else if (paymentInfo.status === 'rejected') {
+                await handlePaymentRejected(paymentInfo);
+            }
+        }
+
+        // IMPORTANTE: Siempre retornar 200 para confirmar recepción
         return NextResponse.json({ received: true }, { status: 200 });
     } catch (error: any) {
         console.error('Mercado Pago webhook error:', error);
-        return NextResponse.json(
-            { error: 'Webhook handler failed', details: error.message },
-            { status: 500 }
-        );
+        // Aún en caso de error, retornar 200 para evitar reintentos
+        return NextResponse.json({ received: true }, { status: 200 });
     }
+}
+
+async function fetchMercadoPagoSubscription(preapprovalId: string) {
+    const response = await fetch(
+        `https://api.mercadopago.com/preapproval/${preapprovalId}`,
+        {
+            headers: {
+                'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+            },
+        }
+    );
+    return response.json();
 }
 
 async function fetchMercadoPagoPayment(paymentId: string) {
@@ -835,22 +850,39 @@ async function fetchMercadoPagoPayment(paymentId: string) {
     return response.json();
 }
 
-async function handleMercadoPagoPaymentApproved(paymentInfo: any) {
-    const userId = paymentInfo.metadata.user_id;
-    const planId = paymentInfo.metadata.plan_id;
+async function handleSubscriptionAuthorized(subscriptionInfo: any) {
+    const userId = subscriptionInfo.external_reference || subscriptionInfo.metadata?.user_id;
+    const planId = subscriptionInfo.metadata?.plan_id;
+
+    if (!userId || !planId) {
+        console.error('Missing userId or planId in subscription metadata');
+        return;
+    }
+
+    // Verificar si ya existe la suscripción
+    const existingSub = await db
+        .select()
+        .from(subscriptions)
+        .where(eq(subscriptions.mercadopagoSubscriptionId, subscriptionInfo.id))
+        .then(rows => rows[0]);
+
+    if (existingSub) {
+        console.log('Subscription already exists:', subscriptionInfo.id);
+        return;
+    }
 
     // Crear suscripción
     await db.insert(subscriptions).values({
         id: crypto.randomUUID(),
         userId,
         provider: 'mercadopago',
-        mercadopagoSubscriptionId: paymentInfo.id,
-        mercadopagoPayerId: paymentInfo.payer.id,
+        mercadopagoSubscriptionId: subscriptionInfo.id,
+        mercadopagoPayerId: subscriptionInfo.payer_id,
         planId,
         planName: getPlanName(planId),
         status: 'active',
-        amount: paymentInfo.transaction_amount * 100, // convertir a centavos
-        currency: paymentInfo.currency_id,
+        amount: Math.round(subscriptionInfo.auto_recurring.transaction_amount * 100), // a centavos
+        currency: subscriptionInfo.auto_recurring.currency_id,
         billingCycle: 'monthly',
         currentPeriodStart: new Date(),
         currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
@@ -861,14 +893,90 @@ async function handleMercadoPagoPaymentApproved(paymentInfo: any) {
         .set({
             subscriptionStatus: 'active',
             currentPlanId: planId,
-            mercadopagoPayerId: paymentInfo.payer.id,
+            mercadopagoPayerId: subscriptionInfo.payer_id,
             ...getPlanFeatures(planId),
         })
         .where(eq(users.id, userId));
+
+    console.log('Subscription created successfully for user:', userId);
 }
 
-async function handleMercadoPagoPaymentRejected(paymentInfo: any) {
+async function handleSubscriptionCancelled(subscriptionInfo: any) {
+    await db.update(subscriptions)
+        .set({
+            status: 'canceled',
+            canceledAt: new Date(),
+        })
+        .where(eq(subscriptions.mercadopagoSubscriptionId, subscriptionInfo.id));
+
+    const sub = await db
+        .select()
+        .from(subscriptions)
+        .where(eq(subscriptions.mercadopagoSubscriptionId, subscriptionInfo.id))
+        .then(rows => rows[0]);
+
+    if (sub) {
+        await db.update(users)
+            .set({
+                subscriptionStatus: 'canceled',
+                currentPlanId: 'free',
+            })
+            .where(eq(users.id, sub.userId));
+    }
+}
+
+async function handleSubscriptionPaused(subscriptionInfo: any) {
+    await db.update(subscriptions)
+        .set({
+            status: 'paused',
+        })
+        .where(eq(subscriptions.mercadopagoSubscriptionId, subscriptionInfo.id));
+
+    const sub = await db
+        .select()
+        .from(subscriptions)
+        .where(eq(subscriptions.mercadopagoSubscriptionId, subscriptionInfo.id))
+        .then(rows => rows[0]);
+
+    if (sub) {
+        await db.update(users)
+            .set({
+                subscriptionStatus: 'paused',
+            })
+            .where(eq(users.id, sub.userId));
+    }
+}
+
+async function handlePaymentApproved(paymentInfo: any) {
+    // Registrar pago exitoso en la tabla de payments
+    await db.insert(payments).values({
+        id: crypto.randomUUID(),
+        userId: paymentInfo.metadata?.user_id || paymentInfo.external_reference,
+        provider: 'mercadopago',
+        mercadopagoPaymentId: paymentInfo.id,
+        amount: Math.round(paymentInfo.transaction_amount * 100),
+        currency: paymentInfo.currency_id,
+        status: 'succeeded',
+        paymentMethod: paymentInfo.payment_method_id,
+    });
+
+    console.log('Payment recorded:', paymentInfo.id);
+}
+
+async function handlePaymentRejected(paymentInfo: any) {
     console.log('Payment rejected:', paymentInfo.id);
+    // Opcional: registrar el pago fallido
+    await db.insert(payments).values({
+        id: crypto.randomUUID(),
+        userId: paymentInfo.metadata?.user_id || paymentInfo.external_reference,
+        provider: 'mercadopago',
+        mercadopagoPaymentId: paymentInfo.id,
+        amount: Math.round(paymentInfo.transaction_amount * 100),
+        currency: paymentInfo.currency_id,
+        status: 'failed',
+        paymentMethod: paymentInfo.payment_method_id,
+        errorMessage: paymentInfo.status_detail,
+    });
 }
 
 function getPlanName(planId: string): string {
@@ -880,7 +988,6 @@ function getPlanName(planId: string): string {
 }
 
 function getPlanFeatures(planId: string) {
-    // Same as Stripe implementation
     const features = {
         pro: {
             hasAccessToWhatsappBotWithAI: true,
