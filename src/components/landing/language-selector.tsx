@@ -32,7 +32,7 @@ export function LanguageSelector() {
                     <Card
                         className={`absolute z-50 bg-white border shadow-lg ${
                             // Mobile: full width dropdown from top
-                            "top-full mt-2 left-0 right-0 mx-4 md:mx-0 md:right-0 md:left-auto md:w-48"
+                            "top-full mt-2 left-0 right-0 mx-0 md:right-0 md:left-auto w-32 md:w-48"
                             }`}
                     >
                         <CardContent className="p-2">
